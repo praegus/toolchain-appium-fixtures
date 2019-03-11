@@ -38,9 +38,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <fitnesse.version>20180127</fitnesse.version>
-        <hsac.fixtures.version>3.28.0</hsac.fixtures.version>
-        <appium.version>6.1.0</appium.version>
+        <fitnesse.version>20190224</fitnesse.version>
+        <hsac.fixtures.version>4.2.0</hsac.fixtures.version>
+        <appium.version>7.0.0</appium.version>
     </properties>
 
     <dependencyManagement>
@@ -49,13 +49,13 @@
                 <!-- Ensure appium dependency does not overrule the selenium api version used -->
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-api</artifactId>
-                <version>3.14.0</version>
+                <version>3.141.59</version>
             </dependency>
             <dependency>
                 <!-- Ensure appium dependency does not overrule the selenium api version used -->
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-support</artifactId>
-                <version>3.14.0</version>
+                <version>3.141.59</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -138,7 +138,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.4</version>
+                        <version>3.1.0</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
