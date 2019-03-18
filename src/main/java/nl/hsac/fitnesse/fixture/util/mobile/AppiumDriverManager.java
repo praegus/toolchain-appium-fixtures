@@ -3,6 +3,7 @@ package nl.hsac.fitnesse.fixture.util.mobile;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.windows.WindowsDriver;
 import nl.hsac.fitnesse.fixture.Environment;
 import nl.hsac.fitnesse.fixture.util.mobile.element.MobileElementConverter;
 import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
@@ -32,6 +33,8 @@ public class AppiumDriverManager extends DriverManager {
             helper = createHelperForIos();
         } else if (driver instanceof AndroidDriver) {
             helper = createHelperForAndroid();
+        } else if (driver instanceof WindowsDriver) {
+            helper = createHelperForWindows();
         } else if (driver instanceof AppiumDriver) {
             helper = createGenericAppiumHelper();
         } else {
@@ -65,6 +68,10 @@ public class AppiumDriverManager extends DriverManager {
 
     protected SeleniumHelper createHelperForAndroid() {
         return new AndroidHelper();
+    }
+
+    protected SeleniumHelper createHelperForWindows() {
+        return new WindowsHelper();
     }
 
     protected SeleniumHelper createGenericAppiumHelper() {
