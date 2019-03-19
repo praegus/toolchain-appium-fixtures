@@ -70,5 +70,13 @@ public class WindowsAppTest extends MobileTest<WindowsElement, WindowsDriver<Win
         focusedWindow = appWindow;
     }
 
+    @Override
+    @WaitUntil
+    public boolean enterAs(String value, String place) {
+        boolean result = click(place);
+        type(value);
+        return result;
+    }
+
 
 }
