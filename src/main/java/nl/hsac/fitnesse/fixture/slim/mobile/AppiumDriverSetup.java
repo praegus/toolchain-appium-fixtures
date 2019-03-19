@@ -47,7 +47,7 @@ public class AppiumDriverSetup extends SeleniumDriverSetup {
     }
 
     public boolean connectToWindowsDriverAtWithCapabilities(String url, Map<String, Object> capabilities) throws MalformedURLException {
-        return this.createAndSetRemoteWebDriver(WindowsDriver<WindowsElement>::new, url, new DesiredCapabilities(capabilities));
+        return this.createAndSetRemoteWebDriver(WindowsDriver::new, url, new DesiredCapabilities(capabilities));
     }
 
     public boolean connectToWindowsDriverAtAndSelectWindow(String url, String window) throws MalformedURLException {

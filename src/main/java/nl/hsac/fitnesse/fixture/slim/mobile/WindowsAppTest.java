@@ -1,8 +1,9 @@
 package nl.hsac.fitnesse.fixture.slim.mobile;
 
-
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
+import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
+import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.mobile.WindowsHelper;
 import org.openqa.selenium.WebElement;
 
@@ -10,10 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WindowsAppTest extends MobileTest<WindowsElement, WindowsDriver<WindowsElement>> {
-    private int delayAfterClickInMillis = 300;
+    private int delayAfterClickInMillis = 100;
+    private String focusedWindow ="";
 
     public WindowsAppTest() {
         super();
+        focusedWindow = windowHandles().get(0);
     }
 
     public WindowsAppTest(int secondsBeforeTimeout) {
@@ -51,4 +54,21 @@ public class WindowsAppTest extends MobileTest<WindowsElement, WindowsDriver<Win
         }
         return result;
     }
+
+    @WaitUntil(TimeoutPolicy.STOP_TEST)
+    public boolean waitForSplashScreenToDisappear() {
+        if (!windowHandles().get(0).equals(focusedWindow)) {
+            switchToTopWindow();
+            return true;
+        }
+         return false;
+    }
+
+    public void switchToTopWindow() {
+        String appWindow = windowHandles().get(0);
+        driver().switchTo().window(appWindow);
+        focusedWindow = appWindow;
+    }
+
+
 }
