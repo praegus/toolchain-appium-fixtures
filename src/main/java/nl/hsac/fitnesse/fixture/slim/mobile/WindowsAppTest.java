@@ -2,6 +2,7 @@ package nl.hsac.fitnesse.fixture.slim.mobile;
 
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
+import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.mobile.WindowsHelper;
@@ -68,6 +69,17 @@ public class WindowsAppTest extends MobileTest<WindowsElement, WindowsDriver<Win
         String appWindow = windowHandles().get(0);
         driver().switchTo().window(appWindow);
         focusedWindow = appWindow;
+    }
+
+    public void switchToNextWindow() {
+        List<String> windows = windowHandles();
+        if(windows.size() > 1) {
+            int currentIndex = windowHandles().indexOf(focusedWindow);
+            int newIndex = currentIndex == (windows.size() - 1) ? 0 : currentIndex + 1;
+            driver().switchTo().window(windows.get(newIndex));
+        } else {
+            throw new SlimFixtureException("There is only one window in WinAppDriver's scope. Cannot Switch to next window");
+        }
     }
 
 
