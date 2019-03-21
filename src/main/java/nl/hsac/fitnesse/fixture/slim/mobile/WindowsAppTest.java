@@ -86,10 +86,11 @@ public class WindowsAppTest extends MobileTest<WindowsElement, WindowsDriver<Win
     @Override
     @WaitUntil
     public boolean enterAs(String value, String place) {
-        boolean result = click(place);
-        type(value);
-        return result;
+        if (click(place)) {
+            type(value);
+            return true;
+        }
+        return false;
     }
-
 
 }
