@@ -4,6 +4,8 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import nl.hsac.fitnesse.fixture.slim.StopTestException;
 import nl.hsac.fitnesse.fixture.slim.web.BrowserTest;
+import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
+import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.mobile.AppiumHelper;
 
 import java.lang.reflect.Method;
@@ -100,5 +102,11 @@ public class MobileTest<T extends MobileElement, D extends AppiumDriver<T>> exte
 
     protected AppiumHelper<T, D> getMobileHelper() {
         return (AppiumHelper<T, D>) super.getSeleniumHelper();
+    }
+
+    @WaitUntil(TimeoutPolicy.STOP_TEST)
+    public boolean waitForToContain(String place, String text) {
+        T element = this.getElement(place, null);
+        return null != element && element.getText().contains(text);
     }
 }

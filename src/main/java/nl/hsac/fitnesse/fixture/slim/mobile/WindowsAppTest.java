@@ -77,9 +77,18 @@ public class WindowsAppTest extends MobileTest<WindowsElement, WindowsDriver<Win
             int currentIndex = windowHandles().indexOf(focusedWindow);
             int newIndex = currentIndex == (windows.size() - 1) ? 0 : currentIndex + 1;
             driver().switchTo().window(windows.get(newIndex));
+            focusedWindow = windows.get(newIndex);
         } else {
             throw new SlimFixtureException("There is only one window in WinAppDriver's scope. Cannot Switch to next window");
         }
+    }
+
+    @Override
+    @WaitUntil
+    public boolean enterAs(String value, String place) {
+        boolean result = click(place);
+        type(value);
+        return result;
     }
 
 
