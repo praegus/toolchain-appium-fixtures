@@ -7,6 +7,7 @@ import nl.hsac.fitnesse.fixture.slim.web.BrowserTest;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.mobile.AppiumHelper;
+import org.openqa.selenium.WebElement;
 
 import java.lang.reflect.Method;
 
@@ -102,6 +103,16 @@ public class MobileTest<T extends MobileElement, D extends AppiumDriver<T>> exte
 
     protected AppiumHelper<T, D> getMobileHelper() {
         return (AppiumHelper<T, D>) super.getSeleniumHelper();
+    }
+
+    @Override
+    protected boolean clear(WebElement element) {
+        boolean result = false;
+        if (null != element) {
+            element.clear();
+            result = true;
+        }
+        return result;
     }
 
     @WaitUntil(TimeoutPolicy.STOP_TEST)
