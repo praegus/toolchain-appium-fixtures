@@ -2,15 +2,21 @@ package nl.hsac.fitnesse.fixture.slim.mobile;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
+import nl.hsac.fitnesse.fixture.slim.StopTestException;
 import nl.hsac.fitnesse.fixture.slim.web.BrowserTest;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.mobile.AppiumHelper;
 
+import java.lang.reflect.Method;
+
 /**
  * Specialized class to test mobile applications using Appium.
  */
 public class MobileTest<T extends MobileElement, D extends AppiumDriver<T>> extends BrowserTest<T> {
+
+    private boolean abortOnException;
+
     public MobileTest() {
         super();
         setImplicitFindInFramesTo(false);
@@ -34,6 +40,23 @@ public class MobileTest<T extends MobileElement, D extends AppiumDriver<T>> exte
     public boolean closeApp() {
         driver().closeApp();
         return true;
+    }
+
+    public void abortOnException(boolean abort) {
+        abortOnException = abort;
+    }
+
+    @Override
+    protected Throwable handleException(Method method, Object[] arguments, Throwable t) {
+        Throwable result = super.handleException(method, arguments, t);
+        if(abortOnException) {
+            String msg = result.getMessage();
+            if (msg.startsWith("message:<<") && msg.endsWith(">>")) {
+                msg = msg.substring(10, msg.length() - 2);
+            }
+            result = new StopTestException(false, msg);
+        }
+        return result;
     }
 
     @Override

@@ -3,9 +3,10 @@ package nl.hsac.fitnesse.fixture.slim.mobile;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.windows.WindowsDriver;
-import io.appium.java_client.windows.WindowsElement;
 import nl.hsac.fitnesse.fixture.Environment;
 import nl.hsac.fitnesse.fixture.slim.web.SeleniumDriverSetup;
+import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
+import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.mobile.AppiumDriverManager;
 import nl.hsac.fitnesse.fixture.util.selenium.driverfactory.DriverManager;
 import org.openqa.selenium.By;
@@ -24,6 +25,7 @@ import java.util.function.BiFunction;
  */
 public class AppiumDriverSetup extends SeleniumDriverSetup {
     private static final String APP_CAPABILITY_NAME = "app";
+    private int retries = 0;
 
     static {
         // ensure our helpers are used for Appium WebDrivers
@@ -47,15 +49,43 @@ public class AppiumDriverSetup extends SeleniumDriverSetup {
     }
 
     public boolean connectToWindowsDriverAtWithCapabilities(String url, Map<String, Object> capabilities) throws MalformedURLException {
-        return this.createAndSetRemoteWebDriver(WindowsDriver::new, url, new DesiredCapabilities(capabilities));
+        return  this.createAndSetRemoteWebDriver(WindowsDriver::new, url, new DesiredCapabilities(capabilities));
+    }
+
+    /**
+     * Connect to a driver and poll maximum 5 times with 5 second delay for a window with name @window to appear
+     * Useful in case starting the app takes > ~3 seconds before a window appears without having to start the app using
+     * a script and connecting to the desktop
+     * @param url The WinAppDriver URL
+     * @param capabilities Capabiltities map to start the driver with
+     * @param window Name of the window to attach to
+     * @return true if the window was found and attached to
+     * @throws MalformedURLException
+     */
+    public boolean connectToWindowsDriverAtWithCapabilitiesAndAttachToWindow(String url, Map<String, Object> capabilities, String window) throws MalformedURLException {
+        boolean result = false;
+        try {
+            result = this.createAndSetRemoteWebDriver(WindowsDriver::new, url, new DesiredCapabilities(capabilities));
+        } catch (Exception e) {
+            while (!result && retries < 5) {
+                try {
+                    result = connectToWindowsDriverAtAndSelectWindow (url, window);
+                } catch (Exception e2) {
+                    waitSeconds(5);
+                    retries++;
+                    System.out.println(retries);
+                }
+            }
+        }
+
+        return result;
     }
 
     public boolean connectToWindowsDriverAtAndSelectWindow(String url, String window) throws MalformedURLException {
         Map<String, Object> capabilities = new HashMap<>();
         capabilities.put("app", "Root");
-        if(connectToWindowsDriverAtWithCapabilities(url, capabilities)){
+        if (connectToWindowsDriverAtWithCapabilities(url, capabilities)) {
             String windowHandle = getWindowHandleForName(window);
-
             stopDriver();
             capabilities.clear();
 
@@ -65,9 +95,9 @@ public class AppiumDriverSetup extends SeleniumDriverSetup {
         return false;
     }
 
+    @WaitUntil(TimeoutPolicy.RETURN_NULL)
     private String getWindowHandleForName(String applicationTitle) {
         String handle = getHelper().driver().findElement(By.name(applicationTitle)).getAttribute("NativeWindowHandle");
-
         String hex = String.format("0x%s", Integer.toHexString(Integer.parseInt(handle)));
         return hex;
     }
