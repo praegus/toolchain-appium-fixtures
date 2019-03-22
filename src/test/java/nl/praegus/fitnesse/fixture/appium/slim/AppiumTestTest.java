@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.WebElement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -66,6 +67,20 @@ public class AppiumTestTest {
         when(appiumHelper.getActiveElement()).thenReturn(null);
 
         boolean result = appTest.enterAs("inputtekst", place);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void clear_element(){
+        boolean result = appTest.clear(element);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void clear_doesnt_work_because_element_is_null(){
+        boolean result = appTest.clear((WebElement) null);
 
         assertThat(result).isFalse();
     }

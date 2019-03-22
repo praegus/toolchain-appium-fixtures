@@ -140,12 +140,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean clear(WebElement element) {
-        boolean result = false;
-        if (null != element) {
+        if (element != null) {
             element.clear();
-            result = true;
+            return true;
         }
-        return result;
+        return false;
     }
 
     @WaitUntil(TimeoutPolicy.STOP_TEST)
@@ -153,7 +152,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         T element = this.getElement(place, null);
         return null != element && element.getText().contains(text);
     }
-
 
     @Override
     protected void beforeInvoke(Method method, Object[] arguments) {
@@ -182,7 +180,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             }
         }
     }
-
 
     protected Object invokedWrappedInWaitUntil(WaitUntil waitUntil, FixtureInteraction interaction, Method method, Object[] arguments) {
         ExpectedCondition<Object> condition = webDriver -> {
@@ -871,7 +868,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public boolean waitForVisible(String place) {
         return waitForVisibleIn(place, null);
     }
-
 
     @WaitUntil(TimeoutPolicy.STOP_TEST)
     public boolean waitForVisibleIn(String place, String container) {
