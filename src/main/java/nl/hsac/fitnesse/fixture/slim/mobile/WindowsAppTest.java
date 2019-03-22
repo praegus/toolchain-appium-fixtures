@@ -13,7 +13,7 @@ import java.util.List;
 
 public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<WindowsElement>> {
     private int delayAfterClickInMillis = 100;
-    private String focusedWindow ="";
+    private String focusedWindow = "";
 
     public WindowsAppTest() {
         super();
@@ -29,19 +29,19 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
     }
 
     @Override
-    protected WindowsHelper getMobileHelper() {
-        return (WindowsHelper) super.getMobileHelper();
+    protected WindowsHelper getAppiumHelper() {
+        return (WindowsHelper) super.getAppiumHelper();
     }
 
     public List<String> windowHandles() {
-        return new ArrayList<>(getSeleniumHelper().driver().getWindowHandles());
+        return new ArrayList<>(getAppiumHelper().driver().getWindowHandles());
     }
 
 
     @Override
     protected boolean clickImp(String place, String container) {
         boolean result = super.clickImp(place, container);
-        if(result) {
+        if (result) {
             waitMilliseconds(delayAfterClickInMillis);
         }
         return result;
@@ -50,7 +50,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
     @Override
     protected boolean doubleClick(WebElement element) {
         boolean result = super.doubleClick(element);
-        if(result) {
+        if (result) {
             waitMilliseconds(delayAfterClickInMillis);
         }
         return result;
@@ -62,21 +62,21 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
             switchToTopWindow();
             return true;
         }
-         return false;
+        return false;
     }
 
     public void switchToTopWindow() {
         String appWindow = windowHandles().get(0);
-        driver().switchTo().window(appWindow);
+        getDriver().switchTo().window(appWindow);
         focusedWindow = appWindow;
     }
 
     public void switchToNextWindow() {
         List<String> windows = windowHandles();
-        if(windows.size() > 1) {
+        if (windows.size() > 1) {
             int currentIndex = windowHandles().indexOf(focusedWindow);
             int newIndex = currentIndex == (windows.size() - 1) ? 0 : currentIndex + 1;
-            driver().switchTo().window(windows.get(newIndex));
+            getDriver().switchTo().window(windows.get(newIndex));
             focusedWindow = windows.get(newIndex);
         } else {
             throw new SlimFixtureException("There is only one window in WinAppDriver's scope. Cannot Switch to next window");

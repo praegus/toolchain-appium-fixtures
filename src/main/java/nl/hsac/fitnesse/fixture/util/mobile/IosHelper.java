@@ -15,7 +15,7 @@ import static nl.hsac.fitnesse.fixture.util.FirstNonNullHelper.firstNonNull;
 import static nl.hsac.fitnesse.fixture.util.selenium.by.TechnicalSelectorBy.byIfStartsWith;
 
 /**
- * Specialized helper to deal with appium's iOS web driver.
+ * Specialized helper to deal with appium's iOS web getDriver.
  */
 public class IosHelper extends AppiumHelper<IOSElement, IOSDriver<IOSElement>> {
     private static final Function<String, By> IOS_UI_AUTOMATION_BY = byIfStartsWith("uiAutomator", MobileBy::IosUIAutomation);

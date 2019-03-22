@@ -20,12 +20,12 @@ public class AndroidTest extends AppiumTest<AndroidElement, AndroidDriver<Androi
 
 	@Override
 	public boolean pressEnter() {
-		getMobileHelper().driver().pressKey(new KeyEvent(AndroidKey.NUMPAD_ENTER));
+		getAppiumHelper().driver().pressKey(new KeyEvent(AndroidKey.NUMPAD_ENTER));
 		return true;
 	}
 
 	@Override
-	protected AndroidHelper getMobileHelper() {
-		return (AndroidHelper) super.getMobileHelper();
+	protected AndroidHelper getAppiumHelper() {
+		return (AndroidHelper) super.getAppiumHelper();
 	}
 }

@@ -13,7 +13,7 @@ import static nl.hsac.fitnesse.fixture.util.FirstNonNullHelper.firstNonNull;
 import static nl.hsac.fitnesse.fixture.util.selenium.by.TechnicalSelectorBy.byIfStartsWith;
 
 /**
- * Specialized helper to deal with appium's Android web driver.
+ * Specialized helper to deal with appium's Android web getDriver.
  */
 public class AndroidHelper extends AppiumHelper<AndroidElement, AndroidDriver<AndroidElement>> {
 	private static final Function<String, By> ANDROID_UI_AUTOMATOR_BY = byIfStartsWith("uiAutomator", MobileBy::AndroidUIAutomator);

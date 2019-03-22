@@ -20,7 +20,7 @@ import static nl.hsac.fitnesse.fixture.util.FirstNonNullHelper.firstNonNull;
 import static nl.hsac.fitnesse.fixture.util.selenium.by.TechnicalSelectorBy.byIfStartsWith;
 
 /**
- * Specialized helper to deal with appium's web driver.
+ * Specialized helper to deal with appium's web getDriver.
  */
 public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> extends SeleniumHelper<T> {
     private final static Function<String, By> ACCESSIBILITY_BY = byIfStartsWith("accessibility", MobileBy::AccessibilityId);

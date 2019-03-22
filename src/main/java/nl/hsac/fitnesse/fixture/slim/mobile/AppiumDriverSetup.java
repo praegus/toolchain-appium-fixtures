@@ -53,11 +53,11 @@ public class AppiumDriverSetup extends SeleniumDriverSetup {
     }
 
     /**
-     * Connect to a driver and poll maximum 5 times with 5 second delay for a window with name @window to appear
+     * Connect to a getDriver and poll maximum 5 times with 5 second delay for a window with name @window to appear
      * Useful in case starting the app takes > ~3 seconds before a window appears without having to start the app using
      * a script and connecting to the desktop
      * @param url The WinAppDriver URL
-     * @param capabilities Capabiltities map to start the driver with
+     * @param capabilities Capabiltities map to start the getDriver with
      * @param window Name of the window to attach to
      * @return true if the window was found and attached to
      * @throws MalformedURLException

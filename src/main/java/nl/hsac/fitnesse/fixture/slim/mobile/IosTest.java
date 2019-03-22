@@ -17,7 +17,7 @@ public class IosTest extends AppiumTest<IOSElement, IOSDriver<IOSElement>> {
     }
 
     @Override
-    protected IosHelper getMobileHelper() {
-        return (IosHelper) super.getMobileHelper();
+    protected IosHelper getAppiumHelper() {
+        return (IosHelper) super.getAppiumHelper();
     }
 }
