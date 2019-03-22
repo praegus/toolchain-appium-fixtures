@@ -1,6 +1,6 @@
 Ensure app is freshly started at each test.
 
-|script                |mobile test|
+|script                |appium test|
 |close app                         |
 |launch app                        |
 |capture screen                    |

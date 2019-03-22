@@ -9,7 +9,7 @@ import nl.hsac.fitnesse.fixture.util.mobile.AndroidHelper;
 /**
  * Specialized class to test Android applications using Appium.
  */
-public class AndroidTest extends MobileTest<AndroidElement, AndroidDriver<AndroidElement>> {
+public class AndroidTest extends AppiumTest<AndroidElement, AndroidDriver<AndroidElement>> {
 	public AndroidTest() {
 		super();
 	}

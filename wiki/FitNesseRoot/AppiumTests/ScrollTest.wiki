@@ -4,7 +4,7 @@ Test
 
 We can scroll down
 
-|script    |mobile test  |
+|script    |appium test  |
 |add       |Wine         |
 |add       |Beer         |
 |add       |bread        |

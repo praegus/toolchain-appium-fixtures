@@ -11,7 +11,7 @@ import org.openqa.selenium.WebElement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WindowsAppTest extends MobileTest<WindowsElement, WindowsDriver<WindowsElement>> {
+public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<WindowsElement>> {
     private int delayAfterClickInMillis = 100;
     private String focusedWindow ="";
 

@@ -7,7 +7,7 @@ import nl.hsac.fitnesse.fixture.util.mobile.IosHelper;
 /**
  * Specialized class to test iOS applications using Appium.
  */
-public class IosTest extends MobileTest<IOSElement, IOSDriver<IOSElement>> {
+public class IosTest extends AppiumTest<IOSElement, IOSDriver<IOSElement>> {
     public IosTest() {
         super();
     }

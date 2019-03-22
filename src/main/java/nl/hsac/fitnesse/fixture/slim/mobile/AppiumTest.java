@@ -14,16 +14,16 @@ import java.lang.reflect.Method;
 /**
  * Specialized class to test mobile applications using Appium.
  */
-public class MobileTest<T extends MobileElement, D extends AppiumDriver<T>> extends BrowserTest<T> {
+public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends BrowserTest<T> {
 
     private boolean abortOnException;
 
-    public MobileTest() {
+    public AppiumTest() {
         super();
         setImplicitFindInFramesTo(false);
     }
 
-    public MobileTest(int secondsBeforeTimeout) {
+    public AppiumTest(int secondsBeforeTimeout) {
         super(secondsBeforeTimeout);
         setImplicitFindInFramesTo(false);
     }
