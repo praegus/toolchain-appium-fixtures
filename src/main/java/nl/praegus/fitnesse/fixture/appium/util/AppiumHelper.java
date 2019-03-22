@@ -52,8 +52,7 @@ public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> ex
     /**
      * @return app page source, which is expected to be XML not HTML.
      */
-    @Override
-    public String getHtml() {
+    public String getSourceXml() {
         return driver().getPageSource();
     }
 
