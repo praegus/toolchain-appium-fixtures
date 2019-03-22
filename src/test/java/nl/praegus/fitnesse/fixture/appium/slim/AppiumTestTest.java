@@ -23,7 +23,7 @@ public class AppiumTestTest {
     private WindowsElement element;
 
     @InjectMocks
-    WindowsAppTest appTest;
+    private WindowsAppTest appTest;
 
     @Test
     public void when_element_can_be_found_and_is_interactable_and_can_be_clicked_text_is_sent() {
@@ -69,6 +69,4 @@ public class AppiumTestTest {
 
         assertThat(result).isFalse();
     }
-
-
 }
