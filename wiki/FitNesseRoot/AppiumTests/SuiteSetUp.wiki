@@ -4,8 +4,8 @@ Help: Defines where to look for fixture code, and ensures browser is started.
 This set up page is executed once, before any tests in this suite.
 
 |Import                              |
-|nl.hsac.fitnesse.fixture.slim       |
-|nl.hsac.fitnesse.fixture.slim.mobile|
+|nl.praegus.fitnesse.fixture.slim       |
+|nl.praegus.fitnesse.fixture.slim.mobile|
 
 !define APPIUM_URL {https://eu1.appium.testobject.com/wd/hub}
 

@@ -1,7 +1,0 @@
----
-Help: Lists tests failed on last run. So they can be re-run to determine whether the failure is consistent.
-Suite
----
-
-!see [[AppiumTests.FirstTest][.AppiumTests.FirstTest]]
-!see [[AppiumTests.ScrollTest][.AppiumTests.ScrollTest]]
