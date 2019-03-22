@@ -23,7 +23,6 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,12 +139,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean clear(WebElement element) {
-        boolean result = false;
-        if (null != element) {
+        if (element != null) {
             element.clear();
-            result = true;
+            return true;
         }
-        return result;
+        return false;
     }
 
     @WaitUntil(TimeoutPolicy.STOP_TEST)
@@ -153,7 +151,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         T element = this.getElement(place, null);
         return null != element && element.getText().contains(text);
     }
-
 
     @Override
     protected void beforeInvoke(Method method, Object[] arguments) {
@@ -182,7 +179,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             }
         }
     }
-
 
     protected Object invokedWrappedInWaitUntil(WaitUntil waitUntil, FixtureInteraction interaction, Method method, Object[] arguments) {
         ExpectedCondition<Object> condition = webDriver -> {
@@ -272,18 +268,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     /**
-     * @return current page's content type.
-     */
-    public String pageContentType() {
-        String result = null;
-        Object ct = appiumHelper.executeJavascript("return document.contentType;");
-        if (ct != null) {
-            result = ct.toString();
-        }
-        return result;
-    }
-
-    /**
      * Replaces content at place by value.
      *
      * @param value value to set.
@@ -338,7 +322,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean enter(String value, String place, String container, boolean shouldClear) {
-        WebElement element = getElementToSendValue(place, container);
+        WebElement element = getElement(place, container);
         return enter(element, value, shouldClear);
     }
 
@@ -370,11 +354,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected T getElementToSendValue(String place) {
-        return getElementToSendValue(place, null);
-    }
-
-    protected T getElementToSendValue(String place, String container) {
-        return getElement(place, container);
+        return getElement(place, null);
     }
 
     /**
@@ -662,15 +642,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean dragAndDropTo(String source, String destination) {
-        return dragAndDropImpl(source, destination, false);
-    }
-
-    @WaitUntil
-    public boolean html5DragAndDropTo(String source, String destination) {
-        return dragAndDropImpl(source, destination, true);
-    }
-
-    protected boolean dragAndDropImpl(String source, String destination, boolean html5) {
         boolean result = false;
         source = cleanupValue(source);
         WebElement sourceElement = getElementToClick(source);
@@ -680,15 +651,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         if ((sourceElement != null) && (destinationElement != null)) {
             scrollIfNotOnScreen(sourceElement);
             if (isInteractable(sourceElement) && destinationElement.isDisplayed()) {
-                if (html5 || sourceElement.getAttribute("draggable").equalsIgnoreCase("true")) {
-                    try {
-                        appiumHelper.html5DragAndDrop(sourceElement, destinationElement);
-                    } catch (IOException e) {
-                        throw new SlimFixtureException(false, "The drag and drop simulator javascript could not be found.", e);
-                    }
-                } else {
-                    appiumHelper.dragAndDrop(sourceElement, destinationElement);
-                }
+                appiumHelper.dragAndDrop(sourceElement, destinationElement);
                 result = true;
             }
         }
@@ -872,16 +835,14 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return waitForVisibleIn(place, null);
     }
 
-
     @WaitUntil(TimeoutPolicy.STOP_TEST)
     public boolean waitForVisibleIn(String place, String container) {
-        Boolean result = Boolean.FALSE;
         WebElement element = getElementToCheckVisibility(place, container);
         if (element != null) {
             scrollIfNotOnScreen(element);
-            result = element.isDisplayed();
+            return element.isDisplayed();
         }
-        return result;
+        return false;
     }
 
     /**
@@ -1158,16 +1119,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean clearIn(String place, String container) {
-        boolean result = false;
-        WebElement element = getElementToClear(place, container);
+        WebElement element = getElement(place, container);
         if (element != null) {
-            result = clear(element);
+            return clear(element);
         }
-        return result;
-    }
-
-    protected T getElementToClear(String place, String container) {
-        return getElementToSendValue(place, container);
+        return false;
     }
 
     @WaitUntil
@@ -1287,11 +1243,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return findElement(by);
     }
 
-    protected T findByJavascript(String script, Object... parameters) {
-        By by = appiumHelper.byJavascript(script, parameters);
-        return findElement(by);
-    }
-
     protected List<T> findAllByXPath(String xpathPattern, String... params) {
         By by = appiumHelper.byXpath(xpathPattern, params);
         return findElements(by);
@@ -1299,11 +1250,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     protected List<T> findAllByCss(String cssPattern, String... params) {
         By by = appiumHelper.byCss(cssPattern, params);
-        return findElements(by);
-    }
-
-    protected List<T> findAllByJavascript(String script, Object... parameters) {
-        By by = appiumHelper.byJavascript(script, parameters);
         return findElements(by);
     }
 
@@ -1569,7 +1515,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     /**
-     * @param timeout number of seconds before waitUntil() and waitForJavascriptCallback() throw TimeOutException.
+     * @param timeout number of seconds before waitUntil() throw TimeOutException.
      */
     public void secondsBeforeTimeout(int timeout) {
         secondsBeforeTimeout = timeout;
@@ -1622,11 +1568,10 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     /**
-     * @return (escaped) HTML content of current page.
+     * @return (escaped) xml content of current page.
      */
     public String pageSource() {
-        String html = appiumHelper.getHtml();
-        return getEnvironment().getHtml(html);
+        return getEnvironment().getHtml(appiumHelper.getSourceXml());
     }
 
     protected String savePageSource(String fileName, String linkText) {
@@ -2126,14 +2071,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
             setIsFinishedSupplier(() -> waitUntilOrNull(finalFinishedCondition));
             setRepeater(() -> waitUntil(finalRepeatCondition));
-        }
-    }
-
-    protected Object waitForJavascriptCallback(String statement, Object... parameters) {
-        try {
-            return appiumHelper.waitForJavascriptCallback(statement, parameters);
-        } catch (TimeoutException e) {
-            return handleTimeoutException(e);
         }
     }
 
