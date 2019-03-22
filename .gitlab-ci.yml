@@ -13,7 +13,7 @@ cache:
 
 build:
   stage: build
-  script: mvn $MAVEN_CLI_OPTS compile
+  script: mvn $MAVEN_CLI_OPTS test
   image: "maven:3.6.0-jdk-8-alpine"
   tags:
     - mvn

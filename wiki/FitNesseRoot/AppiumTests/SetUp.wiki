@@ -1,7 +1,0 @@
-Ensure app is freshly started at each test.
-
-|script                |appium test|
-|close app                         |
-|launch app                        |
-|capture screen                    |
-|seconds before timeout|2          |

@@ -37,8 +37,8 @@ import java.util.function.Supplier;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends SlimFixture {
     private final List<String> currentSearchContextPath = new ArrayList<>();
-    private AppiumHelper<T, D> appiumHelper = (AppiumHelper<T, D>) getEnvironment().getSeleniumHelper();
-    private ReflectionHelper reflectionHelper = getEnvironment().getReflectionHelper();
+    private AppiumHelper<T, D> appiumHelper;
+    private ReflectionHelper reflectionHelper;
     private boolean implicitFindInFrames = true;
     private int secondsBeforeTimeout;
     private int secondsBeforePageLoadTimeout;
@@ -58,12 +58,23 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     private boolean abortOnException;
 
     public AppiumTest() {
+        this.appiumHelper = (AppiumHelper<T, D>) getEnvironment().getSeleniumHelper();
+        this.reflectionHelper = getEnvironment().getReflectionHelper();
         secondsBeforeTimeout(getEnvironment().getSeleniumDriverManager().getDefaultTimeoutSeconds());
         setImplicitFindInFramesTo(false);
     }
 
     public AppiumTest(int secondsBeforeTimeout) {
+        this.appiumHelper = (AppiumHelper<T, D>) getEnvironment().getSeleniumHelper();
+        this.reflectionHelper = getEnvironment().getReflectionHelper();
         secondsBeforeTimeout(secondsBeforeTimeout);
+        setImplicitFindInFramesTo(false);
+    }
+
+    public AppiumTest(AppiumHelper<T, D> appiumHelper, ReflectionHelper reflectionHelper) {
+        this.appiumHelper = appiumHelper;
+        this.reflectionHelper = reflectionHelper;
+        secondsBeforeTimeout(getEnvironment().getSeleniumDriverManager().getDefaultTimeoutSeconds());
         setImplicitFindInFramesTo(false);
     }
 
