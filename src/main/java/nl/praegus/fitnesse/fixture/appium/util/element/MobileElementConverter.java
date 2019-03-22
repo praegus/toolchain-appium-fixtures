@@ -1,4 +1,4 @@
-package nl.praegus.fitnesse.fixture.util.mobile.element;
+package nl.praegus.fitnesse.fixture.appium.util.element;
 
 import io.appium.java_client.HasSessionDetails;
 import io.appium.java_client.MobileElement;

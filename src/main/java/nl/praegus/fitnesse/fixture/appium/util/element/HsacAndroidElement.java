@@ -1,7 +1,7 @@
-package nl.praegus.fitnesse.fixture.util.mobile.element;
+package nl.praegus.fitnesse.fixture.appium.util.element;
 
-import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.ios.IOSElement;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.AndroidElement;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.BooleanCache;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.ObjectCache;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.ObjectCacheMap;
@@ -12,7 +12,7 @@ import org.openqa.selenium.SearchContext;
 
 import java.net.URL;
 
-public class HsacIOSElement extends IOSElement {
+public class HsacAndroidElement extends AndroidElement {
     private BooleanCache isSelectedCache;
     private final BooleanCache isDisplayedCache = new BooleanCache(super::isDisplayed);
     private BooleanCache isEnabledCache;
@@ -27,9 +27,10 @@ public class HsacIOSElement extends IOSElement {
 
     @Override
     protected void setFoundBy(SearchContext foundFrom, String locator, String term) {
-        if (foundFrom instanceof IOSDriver) {
-            URL url = ((IOSDriver) foundFrom).getRemoteAddress();
-            super.setFoundBy(new DummyContext("IOSDriver on: " + url), locator, term);
+        if (foundFrom instanceof AndroidDriver) {
+            // standard toString of diver will issue 2 calls to remote server to get session details
+            URL url = ((AndroidDriver) foundFrom).getRemoteAddress();
+            super.setFoundBy(new DummyContext("AndroidDriver on: " + url), locator, term);
         } else {
             super.setFoundBy(foundFrom, locator, term);
         }

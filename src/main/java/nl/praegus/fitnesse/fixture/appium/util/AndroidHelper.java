@@ -1,10 +1,10 @@
-package nl.praegus.fitnesse.fixture.util.mobile;
+package nl.praegus.fitnesse.fixture.appium.util;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
-import nl.praegus.fitnesse.fixture.util.mobile.by.AndroidBy;
-import nl.praegus.fitnesse.fixture.util.mobile.scroll.AndroidScrollHelper;
+import nl.praegus.fitnesse.fixture.appium.util.by.AndroidBy;
+import nl.praegus.fitnesse.fixture.appium.util.scroll.AndroidScrollHelper;
 import org.openqa.selenium.By;
 
 import java.util.function.Function;

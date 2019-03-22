@@ -1,4 +1,4 @@
-package nl.praegus.fitnesse.fixture.slim.mobile;
+package nl.praegus.fitnesse.fixture.appium.slim;
 
 import fitnesse.slim.fixtureInteraction.FixtureInteraction;
 import io.appium.java_client.AppiumDriver;
@@ -10,7 +10,7 @@ import nl.hsac.fitnesse.fixture.slim.web.TimeoutStopTestException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.praegus.fitnesse.fixture.util.mobile.AppiumHelper;
+import nl.praegus.fitnesse.fixture.appium.util.AppiumHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.*;
 import nl.hsac.fitnesse.fixture.util.selenium.by.*;
 import nl.hsac.fitnesse.slim.interaction.ExceptionHelper;

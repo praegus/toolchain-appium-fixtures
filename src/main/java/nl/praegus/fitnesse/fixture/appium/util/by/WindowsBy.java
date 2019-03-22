@@ -1,4 +1,4 @@
-package nl.praegus.fitnesse.fixture.util.mobile.by;
+package nl.praegus.fitnesse.fixture.appium.util.by;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.windows.WindowsElement;

@@ -1,11 +1,11 @@
-package nl.praegus.fitnesse.fixture.util.mobile;
+package nl.praegus.fitnesse.fixture.appium.util;
 
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
-import nl.praegus.fitnesse.fixture.util.mobile.by.AppiumHeuristicBy;
-import nl.praegus.fitnesse.fixture.util.mobile.by.IsDisplayedFilter;
-import nl.praegus.fitnesse.fixture.util.mobile.by.WindowsBy;
-import nl.praegus.fitnesse.fixture.util.mobile.scroll.ScrollHelper;
+import nl.praegus.fitnesse.fixture.appium.util.by.IsDisplayedFilter;
+import nl.praegus.fitnesse.fixture.appium.util.by.WindowsBy;
+import nl.praegus.fitnesse.fixture.appium.util.scroll.ScrollHelper;
+import nl.praegus.fitnesse.fixture.appium.util.by.AppiumHeuristicBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 

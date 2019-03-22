@@ -1,10 +1,10 @@
-package nl.praegus.fitnesse.fixture.util.mobile.scroll;
+package nl.praegus.fitnesse.fixture.appium.util.scroll;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSElement;
-import nl.praegus.fitnesse.fixture.util.mobile.IosHelper;
-import nl.praegus.fitnesse.fixture.util.mobile.by.IOSBy;
+import nl.praegus.fitnesse.fixture.appium.util.IosHelper;
+import nl.praegus.fitnesse.fixture.appium.util.by.IOSBy;
 
 /**
  * Helper to deal with scrolling for iOS.

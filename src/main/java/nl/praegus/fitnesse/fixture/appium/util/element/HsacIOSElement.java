@@ -1,17 +1,20 @@
-package nl.praegus.fitnesse.fixture.util.mobile.element;
+package nl.praegus.fitnesse.fixture.appium.util.element;
 
-import io.appium.java_client.windows.WindowsDriver;
-import io.appium.java_client.windows.WindowsElement;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.IOSElement;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.BooleanCache;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.ObjectCache;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.ObjectCacheMap;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.SearchContext;
 
 import java.net.URL;
 
-public class HsacWindowsElement extends WindowsElement{
+public class HsacIOSElement extends IOSElement {
     private BooleanCache isSelectedCache;
-    private BooleanCache isDisplayedCache;
+    private final BooleanCache isDisplayedCache = new BooleanCache(super::isDisplayed);
     private BooleanCache isEnabledCache;
     private ObjectCache<String> tagNameCache;
     private ObjectCache<String> textCache;
@@ -24,9 +27,9 @@ public class HsacWindowsElement extends WindowsElement{
 
     @Override
     protected void setFoundBy(SearchContext foundFrom, String locator, String term) {
-        if (foundFrom instanceof WindowsDriver) {
-            URL url = ((WindowsDriver) foundFrom).getRemoteAddress();
-            super.setFoundBy(new DummyContext("WindowsDriver on: " + url), locator, term);
+        if (foundFrom instanceof IOSDriver) {
+            URL url = ((IOSDriver) foundFrom).getRemoteAddress();
+            super.setFoundBy(new DummyContext("IOSDriver on: " + url), locator, term);
         } else {
             super.setFoundBy(foundFrom, locator, term);
         }
@@ -42,9 +45,6 @@ public class HsacWindowsElement extends WindowsElement{
 
     @Override
     public boolean isDisplayed() {
-        if (isDisplayedCache == null) {
-            isDisplayedCache = new BooleanCache(super::isDisplayed);
-        }
         return isDisplayedCache.getBooleanValue();
     }
 
