@@ -5,6 +5,8 @@ import io.appium.java_client.windows.WindowsElement;
 import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
+import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
+import nl.praegus.fitnesse.fixture.appium.util.AppiumHelper;
 import nl.praegus.fitnesse.fixture.appium.util.WindowsHelper;
 import org.openqa.selenium.WebElement;
 
@@ -22,6 +24,10 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
 
     public WindowsAppTest(int secondsBeforeTimeout) {
         super(secondsBeforeTimeout);
+    }
+
+    public WindowsAppTest(AppiumHelper appiumHelper, ReflectionHelper reflectionHelper) {
+        super(appiumHelper, reflectionHelper);
     }
 
     public void setMillisecondsDelayAfterClick(int millis) {
@@ -87,8 +93,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
     @WaitUntil
     public boolean enterAs(String value, String place) {
         if (click(place)) {
-            type(value);
-            return true;
+            return type(value);
         }
         return false;
     }
