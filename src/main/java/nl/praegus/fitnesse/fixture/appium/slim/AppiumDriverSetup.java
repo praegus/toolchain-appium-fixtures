@@ -1,4 +1,4 @@
-package nl.praegus.fitnesse.fixture.slim.mobile;
+package nl.praegus.fitnesse.fixture.appium.slim;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -7,7 +7,7 @@ import nl.hsac.fitnesse.fixture.Environment;
 import nl.hsac.fitnesse.fixture.slim.web.SeleniumDriverSetup;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
-import nl.praegus.fitnesse.fixture.util.mobile.AppiumDriverManager;
+import nl.praegus.fitnesse.fixture.appium.util.AppiumDriverManager;
 import nl.hsac.fitnesse.fixture.util.selenium.driverfactory.DriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;

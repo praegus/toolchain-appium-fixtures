@@ -1,11 +1,11 @@
-package nl.praegus.fitnesse.fixture.slim.mobile;
+package nl.praegus.fitnesse.fixture.appium.slim;
 
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
 import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
-import nl.praegus.fitnesse.fixture.util.mobile.WindowsHelper;
+import nl.praegus.fitnesse.fixture.appium.util.WindowsHelper;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;

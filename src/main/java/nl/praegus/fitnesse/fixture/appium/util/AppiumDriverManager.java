@@ -1,11 +1,11 @@
-package nl.praegus.fitnesse.fixture.util.mobile;
+package nl.praegus.fitnesse.fixture.appium.util;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.windows.WindowsDriver;
 import nl.hsac.fitnesse.fixture.Environment;
-import nl.praegus.fitnesse.fixture.util.mobile.element.MobileElementConverter;
+import nl.praegus.fitnesse.fixture.appium.util.element.MobileElementConverter;
 import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.by.BestMatchBy;
 import nl.hsac.fitnesse.fixture.util.selenium.driverfactory.DriverFactory;

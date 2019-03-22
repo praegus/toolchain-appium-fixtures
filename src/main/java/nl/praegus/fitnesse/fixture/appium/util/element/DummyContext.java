@@ -1,4 +1,4 @@
-package nl.praegus.fitnesse.fixture.util.mobile.element;
+package nl.praegus.fitnesse.fixture.appium.util.element;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;

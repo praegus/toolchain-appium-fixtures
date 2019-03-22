@@ -1,10 +1,10 @@
-package nl.praegus.fitnesse.fixture.slim.mobile;
+package nl.praegus.fitnesse.fixture.appium.slim;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
-import nl.praegus.fitnesse.fixture.util.mobile.AndroidHelper;
+import nl.praegus.fitnesse.fixture.appium.util.AndroidHelper;
 
 /**
  * Specialized class to test Android applications using Appium.

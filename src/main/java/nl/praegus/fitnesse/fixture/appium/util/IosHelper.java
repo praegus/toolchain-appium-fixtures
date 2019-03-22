@@ -1,12 +1,12 @@
-package nl.praegus.fitnesse.fixture.util.mobile;
+package nl.praegus.fitnesse.fixture.appium.util;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSElement;
-import nl.praegus.fitnesse.fixture.util.mobile.by.AppiumHeuristicBy;
-import nl.praegus.fitnesse.fixture.util.mobile.by.IOSBy;
-import nl.praegus.fitnesse.fixture.util.mobile.by.IsDisplayedFilter;
-import nl.praegus.fitnesse.fixture.util.mobile.scroll.IosScrollHelper;
+import nl.praegus.fitnesse.fixture.appium.util.by.AppiumHeuristicBy;
+import nl.praegus.fitnesse.fixture.appium.util.by.IOSBy;
+import nl.praegus.fitnesse.fixture.appium.util.by.IsDisplayedFilter;
+import nl.praegus.fitnesse.fixture.appium.util.scroll.IosScrollHelper;
 import org.openqa.selenium.By;
 
 import java.util.function.Function;

@@ -1,8 +1,8 @@
-package nl.praegus.fitnesse.fixture.slim.mobile;
+package nl.praegus.fitnesse.fixture.appium.slim;
 
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSElement;
-import nl.praegus.fitnesse.fixture.util.mobile.IosHelper;
+import nl.praegus.fitnesse.fixture.appium.util.IosHelper;
 
 /**
  * Specialized class to test iOS applications using Appium.
