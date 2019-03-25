@@ -2,7 +2,7 @@ package nl.praegus.fitnesse.slim.fixtures;
 
 import io.appium.java_client.windows.WindowsElement;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.praegus.fitnesse.slim.util.AppiumHelper;
+import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -21,14 +21,14 @@ import static org.mockito.Mockito.when;
 public class AppiumTestTest {
 
     @Mock
-    private AppiumHelper appiumHelper;
+    private WindowsHelper appiumHelper;
     @Mock
     private ReflectionHelper reflectionHelper;
     @Mock
     private WindowsElement element;
 
     @InjectMocks
-    private WindowsAppTest appTest;
+    private WindowsAppTest appiumTest;
 
     @Test
     public void when_element_can_be_found_and_is_interactable_and_can_be_clicked_text_is_sent() {
@@ -37,7 +37,7 @@ public class AppiumTestTest {
         when(appiumHelper.isInteractable(element)).thenReturn(true);
         when(appiumHelper.getActiveElement()).thenReturn(element);
 
-        boolean result = appTest.enterAs("inputtekst", place);
+        boolean result = appiumTest.enterAs("inputtekst", place);
 
         assertThat(result).isTrue();
     }
@@ -47,7 +47,7 @@ public class AppiumTestTest {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(null);
 
-        boolean result = appTest.enterAs("inputtekst", place);
+        boolean result = appiumTest.enterAs("inputtekst", place);
 
         assertThat(result).isFalse();
     }
@@ -58,7 +58,7 @@ public class AppiumTestTest {
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(false);
 
-        boolean result = appTest.enterAs("inputtekst", place);
+        boolean result = appiumTest.enterAs("inputtekst", place);
 
         assertThat(result).isFalse();
     }
@@ -70,7 +70,7 @@ public class AppiumTestTest {
         when(appiumHelper.isInteractable(element)).thenReturn(true);
         when(appiumHelper.getActiveElement()).thenReturn(null);
 
-        boolean result = appTest.enterAs("inputtekst", place);
+        boolean result = appiumTest.enterAs("inputtekst", place);
 
         assertThat(result).isFalse();
     }
@@ -80,7 +80,7 @@ public class AppiumTestTest {
         String place = "locator";
         when(appiumHelper.getElement(place)).thenReturn(element);
 
-        boolean result = appTest.clear(place);
+        boolean result = appiumTest.clear(place);
 
         assertThat(result).isTrue();
     }
@@ -90,7 +90,7 @@ public class AppiumTestTest {
         String place = "locator";
         when(appiumHelper.getElement(place)).thenReturn(null);
 
-        boolean result = appTest.clear(place);
+        boolean result = appiumTest.clear(place);
 
         assertThat(result).isFalse();
     }
@@ -98,14 +98,14 @@ public class AppiumTestTest {
 
     @Test
     public void clear_element(){
-        boolean result = appTest.clear(element);
+        boolean result = appiumTest.clear(element);
 
         assertThat(result).isTrue();
     }
 
     @Test
     public void clear_doesnt_work_because_element_is_null(){
-        boolean result = appTest.clear((WebElement) null);
+        boolean result = appiumTest.clear((WebElement) null);
 
         assertThat(result).isFalse();
     }
@@ -116,7 +116,7 @@ public class AppiumTestTest {
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(true);
 
-        boolean result = appTest.click(place);
+        boolean result = appiumTest.click(place);
 
         assertThat(result).isTrue();
     }
@@ -126,7 +126,7 @@ public class AppiumTestTest {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(null);
 
-        boolean result = appTest.click(place);
+        boolean result = appiumTest.click(place);
 
         assertThat(result).isFalse();
     }
@@ -137,7 +137,7 @@ public class AppiumTestTest {
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(false);
 
-        boolean result = appTest.click(place);
+        boolean result = appiumTest.click(place);
 
         assertThat(result).isFalse();
     }
@@ -148,7 +148,7 @@ public class AppiumTestTest {
         when(appiumHelper.findByTechnicalSelectorOr(ArgumentMatchers.eq(place), any(Supplier.class))).thenReturn(element);
         when(element.isDisplayed()).thenReturn(true);
 
-        boolean result = appTest.waitForVisible(place);
+        boolean result = appiumTest.waitForVisible(place);
 
         assertThat(result).isTrue();
     }
@@ -158,7 +158,7 @@ public class AppiumTestTest {
         String place = "place";
         when(appiumHelper.findByTechnicalSelectorOr(ArgumentMatchers.eq(place), any(Supplier.class))).thenReturn(null);
 
-        boolean result = appTest.waitForVisible(place);
+        boolean result = appiumTest.waitForVisible(place);
 
         assertThat(result).isFalse();
     }
@@ -169,14 +169,14 @@ public class AppiumTestTest {
         when(appiumHelper.findByTechnicalSelectorOr(ArgumentMatchers.eq(place), any(Supplier.class))).thenReturn(element);
         when(element.isDisplayed()).thenReturn(false);
 
-        boolean result = appTest.waitForVisible(place);
+        boolean result = appiumTest.waitForVisible(place);
 
         assertThat(result).isFalse();
     }
 
     @Test
     public void when_no_select_element_is_to_be_found_false_is_returned(){
-        boolean result = appTest.clickSelectOption(null, "value");
+        boolean result = appiumTest.clickSelectOption(null, "value");
 
         assertThat(result).isFalse();
     }
@@ -186,7 +186,7 @@ public class AppiumTestTest {
         when(element.getTagName()).thenReturn("select");
         when(element.findElement(any())).thenReturn(null);
 
-        boolean result = appTest.clickSelectOption(element, "value");
+        boolean result = appiumTest.clickSelectOption(element, "value");
 
         assertThat(result).isFalse();
     }
@@ -198,7 +198,7 @@ public class AppiumTestTest {
         when(element.findElement(any())).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(true);
 
-        boolean result = appTest.clickSelectOption(element, "value");
+        boolean result = appiumTest.clickSelectOption(element, "value");
 
         assertThat(result).isTrue();
     }

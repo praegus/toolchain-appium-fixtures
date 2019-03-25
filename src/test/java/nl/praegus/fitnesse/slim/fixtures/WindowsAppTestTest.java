@@ -84,7 +84,6 @@ public class WindowsAppTestTest {
     public void switch_to_next_window_cannot_be_done_with_only_one_window() {
         when(windowsHelper.driver()).thenReturn(driver);
         when(driver.getWindowHandles()).thenReturn(Collections.singleton("window"));
-        when(driver.switchTo()).thenReturn(targetLocator);
 
         assertThatThrownBy(() -> windowsAppTest.switchToNextWindow())
                 .isInstanceOf(SlimFixtureException.class)
