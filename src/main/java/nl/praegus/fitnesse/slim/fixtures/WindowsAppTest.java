@@ -26,8 +26,12 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         super(secondsBeforeTimeout);
     }
 
-    public WindowsAppTest(AppiumHelper appiumHelper, ReflectionHelper reflectionHelper) {
-        super(appiumHelper, reflectionHelper);
+    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper) {
+        super(windowsHelper, reflectionHelper);
+    }
+
+    public String getFocusedWindow() {
+        return focusedWindow;
     }
 
     public void setMillisecondsDelayAfterClick(int millis) {

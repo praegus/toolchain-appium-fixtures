@@ -697,8 +697,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         if (container == null) {
             result = action.get();
         } else {
-            String cleanContainer = cleanupValue(container);
-            result = doInContainer(() -> getContainerElement(cleanContainer), action);
+            result = doInContainer(() -> getContainerElement(cleanupValue(container)), action);
         }
         return result;
     }
