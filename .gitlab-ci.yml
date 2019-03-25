@@ -18,7 +18,7 @@ build:
   tags:
     - mvn
   artifacts:
-    name: "praegus-fitnesse-appium"
+    name: "toolchain-appium-fixtures"
     expire_in: 1 hour
     paths:
       - target/*
@@ -27,7 +27,7 @@ build:
 
 sonar:
   stage: sonar
-  script: mvn sonar:sonar -Dsonar.projectKey=praegus-fitnesse-appium -Dsonar.host.url=$SONAR_ENDPOINT -Dsonar.login=$SONAR_LOGIN
+  script: mvn sonar:sonar -Dsonar.projectKey=toolchain-appium-fixtures -Dsonar.host.url=$SONAR_ENDPOINT -Dsonar.login=$SONAR_LOGIN
   image: "maven:3.6.0-jdk-8-alpine"
   tags:
     - mvn
