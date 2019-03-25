@@ -26,9 +26,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@gitlab.com:praegus/praegus-fitnesse-appium.git</connection>
-        <url>https://gitlab.com/praegus/praegus-fitnesse-appium.git</url>
-        <developerConnection>scm:git:git@gitlab.com:praegus/praegus-fitnesse-appium.git</developerConnection>
+        <connection>scm:git:git@gitlab.com:praegus/toolchain-fixtures/toolchain-appium-fixtures.git</connection>
+        <url>https://gitlab.com/praegus/toolchain-fixtures/toolchain-appium-fixtures.git</url>
+        <developerConnection>scm:git:git@gitlab.com:praegus/toolchain-fixtures/toolchain-appium-fixtures.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
