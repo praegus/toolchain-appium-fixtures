@@ -57,12 +57,13 @@ public class AppiumDriverSetup extends SeleniumDriverSetup {
 
     /**
      * Connect to a getDriver and poll maximum 5 times with 5 second delay for a window with name @window to appear
-     * Useful in case starting the app takes > ~3 seconds before a window appears without having to start the app using
+     * Useful in case starting the app takes more than 3 seconds before a window appears without having to start the app using
      * a script and connecting to the desktop
      *
      * @param url          The WinAppDriver URL
      * @param capabilities Capabiltities map to start the getDriver with
      * @param window       Name of the window to attach to
+     * @return connection succesful or not
      */
     public boolean connectToWindowsDriverAtWithCapabilitiesAndAttachToWindow(String url, Map<String, Object> capabilities, String window) {
         boolean result = false;
