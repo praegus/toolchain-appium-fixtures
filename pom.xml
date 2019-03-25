@@ -6,7 +6,7 @@
 
     <groupId>nl.praegus</groupId>
     <artifactId>praegus-fitnesse-appium</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>Praegus FitNesse Fixtures for Appium</name>
     <description>Fixtures to assist in android, iOS and windows app testing via FitNesse</description>
 
