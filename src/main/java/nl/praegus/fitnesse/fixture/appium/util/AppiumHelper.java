@@ -22,7 +22,7 @@ import static nl.hsac.fitnesse.fixture.util.selenium.by.TechnicalSelectorBy.byIf
 /**
  * Specialized helper to deal with appium's web getDriver.
  */
-public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> extends SeleniumHelper<T> {
+public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> extends SeleniumHelper<T> {
     private final static Function<String, By> ACCESSIBILITY_BY = byIfStartsWith("accessibility", MobileBy::AccessibilityId);
     private ScrollHelper<T, D> scrollHelper;
 
@@ -71,6 +71,14 @@ public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> ex
             }
         };
     }
+
+    protected abstract By getElementBy(String place);
+
+    protected abstract By getClickBy(String place);
+
+    protected abstract By getContainerBy(String container);
+
+    protected abstract By getElementToCheckVisibilityBy(String text);
 
     @Override
     public void setScriptWait(int scriptTimeout) {

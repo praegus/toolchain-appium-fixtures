@@ -34,8 +34,6 @@ public class AppiumDriverManager extends DriverManager {
             helper = createHelperForAndroid();
         } else if (driver instanceof WindowsDriver) {
             helper = createHelperForWindows();
-        } else if (driver instanceof AppiumDriver) {
-            helper = createGenericAppiumHelper();
         } else {
             helper = super.createHelper(driver);
         }
@@ -73,10 +71,6 @@ public class AppiumDriverManager extends DriverManager {
         return new WindowsHelper();
     }
 
-    protected SeleniumHelper createGenericAppiumHelper() {
-        return new AppiumHelper();
-    }
-
     protected WebElement selectBestElement(List<WebElement> elements) {
         WebElement element = elements.get(0);
         if (!element.isDisplayed()) {
@@ -90,5 +84,4 @@ public class AppiumDriverManager extends DriverManager {
         }
         return element;
     }
-
 }

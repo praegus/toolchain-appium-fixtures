@@ -35,22 +35,18 @@ public class IosHelper extends AppiumHelper<IOSElement, IOSDriver<IOSElement>> {
                 IOS_NS_PREDICATE_STRING_BY);
     }
 
-    @Override
     protected By getElementBy(String place) {
         return IOSBy.heuristic(place);
     }
 
-    @Override
-    protected By getNothing(String place) {
+    protected By getClickBy(String place) {
         return new AppiumHeuristicBy<>(IOSBy.buttonHeuristic(place), IOSBy.heuristic(place));
     }
 
-    @Override
     protected By getContainerBy(String container) {
         return IOSBy.heuristic(container);
     }
 
-    @Override
     protected By getElementToCheckVisibilityBy(String text) {
         return new AppiumHeuristicBy<>(new IsDisplayedFilter<IOSElement>(), MobileBy.AccessibilityId(text), IOSBy.partialText(text));
     }

@@ -29,28 +29,23 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
         }
     }
 
-    @Override
     protected By getElementBy(String place) {
         return WindowsBy.heuristic(place);
     }
 
-    @Override
-    protected By getNothing(String place)  {
+    protected By getClickBy(String place)  {
         return WindowsBy.heuristic(place);
     }
 
-    @Override
     protected By getContainerBy(String container) {
         return WindowsBy.heuristic(container);
     }
 
-    @Override
     protected By getElementToCheckVisibilityBy(String text) {
         return new AppiumHeuristicBy<>(new IsDisplayedFilter<WindowsElement>(),
                 WindowsBy.name(text), WindowsBy.accessibilityId(text), WindowsBy.exactText(text), WindowsBy.partialText(text));
     }
 
-    @Override
     public void scrollTo(WebElement element) {
         //not implemented
     }
