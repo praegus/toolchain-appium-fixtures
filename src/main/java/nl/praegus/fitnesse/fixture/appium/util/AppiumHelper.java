@@ -4,11 +4,11 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
-import nl.praegus.fitnesse.fixture.appium.util.by.AppiumHeuristicBy;
-import nl.praegus.fitnesse.fixture.appium.util.scroll.ScrollHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
 import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.by.ConstantBy;
+import nl.praegus.fitnesse.fixture.appium.util.by.AppiumHeuristicBy;
+import nl.praegus.fitnesse.fixture.appium.util.scroll.ScrollHelper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -42,6 +42,7 @@ public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> ex
      * Finds the first element matching the supplied criteria, without retrieving all and checking for their visibility.
      * Searching this way should be faster, when a hit is found. When no hit is found an exception is thrown (and swallowed)
      * which is bad Java practice, but not slow compared to Appium performance.
+     *
      * @param by criteria to search
      * @return <code>null</code> if no match found, first element returned otherwise.
      */
@@ -88,37 +89,26 @@ public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> ex
 
     @Override
     public T getElementToClick(String place) {
-        return findByTechnicalSelectorOr(place, this::getClickBy);
+        return findByTechnicalSelectorOr(place, this::getNothing);
     }
 
-    protected By getClickBy(String place) {
+    protected By getNothing(String place) {
         return ConstantBy.nothing();
     }
 
     @Override
     public T getElement(String place) {
-        return findByTechnicalSelectorOr(place, this::getElementBy);
-    }
-
-    protected By getElementBy(String place) {
-        return ConstantBy.nothing();
+        return findByTechnicalSelectorOr(place, this::getNothing);
     }
 
     public T getContainer(String container) {
-        Function<String, By> containerBy = this::getContainerBy;
+        Function<String, By> containerBy = this::getNothing;
         return findByTechnicalSelectorOr(container, containerBy);
     }
 
-    protected By getContainerBy(String container) {
-        return ConstantBy.nothing();
-    }
-
+    @Override
     public T getElementToCheckVisibility(String place) {
-        return findByTechnicalSelectorOr(place, this::getElementToCheckVisibilityBy);
-    }
-
-    protected By getElementToCheckVisibilityBy(String place) {
-        return ConstantBy.nothing();
+        return findByTechnicalSelectorOr(place, this::getNothing);
     }
 
     @Override

@@ -5,20 +5,16 @@ import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
 import nl.praegus.fitnesse.fixture.appium.util.AppiumHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -176,5 +172,34 @@ public class AppiumTestTest {
         boolean result = appTest.waitForVisible(place);
 
         assertThat(result).isFalse();
+    }
+
+    @Test
+    public void when_no_select_element_is_to_be_found_false_is_returned(){
+        boolean result = appTest.clickSelectOption(null, "value");
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void when_the_option_of_the_select_element_is_not_found_false_is_returned(){
+        when(element.getTagName()).thenReturn("select");
+        when(element.findElement(any())).thenReturn(null);
+
+        boolean result = appTest.clickSelectOption(element, "value");
+
+        assertThat(result).isFalse();
+    }
+
+
+    @Test
+    public void when_the_select_element_is_found_and_value_is_selected_true_is_returned(){
+        when(element.getTagName()).thenReturn("select");
+        when(element.findElement(any())).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appTest.clickSelectOption(element, "value");
+
+        assertThat(result).isTrue();
     }
 }

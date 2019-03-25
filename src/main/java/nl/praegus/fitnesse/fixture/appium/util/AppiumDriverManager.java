@@ -5,12 +5,11 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.windows.WindowsDriver;
 import nl.hsac.fitnesse.fixture.Environment;
-import nl.praegus.fitnesse.fixture.appium.util.element.MobileElementConverter;
 import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.by.BestMatchBy;
 import nl.hsac.fitnesse.fixture.util.selenium.driverfactory.DriverFactory;
 import nl.hsac.fitnesse.fixture.util.selenium.driverfactory.DriverManager;
-import org.openqa.selenium.SearchContext;
+import nl.praegus.fitnesse.fixture.appium.util.element.MobileElementConverter;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -42,15 +41,15 @@ public class AppiumDriverManager extends DriverManager {
         }
         if (driver instanceof AppiumDriver) {
             AppiumDriver d = (AppiumDriver) driver;
-            setBestFunction(d);
+            setBestFunction();
             setMobileElementConverter(d);
         }
         return helper;
     }
 
-    protected void setBestFunction(AppiumDriver d) {
+    protected void setBestFunction() {
         // selecting the 'best macth' should not be done by checking whats on top via Javascript
-        BestMatchBy.setBestFunction(this::selectBestElement);
+        BestMatchBy.setBestFunction((sc, elements) -> selectBestElement(elements));
     }
 
     protected void setMobileElementConverter(AppiumDriver d) {
@@ -78,7 +77,7 @@ public class AppiumDriverManager extends DriverManager {
         return new AppiumHelper();
     }
 
-    protected WebElement selectBestElement(SearchContext sc, List<WebElement> elements) {
+    protected WebElement selectBestElement(List<WebElement> elements) {
         WebElement element = elements.get(0);
         if (!element.isDisplayed()) {
             for (int i = 1; i < elements.size(); i++) {

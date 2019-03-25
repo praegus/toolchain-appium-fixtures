@@ -41,7 +41,7 @@ public class IosHelper extends AppiumHelper<IOSElement, IOSDriver<IOSElement>> {
     }
 
     @Override
-    protected By getClickBy(String place) {
+    protected By getNothing(String place) {
         return new AppiumHeuristicBy<>(IOSBy.buttonHeuristic(place), IOSBy.heuristic(place));
     }
 

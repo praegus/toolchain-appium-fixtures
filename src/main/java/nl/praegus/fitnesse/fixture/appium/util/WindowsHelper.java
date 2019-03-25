@@ -2,10 +2,10 @@ package nl.praegus.fitnesse.fixture.appium.util;
 
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
+import nl.praegus.fitnesse.fixture.appium.util.by.AppiumHeuristicBy;
 import nl.praegus.fitnesse.fixture.appium.util.by.IsDisplayedFilter;
 import nl.praegus.fitnesse.fixture.appium.util.by.WindowsBy;
 import nl.praegus.fitnesse.fixture.appium.util.scroll.ScrollHelper;
-import nl.praegus.fitnesse.fixture.appium.util.by.AppiumHeuristicBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -35,7 +35,7 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
     }
 
     @Override
-    protected By getClickBy(String place)  {
+    protected By getNothing(String place)  {
         return WindowsBy.heuristic(place);
     }
 

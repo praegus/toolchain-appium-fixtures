@@ -36,12 +36,8 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +45,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
+
 /**
  * Specialized class to test applications (iOS, Android, Windows) using Appium.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends SlimFixture {
-    private final static Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final List<String> currentSearchContextPath = new ArrayList<>();
     private AppiumHelper<T, D> appiumHelper;
     private ReflectionHelper reflectionHelper;
@@ -518,16 +515,13 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean clickSelectOption(WebElement element, String optionValue) {
-        boolean result = false;
-        if (element != null) {
-            if (isSelect(element)) {
-                optionValue = cleanupValue(optionValue);
-                By optionBy = new OptionBy(optionValue);
-                WebElement option = optionBy.findElement(element);
-                result = clickSelectOption(element, option);
-            }
+        if (element != null && isSelect(element)) {
+            optionValue = cleanupValue(optionValue);
+            By optionBy = new OptionBy(optionValue);
+            WebElement option = element.findElement(optionBy);
+            return clickSelectOption(element, option);
         }
-        return result;
+        return false;
     }
 
     protected boolean clickSelectOption(WebElement element, WebElement option) {
@@ -865,28 +859,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return false;
     }
 
-    /**
-     * @deprecated use #waitForVisible(xpath=) instead
-     */
-    @Deprecated
-    public boolean waitForXPathVisible(String xPath) {
-        By by = By.xpath(xPath);
-        return waitForVisible(by);
-    }
-
-    @Deprecated
-    protected boolean waitForVisible(By by) {
-        return waitUntilOrStop(webDriver -> {
-            Boolean result = Boolean.FALSE;
-            WebElement element = findElement(by);
-            if (element != null) {
-                scrollIfNotOnScreen(element);
-                result = element.isDisplayed();
-            }
-            return result;
-        });
-    }
-
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public String valueOf(String place) {
         return valueFor(place);
@@ -1031,10 +1003,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     protected List<WebElement> getSelectedOptions(WebElement selectElement) {
         SelectHelper s = new SelectHelper(selectElement);
         return s.getAllSelectedOptions();
-    }
-
-    protected boolean isSelect(WebElement element) {
-        return SelectHelper.isSelect(element);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
@@ -1712,7 +1680,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             // last attempt to ensure condition has not been met
             // this to prevent messages that show no problem
             lastAttemptResult = condition.apply(appiumHelper.driver());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             // ignore
         }
         if (lastAttemptResult == null || Boolean.FALSE.equals(lastAttemptResult)) {
@@ -1824,9 +1792,9 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         } catch (UnhandledAlertException e) {
             // https://code.google.com/p/selenium/issues/detail?id=4412
 
-            LOGGER.error("Unable to take screenshot while alert is present for exception: {}", messageBase);
+            logger.error("Unable to take screenshot while alert is present for exception: {}", messageBase);
         } catch (Exception sse) {
-            LOGGER.error("Unable to take screenshot for exception: {}\n {}", messageBase, sse.toString());
+            logger.error("Unable to take screenshot for exception: {}\n {}", messageBase, sse);
         }
         return screenshotTag;
     }
@@ -1845,20 +1813,15 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             label = savePageSource(fileName, label);
         } catch (UnhandledAlertException e) {
             // https://code.google.com/p/selenium/issues/detail?id=4412
-            LOGGER.error("Unable to capture page source while alert is present for exception: {}", messageBase);
+            logger.error("Unable to capture page source while alert is present for exception: {}", messageBase);
         } catch (Exception e) {
-            LOGGER.error("Unable to capture page source for exception: {}", messageBase);
-            e.printStackTrace();
+            logger.error("Unable to capture page source for exception: {}\n {}", messageBase, e);
         }
         return label;
     }
 
     protected String formatExceptionMsg(String value) {
         return StringEscapeUtils.escapeHtml4(value);
-    }
-
-    private WebDriverWait waitDriver() {
-        return appiumHelper.waitDriver();
     }
 
     /**
