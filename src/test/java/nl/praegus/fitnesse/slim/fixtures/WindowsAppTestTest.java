@@ -1,0 +1,92 @@
+package nl.praegus.fitnesse.slim.fixtures;
+
+import io.appium.java_client.windows.WindowsDriver;
+import io.appium.java_client.windows.WindowsElement;
+import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
+import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
+import nl.praegus.fitnesse.slim.util.WindowsHelper;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.WebDriver;
+
+import java.util.Collections;
+import java.util.LinkedHashSet;
+
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class WindowsAppTestTest {
+
+    @Mock
+    private WindowsHelper windowsHelper;
+    @Mock
+    private ReflectionHelper reflectionHelper;
+    @Mock
+    private WindowsElement element;
+    @Mock
+    private WindowsDriver driver;
+
+    @Mock
+    WebDriver.TargetLocator targetLocator;
+
+    @InjectMocks
+    private WindowsAppTest windowsAppTest;
+
+    @Test
+    public void successfully_dubble_clicking_returns_true() {
+        when(windowsHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = windowsAppTest.doubleClick(element);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void when_splash_screen_is_gone_true_is_returned() {
+        when(windowsHelper.driver()).thenReturn(driver);
+        when(driver.getWindowHandles()).thenReturn(Collections.singleton("window"));
+        when(driver.switchTo()).thenReturn(targetLocator);
+
+        boolean result = windowsAppTest.waitForSplashScreenToDisappear();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void when_splash_screen_does_not_go_away_false_is_returned() {
+        when(windowsHelper.driver()).thenReturn(driver);
+        when(driver.getWindowHandles()).thenReturn(Collections.singleton(""));
+
+        boolean result = windowsAppTest.waitForSplashScreenToDisappear();
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void switch_to_next_window_can_be_done_with_two_windows() {
+        when(windowsHelper.driver()).thenReturn(driver);
+        when(driver.getWindowHandles()).thenReturn(new LinkedHashSet<>(asList("window1", "window2")));
+        when(driver.switchTo()).thenReturn(targetLocator);
+
+        windowsAppTest.switchToNextWindow();
+        assertThat(windowsAppTest.getFocusedWindow()).isEqualTo("window1");
+        windowsAppTest.switchToNextWindow();
+        assertThat(windowsAppTest.getFocusedWindow()).isEqualTo("window2");
+    }
+
+    @Test
+    public void switch_to_next_window_cannot_be_done_with_only_one_window() {
+        when(windowsHelper.driver()).thenReturn(driver);
+        when(driver.getWindowHandles()).thenReturn(Collections.singleton("window"));
+
+        assertThatThrownBy(() -> windowsAppTest.switchToNextWindow())
+                .isInstanceOf(SlimFixtureException.class)
+                .hasMessage("There is only one window in WinAppDriver's scope. Cannot Switch to next window");
+    }
+}
