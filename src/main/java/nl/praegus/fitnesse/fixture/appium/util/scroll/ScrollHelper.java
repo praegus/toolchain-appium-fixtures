@@ -30,7 +30,6 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
     private Duration waitBetweenScrollPressAndMove = Duration.ofMillis(10);
     private Duration waitAfterMoveDuration = Duration.ofMillis(10);
 
-
     public ScrollHelper(AppiumHelper<T, D> helper) {
         this.helper = helper;
     }
@@ -53,7 +52,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             }
             int centerX = center.getX();
 
-            int heightDelta = Double.valueOf(dimensions.getHeight() / 2 * swipeDistance).intValue();
+            int heightDelta = (int) (dimensions.getHeight() / 2.0 * swipeDistance);
             int centerY = center.getY();
             int lowPoint = centerY + heightDelta;
             int highPoint = centerY - heightDelta;
@@ -130,7 +129,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
         }
 
         ta.release()
-            .perform();
+                .perform();
     }
 
     public Duration getWaitBetweenScrollPressAndMove() {

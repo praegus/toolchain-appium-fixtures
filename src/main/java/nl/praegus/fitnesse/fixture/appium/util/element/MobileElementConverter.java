@@ -11,11 +11,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
 
 public class MobileElementConverter extends JsonToMobileElementConverter {
-    private final RemoteWebDriver driver;
 
     public MobileElementConverter(RemoteWebDriver driver, HasSessionDetails hasSessionDetails) {
         super(driver, hasSessionDetails);
-        this.driver = driver;
     }
 
     @Override

@@ -6,6 +6,10 @@ import nl.hsac.fitnesse.fixture.util.selenium.by.LazyPatternBy;
 import org.openqa.selenium.By;
 
 public class IOSBy {
+    private IOSBy() {
+        // hide constructor
+    }
+
     private static final String CONTAINS_EXACT = "name=='%1$s' OR label=='%1$s' OR value=='%1$s'";
 
     private static final String CONTAINS_PARTIAL = "name CONTAINS '%1$s' OR label CONTAINS '%1$s' OR value CONTAINS '%1$s'";

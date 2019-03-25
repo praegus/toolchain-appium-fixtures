@@ -5,6 +5,10 @@ import nl.hsac.fitnesse.fixture.util.selenium.by.XPathBy;
 import org.openqa.selenium.By;
 
 public class AndroidBy {
+    private AndroidBy(){
+        // hide constructor
+    }
+
     private static final String CLICKABLE = "[@clickable='true']";
 
     private static final String CONTAINS_EXACT = "[@enabled='true' " +

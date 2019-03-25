@@ -29,22 +29,18 @@ public class AndroidHelper extends AppiumHelper<AndroidElement, AndroidDriver<An
 				ANDROID_UI_AUTOMATOR_BY);
 		}
 
-	@Override
 	protected By getElementBy(String place) {
 		return AndroidBy.heuristic(place);
 	}
 
-	@Override
 	protected By getClickBy(String place) {
 		return AndroidBy.clickableHeuristic(place);
 	}
 
-	@Override
 	protected By getContainerBy(String container) {
 		return AndroidBy.heuristic(container);
 	}
 
-    @Override
     protected By getElementToCheckVisibilityBy(String text) {
         return AndroidBy.partialText(text);
     }

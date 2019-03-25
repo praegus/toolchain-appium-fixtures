@@ -4,11 +4,11 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
-import nl.praegus.fitnesse.fixture.appium.util.by.AppiumHeuristicBy;
-import nl.praegus.fitnesse.fixture.appium.util.scroll.ScrollHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
 import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.by.ConstantBy;
+import nl.praegus.fitnesse.fixture.appium.util.by.AppiumHeuristicBy;
+import nl.praegus.fitnesse.fixture.appium.util.scroll.ScrollHelper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -22,7 +22,7 @@ import static nl.hsac.fitnesse.fixture.util.selenium.by.TechnicalSelectorBy.byIf
 /**
  * Specialized helper to deal with appium's web getDriver.
  */
-public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> extends SeleniumHelper<T> {
+public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> extends SeleniumHelper<T> {
     private final static Function<String, By> ACCESSIBILITY_BY = byIfStartsWith("accessibility", MobileBy::AccessibilityId);
     private ScrollHelper<T, D> scrollHelper;
 
@@ -42,6 +42,7 @@ public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> ex
      * Finds the first element matching the supplied criteria, without retrieving all and checking for their visibility.
      * Searching this way should be faster, when a hit is found. When no hit is found an exception is thrown (and swallowed)
      * which is bad Java practice, but not slow compared to Appium performance.
+     *
      * @param by criteria to search
      * @return <code>null</code> if no match found, first element returned otherwise.
      */
@@ -71,6 +72,14 @@ public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> ex
         };
     }
 
+    protected abstract By getElementBy(String place);
+
+    protected abstract By getClickBy(String place);
+
+    protected abstract By getContainerBy(String container);
+
+    protected abstract By getElementToCheckVisibilityBy(String text);
+
     @Override
     public void setScriptWait(int scriptTimeout) {
         // Not setting script timeout as Appium does not support it
@@ -88,37 +97,26 @@ public class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> ex
 
     @Override
     public T getElementToClick(String place) {
-        return findByTechnicalSelectorOr(place, this::getClickBy);
+        return findByTechnicalSelectorOr(place, this::getNothing);
     }
 
-    protected By getClickBy(String place) {
+    protected By getNothing(String place) {
         return ConstantBy.nothing();
     }
 
     @Override
     public T getElement(String place) {
-        return findByTechnicalSelectorOr(place, this::getElementBy);
-    }
-
-    protected By getElementBy(String place) {
-        return ConstantBy.nothing();
+        return findByTechnicalSelectorOr(place, this::getNothing);
     }
 
     public T getContainer(String container) {
-        Function<String, By> containerBy = this::getContainerBy;
+        Function<String, By> containerBy = this::getNothing;
         return findByTechnicalSelectorOr(container, containerBy);
     }
 
-    protected By getContainerBy(String container) {
-        return ConstantBy.nothing();
-    }
-
+    @Override
     public T getElementToCheckVisibility(String place) {
-        return findByTechnicalSelectorOr(place, this::getElementToCheckVisibilityBy);
-    }
-
-    protected By getElementToCheckVisibilityBy(String place) {
-        return ConstantBy.nothing();
+        return findByTechnicalSelectorOr(place, this::getNothing);
     }
 
     @Override

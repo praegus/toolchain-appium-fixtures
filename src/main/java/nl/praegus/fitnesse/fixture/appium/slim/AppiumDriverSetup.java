@@ -7,13 +7,16 @@ import nl.hsac.fitnesse.fixture.Environment;
 import nl.hsac.fitnesse.fixture.slim.web.SeleniumDriverSetup;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
-import nl.praegus.fitnesse.fixture.appium.util.AppiumDriverManager;
 import nl.hsac.fitnesse.fixture.util.selenium.driverfactory.DriverManager;
+import nl.praegus.fitnesse.fixture.appium.util.AppiumDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -24,8 +27,8 @@ import java.util.function.BiFunction;
  * Fixture to connect FitNesse to appium.
  */
 public class AppiumDriverSetup extends SeleniumDriverSetup {
+    private final static Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String APP_CAPABILITY_NAME = "app";
-    private int retries = 0;
 
     static {
         // ensure our helpers are used for Appium WebDrivers
@@ -49,35 +52,34 @@ public class AppiumDriverSetup extends SeleniumDriverSetup {
     }
 
     public boolean connectToWindowsDriverAtWithCapabilities(String url, Map<String, Object> capabilities) throws MalformedURLException {
-        return  this.createAndSetRemoteWebDriver(WindowsDriver::new, url, new DesiredCapabilities(capabilities));
+        return this.createAndSetRemoteWebDriver(WindowsDriver::new, url, new DesiredCapabilities(capabilities));
     }
 
     /**
      * Connect to a getDriver and poll maximum 5 times with 5 second delay for a window with name @window to appear
      * Useful in case starting the app takes > ~3 seconds before a window appears without having to start the app using
      * a script and connecting to the desktop
-     * @param url The WinAppDriver URL
+     *
+     * @param url          The WinAppDriver URL
      * @param capabilities Capabiltities map to start the getDriver with
-     * @param window Name of the window to attach to
-     * @return true if the window was found and attached to
-     * @throws MalformedURLException
+     * @param window       Name of the window to attach to
      */
-    public boolean connectToWindowsDriverAtWithCapabilitiesAndAttachToWindow(String url, Map<String, Object> capabilities, String window) throws MalformedURLException {
+    public boolean connectToWindowsDriverAtWithCapabilitiesAndAttachToWindow(String url, Map<String, Object> capabilities, String window) {
         boolean result = false;
+        int numberOfRetries = 0;
         try {
             result = this.createAndSetRemoteWebDriver(WindowsDriver::new, url, new DesiredCapabilities(capabilities));
         } catch (Exception e) {
-            while (!result && retries < 5) {
+            while (!result && numberOfRetries < 5) {
                 try {
-                    result = connectToWindowsDriverAtAndSelectWindow (url, window);
+                    result = connectToWindowsDriverAtAndSelectWindow(url, window);
                 } catch (Exception e2) {
                     waitSeconds(5);
-                    retries++;
-                    System.out.println(retries);
+                    numberOfRetries++;
+                    LOGGER.warn("Connection failed, retrying to connect, attempt: {}", numberOfRetries);
                 }
             }
         }
-
         return result;
     }
 
@@ -98,8 +100,7 @@ public class AppiumDriverSetup extends SeleniumDriverSetup {
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     private String getWindowHandleForName(String applicationTitle) {
         String handle = getHelper().driver().findElement(By.name(applicationTitle)).getAttribute("NativeWindowHandle");
-        String hex = String.format("0x%s", Integer.toHexString(Integer.parseInt(handle)));
-        return hex;
+        return String.format("0x%s", Integer.toHexString(Integer.parseInt(handle)));
     }
 
     @Override

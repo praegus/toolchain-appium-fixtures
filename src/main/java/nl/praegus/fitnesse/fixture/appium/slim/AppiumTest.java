@@ -10,17 +10,32 @@ import nl.hsac.fitnesse.fixture.slim.web.TimeoutStopTestException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.praegus.fitnesse.fixture.appium.util.AppiumHelper;
-import nl.hsac.fitnesse.fixture.util.selenium.*;
-import nl.hsac.fitnesse.fixture.util.selenium.by.*;
+import nl.hsac.fitnesse.fixture.util.selenium.AllFramesDecorator;
+import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
+import nl.hsac.fitnesse.fixture.util.selenium.SelectHelper;
+import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
+import nl.hsac.fitnesse.fixture.util.selenium.StaleContextException;
+import nl.hsac.fitnesse.fixture.util.selenium.by.AltBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.GridBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.ListItemBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.OptionBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.XPathBy;
 import nl.hsac.fitnesse.slim.interaction.ExceptionHelper;
+import nl.praegus.fitnesse.fixture.appium.util.AppiumHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -29,6 +44,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
 
 /**
  * Specialized class to test applications (iOS, Android, Windows) using Appium.
@@ -498,16 +515,13 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean clickSelectOption(WebElement element, String optionValue) {
-        boolean result = false;
-        if (element != null) {
-            if (isSelect(element)) {
-                optionValue = cleanupValue(optionValue);
-                By optionBy = new OptionBy(optionValue);
-                WebElement option = optionBy.findElement(element);
-                result = clickSelectOption(element, option);
-            }
+        if (element != null && isSelect(element)) {
+            optionValue = cleanupValue(optionValue);
+            By optionBy = new OptionBy(optionValue);
+            WebElement option = element.findElement(optionBy);
+            return clickSelectOption(element, option);
         }
-        return result;
+        return false;
     }
 
     protected boolean clickSelectOption(WebElement element, WebElement option) {
@@ -845,28 +859,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return false;
     }
 
-    /**
-     * @deprecated use #waitForVisible(xpath=) instead
-     */
-    @Deprecated
-    public boolean waitForXPathVisible(String xPath) {
-        By by = By.xpath(xPath);
-        return waitForVisible(by);
-    }
-
-    @Deprecated
-    protected boolean waitForVisible(By by) {
-        return waitUntilOrStop(webDriver -> {
-            Boolean result = Boolean.FALSE;
-            WebElement element = findElement(by);
-            if (element != null) {
-                scrollIfNotOnScreen(element);
-                result = element.isDisplayed();
-            }
-            return result;
-        });
-    }
-
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public String valueOf(String place) {
         return valueFor(place);
@@ -1011,10 +1003,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     protected List<WebElement> getSelectedOptions(WebElement selectElement) {
         SelectHelper s = new SelectHelper(selectElement);
         return s.getAllSelectedOptions();
-    }
-
-    protected boolean isSelect(WebElement element) {
-        return SelectHelper.isSelect(element);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
@@ -1692,7 +1680,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             // last attempt to ensure condition has not been met
             // this to prevent messages that show no problem
             lastAttemptResult = condition.apply(appiumHelper.driver());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             // ignore
         }
         if (lastAttemptResult == null || Boolean.FALSE.equals(lastAttemptResult)) {
@@ -1803,10 +1791,10 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             screenshotTag = getScreenshotLink(screenShotFile);
         } catch (UnhandledAlertException e) {
             // https://code.google.com/p/selenium/issues/detail?id=4412
-            System.err.println("Unable to take screenshot while alert is present for exception: " + messageBase);
+
+            logger.error("Unable to take screenshot while alert is present for exception: {}", messageBase);
         } catch (Exception sse) {
-            System.err.println("Unable to take screenshot for exception: " + messageBase);
-            sse.printStackTrace();
+            logger.error("Unable to take screenshot for exception: {}\n {}", messageBase, sse);
         }
         return screenshotTag;
     }
@@ -1825,20 +1813,15 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             label = savePageSource(fileName, label);
         } catch (UnhandledAlertException e) {
             // https://code.google.com/p/selenium/issues/detail?id=4412
-            System.err.println("Unable to capture page source while alert is present for exception: " + messageBase);
+            logger.error("Unable to capture page source while alert is present for exception: {}", messageBase);
         } catch (Exception e) {
-            System.err.println("Unable to capture page source for exception: " + messageBase);
-            e.printStackTrace();
+            logger.error("Unable to capture page source for exception: {}\n {}", messageBase, e);
         }
         return label;
     }
 
     protected String formatExceptionMsg(String value) {
         return StringEscapeUtils.escapeHtml4(value);
-    }
-
-    private WebDriverWait waitDriver() {
-        return appiumHelper.waitDriver();
     }
 
     /**

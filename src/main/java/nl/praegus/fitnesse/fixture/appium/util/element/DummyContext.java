@@ -6,6 +6,8 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 /**
  * Normal 'setFoundBy' logic in RemoteWebDriver calls toString() on SearchContext. For AppiumDriver and its subclasses
  * that means 2 remote calls getting all session details.
@@ -20,7 +22,7 @@ public class DummyContext implements SearchContext {
 
     @Override
     public <T extends WebElement> List<T> findElements(By by) {
-        return null;
+        return emptyList();
     }
 
     @Override

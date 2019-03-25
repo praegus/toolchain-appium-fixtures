@@ -6,6 +6,10 @@ import org.openqa.selenium.By;
 
 public class WindowsBy {
 
+    private WindowsBy(){
+        // hide constructor
+    }
+
     private static final String CONTAINS_EXACT = "//*[@Value='%1$s' or @HelpText='%1$s']";
 
     private static final String CONTAINS_PARTIAL = "//*[contains(@Name, '%1$s') " +
