@@ -53,7 +53,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             }
             int centerX = center.getX();
 
-            int heightDelta = Double.valueOf(dimensions.getHeight() / 2 * swipeDistance).intValue();
+            int heightDelta = Double.valueOf(dimensions.getHeight() / 2.0 * swipeDistance).intValue();
             int centerY = center.getY();
             int lowPoint = centerY + heightDelta;
             int highPoint = centerY - heightDelta;

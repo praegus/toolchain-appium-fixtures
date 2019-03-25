@@ -10,19 +10,38 @@ import nl.hsac.fitnesse.fixture.slim.web.TimeoutStopTestException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.praegus.fitnesse.fixture.appium.util.AppiumHelper;
-import nl.hsac.fitnesse.fixture.util.selenium.*;
-import nl.hsac.fitnesse.fixture.util.selenium.by.*;
+import nl.hsac.fitnesse.fixture.util.selenium.AllFramesDecorator;
+import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
+import nl.hsac.fitnesse.fixture.util.selenium.SelectHelper;
+import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
+import nl.hsac.fitnesse.fixture.util.selenium.StaleContextException;
+import nl.hsac.fitnesse.fixture.util.selenium.by.AltBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.GridBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.ListItemBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.OptionBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.XPathBy;
 import nl.hsac.fitnesse.slim.interaction.ExceptionHelper;
+import nl.praegus.fitnesse.fixture.appium.util.AppiumHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +54,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends SlimFixture {
+    private final static Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final List<String> currentSearchContextPath = new ArrayList<>();
     private AppiumHelper<T, D> appiumHelper;
     private ReflectionHelper reflectionHelper;
@@ -1803,10 +1823,10 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             screenshotTag = getScreenshotLink(screenShotFile);
         } catch (UnhandledAlertException e) {
             // https://code.google.com/p/selenium/issues/detail?id=4412
-            System.err.println("Unable to take screenshot while alert is present for exception: " + messageBase);
+
+            LOGGER.error("Unable to take screenshot while alert is present for exception: {}", messageBase);
         } catch (Exception sse) {
-            System.err.println("Unable to take screenshot for exception: " + messageBase);
-            sse.printStackTrace();
+            LOGGER.error("Unable to take screenshot for exception: {}\n {}", messageBase, sse.toString());
         }
         return screenshotTag;
     }
@@ -1825,9 +1845,9 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             label = savePageSource(fileName, label);
         } catch (UnhandledAlertException e) {
             // https://code.google.com/p/selenium/issues/detail?id=4412
-            System.err.println("Unable to capture page source while alert is present for exception: " + messageBase);
+            LOGGER.error("Unable to capture page source while alert is present for exception: {}", messageBase);
         } catch (Exception e) {
-            System.err.println("Unable to capture page source for exception: " + messageBase);
+            LOGGER.error("Unable to capture page source for exception: {}", messageBase);
             e.printStackTrace();
         }
         return label;
