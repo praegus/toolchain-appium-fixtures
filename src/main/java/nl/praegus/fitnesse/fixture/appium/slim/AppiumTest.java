@@ -1179,39 +1179,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return doInContainer(container, () -> getElement(place));
     }
 
-    /**
-     * @deprecated use #click(xpath=) instead.
-     */
-    @WaitUntil
-    @Deprecated
-    public boolean clickByXPath(String xPath) {
-        WebElement element = findByXPath(xPath);
-        return clickElement(element);
-    }
-
-    /**
-     * @deprecated use #valueOf(xpath=) instead.
-     */
-    @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    @Deprecated
-    public String textByXPath(String xPath) {
-        return getTextByXPath(xPath);
-    }
-
-    protected String getTextByXPath(String xpathPattern, String... params) {
-        WebElement element = findByXPath(xpathPattern, params);
-        return getElementText(element);
-    }
-
-    /**
-     * @deprecated use #valueOf(css=.) instead.
-     */
-    @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    @Deprecated
-    public String textByClassName(String className) {
-        return getTextByClassName(className);
-    }
-
     protected String getTextByClassName(String className) {
         WebElement element = findByClassName(className);
         return getElementText(element);

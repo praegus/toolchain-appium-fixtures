@@ -6,25 +6,16 @@
 
     <groupId>nl.praegus</groupId>
     <artifactId>praegus-fitnesse-appium</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2</version>
     <name>Praegus FitNesse Fixtures for Appium</name>
-    <description>Fixtures to assist in mobile and windows app testing via FitNesse</description>
-
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
+    <description>Fixtures to assist in android, iOS and windows app testing via FitNesse</description>
 
     <developers>
         <developer>
             <name>Maarten-Jan van Gool</name>
             <email>maarten-jan.van.gool@praegus.nl</email>
-            <organization>Praegus B.V.</organization>
-            <organizationUrl>https://nl.linkedin.com/in/maartenjanvangool</organizationUrl>
+            <organization>Praegus Solutions B.V.</organization>
+            <organizationUrl>https://praegus.nl/solutions/</organizationUrl>
         </developer>
         <developer>
             <name>Fried Hoeben</name>
@@ -35,9 +26,10 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/fhoeben/hsac-fitnesse-appium.git</connection>
-        <url>https://github.com/fhoeben/hsac-fitnesse-appium.git</url>
-        <developerConnection>scm:git:git://github.com/fhoeben/hsac-fitnesse-appium.git</developerConnection>
+        <connection>scm:git:git@gitlab.com:praegus/praegus-fitnesse-appium.git</connection>
+        <url>https://gitlab.com/praegus/praegus-fitnesse-appium.git</url>
+        <developerConnection>scm:git:git@gitlab.com:praegus/praegus-fitnesse-appium.git</developerConnection>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
@@ -106,6 +98,17 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <!-- references the profile defined just below -->
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>
             <!--test -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -137,16 +140,70 @@
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
+            <!--package-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.0.0</version>
                 <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <!-- references the profile defined just below -->
-                    <releaseProfiles>release</releaseProfiles>
-                    <goals>deploy</goals>
+                    <!-- get all project dependencies -->
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- bind to the packaging phase -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--verify-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -208,15 +265,23 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
+            <id>snapshots</id>
             <name>Maven Central Snapshot Repository</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
         <repository>
-            <id>ossrh</id>
+            <id>staging</id>
             <name>Maven Central Staging Repository</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
     </distributionManagement>
 
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
 </project>
