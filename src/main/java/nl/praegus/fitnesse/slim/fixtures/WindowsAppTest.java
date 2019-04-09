@@ -6,10 +6,13 @@ import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.praegus.fitnesse.slim.util.AppiumHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.openqa.selenium.WebElement;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,4 +105,22 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         return false;
     }
 
+    public boolean pasteText(String text) {
+        StringSelection stringSelection = new StringSelection(text);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, stringSelection);
+
+        try {
+            Robot robot = new Robot();
+            robot.keyPress(KeyEvent.VK_CONTROL);
+            robot.keyPress(KeyEvent.VK_V);
+            robot.keyRelease(KeyEvent.VK_V);
+            robot.keyRelease(KeyEvent.VK_CONTROL);
+            return true;
+        } catch (AWTException e) {
+            throw new SlimFixtureException("the platform configuration does not allow\n" +
+                    "     * low-level input control ");
+
+        }
+    }
 }
