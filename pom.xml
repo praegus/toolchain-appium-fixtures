@@ -6,7 +6,7 @@
 
     <groupId>nl.praegus</groupId>
     <artifactId>toolchain-appium-fixtures</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
 
     <url>https://gitlab.com/praegus/toolchain-fixtures/toolchain-appium-fixtures.git</url>
     <name>Praegus FitNesse Fixtures for Appium</name>
@@ -16,6 +16,12 @@
         <developer>
             <name>Maarten-Jan van Gool</name>
             <email>maarten-jan.van.gool@praegus.nl</email>
+            <organization>Praegus Solutions B.V.</organization>
+            <organizationUrl>https://praegus.nl/solutions/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Juriaan Rijnaars</name>
+            <email>juriaan.rijnaars@praegus.nl</email>
             <organization>Praegus Solutions B.V.</organization>
             <organizationUrl>https://praegus.nl/solutions/</organizationUrl>
         </developer>
