@@ -7,6 +7,7 @@ import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -15,6 +16,7 @@ import org.openqa.selenium.WebDriver;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -41,6 +43,8 @@ public class WindowsAppTestTest {
     private WebDriver.TargetLocator targetLocator;
     @Mock
     private Robot robot;
+    @Mock
+    private Clipboard clipboard;
 
     @InjectMocks
     private WindowsAppTest windowsAppTest;
@@ -107,8 +111,9 @@ public class WindowsAppTestTest {
         verify(robot, times(1)).keyRelease(KeyEvent.VK_CONTROL);
         verify(robot, times(1)).keyRelease(KeyEvent.VK_V);
 
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        assertThat(clipboard.getContents(null).getTransferData(DataFlavor.stringFlavor)).isEqualTo("text to be pasted");
+        ArgumentCaptor<StringSelection> captor = ArgumentCaptor.forClass(StringSelection.class);
+        verify(clipboard, times(1)).setContents(captor.capture(), any());
+        assertThat(captor.getValue().getTransferData(DataFlavor.stringFlavor)).isEqualTo("text to be pasted");
     }
 
     @Test

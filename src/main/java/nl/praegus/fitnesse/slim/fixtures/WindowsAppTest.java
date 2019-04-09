@@ -22,9 +22,11 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
     private int delayAfterClickInMillis = 100;
     private String focusedWindow = "";
     private Robot robot;
+    private Clipboard clipboard;
 
     public WindowsAppTest() {
         super();
+        this.clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         focusedWindow = windowHandles().get(0);
         try {
             robot = new Robot();
@@ -37,9 +39,10 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         super(secondsBeforeTimeout);
     }
 
-    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper, Robot robot) {
+    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper, Robot robot , Clipboard clipboard) {
         super(windowsHelper, reflectionHelper);
         this.robot = robot;
+        this.clipboard = clipboard;
     }
 
     public String getFocusedWindow() {
@@ -116,7 +119,6 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
 
     public boolean pasteText(String text) {
         StringSelection stringSelection = new StringSelection(text);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, stringSelection);
 
         return pressAnd("control", "v");
