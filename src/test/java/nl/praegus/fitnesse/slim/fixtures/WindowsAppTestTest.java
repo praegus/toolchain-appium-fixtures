@@ -7,18 +7,26 @@ import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.openqa.selenium.WebDriver;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WindowsAppTestTest {
@@ -31,9 +39,12 @@ public class WindowsAppTestTest {
     private WindowsElement element;
     @Mock
     private WindowsDriver driver;
-
     @Mock
-    WebDriver.TargetLocator targetLocator;
+    private WebDriver.TargetLocator targetLocator;
+    @Mock
+    private Robot robot;
+    @Mock
+    private Clipboard clipboard;
 
     @InjectMocks
     private WindowsAppTest windowsAppTest;
@@ -88,5 +99,40 @@ public class WindowsAppTestTest {
         assertThatThrownBy(() -> windowsAppTest.switchToNextWindow())
                 .isInstanceOf(SlimFixtureException.class)
                 .hasMessage("There is only one window in WinAppDriver's scope. Cannot Switch to next window");
+    }
+
+    @Test
+    public void when_paste_key_is_used_clipboard_text_is_pasted() throws IOException, UnsupportedFlavorException {
+        boolean result = windowsAppTest.pasteText("text to be pasted");
+
+        assertThat(result).isTrue();
+        verify(robot, times(1)).keyPress(KeyEvent.VK_CONTROL);
+        verify(robot, times(1)).keyPress(KeyEvent.VK_V);
+        verify(robot, times(1)).keyRelease(KeyEvent.VK_CONTROL);
+        verify(robot, times(1)).keyRelease(KeyEvent.VK_V);
+
+        ArgumentCaptor<StringSelection> captor = ArgumentCaptor.forClass(StringSelection.class);
+        verify(clipboard, times(1)).setContents(captor.capture(), any());
+        assertThat(captor.getValue().getTransferData(DataFlavor.stringFlavor)).isEqualTo("text to be pasted");
+    }
+
+    @Test
+    public void when__key_is_pressed_true_is_returned() {
+        boolean result = windowsAppTest.pressKey("v");
+
+        assertThat(result).isTrue();
+        verify(robot, times(1)).keyPress(KeyEvent.VK_V);
+        verify(robot, times(1)).keyRelease(KeyEvent.VK_V);
+    }
+
+    @Test
+    public void when_two_keys_are_pressed_true_is_returned() {
+        boolean result = windowsAppTest.pressAnd("control", "v");
+
+        assertThat(result).isTrue();
+        verify(robot, times(1)).keyPress(KeyEvent.VK_CONTROL);
+        verify(robot, times(1)).keyPress(KeyEvent.VK_V);
+        verify(robot, times(1)).keyRelease(KeyEvent.VK_CONTROL);
+        verify(robot, times(1)).keyRelease(KeyEvent.VK_V);
     }
 }

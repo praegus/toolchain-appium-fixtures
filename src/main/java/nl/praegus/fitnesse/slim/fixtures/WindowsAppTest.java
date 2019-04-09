@@ -6,28 +6,43 @@ import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.praegus.fitnesse.slim.util.AppiumHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.openqa.selenium.WebElement;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nl.praegus.fitnesse.slim.util.KeyMapping.getKey;
+
+@SuppressWarnings("WeakerAccess")
 public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<WindowsElement>> {
     private int delayAfterClickInMillis = 100;
     private String focusedWindow = "";
+    private Robot robot;
+    private Clipboard clipboard;
 
     public WindowsAppTest() {
         super();
+        this.clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         focusedWindow = windowHandles().get(0);
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            throw new SlimFixtureException("the platform configuration does not allow low-level input control");
+        }
     }
 
     public WindowsAppTest(int secondsBeforeTimeout) {
         super(secondsBeforeTimeout);
     }
 
-    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper) {
+    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper, Robot robot , Clipboard clipboard) {
         super(windowsHelper, reflectionHelper);
+        this.robot = robot;
+        this.clipboard = clipboard;
     }
 
     public String getFocusedWindow() {
@@ -102,4 +117,24 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         return false;
     }
 
+    public boolean pasteText(String text) {
+        StringSelection stringSelection = new StringSelection(text);
+        clipboard.setContents(stringSelection, stringSelection);
+
+        return pressAnd("control", "v");
+    }
+
+    public boolean pressAnd(String key1, String key2) {
+        robot.keyPress(getKey(key1));
+        robot.keyPress(getKey(key2));
+        robot.keyRelease(getKey(key1));
+        robot.keyRelease(getKey(key2));
+        return true;
+    }
+
+    public boolean pressKey(String key) {
+        robot.keyPress(getKey(key));
+        robot.keyRelease(getKey(key));
+        return true;
+    }
 }
