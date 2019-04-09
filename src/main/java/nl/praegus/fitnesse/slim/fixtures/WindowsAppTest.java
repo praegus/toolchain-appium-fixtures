@@ -12,25 +12,34 @@ import org.openqa.selenium.WebElement;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nl.praegus.fitnesse.slim.util.KeyMapping.getKey;
+
+@SuppressWarnings("WeakerAccess")
 public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<WindowsElement>> {
     private int delayAfterClickInMillis = 100;
     private String focusedWindow = "";
+    private Robot robot;
 
     public WindowsAppTest() {
         super();
         focusedWindow = windowHandles().get(0);
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            throw new SlimFixtureException("the platform configuration does not allow low-level input control");
+        }
     }
 
     public WindowsAppTest(int secondsBeforeTimeout) {
         super(secondsBeforeTimeout);
     }
 
-    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper) {
+    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper, Robot robot) {
         super(windowsHelper, reflectionHelper);
+        this.robot = robot;
     }
 
     public String getFocusedWindow() {
@@ -110,17 +119,20 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, stringSelection);
 
-        try {
-            Robot robot = new Robot();
-            robot.keyPress(KeyEvent.VK_CONTROL);
-            robot.keyPress(KeyEvent.VK_V);
-            robot.keyRelease(KeyEvent.VK_V);
-            robot.keyRelease(KeyEvent.VK_CONTROL);
-            return true;
-        } catch (AWTException e) {
-            throw new SlimFixtureException("the platform configuration does not allow\n" +
-                    "     * low-level input control ");
+        return pressAnd("control", "v");
+    }
 
-        }
+    public boolean pressAnd(String key1, String key2) {
+        robot.keyPress(getKey(key1));
+        robot.keyPress(getKey(key2));
+        robot.keyRelease(getKey(key1));
+        robot.keyRelease(getKey(key2));
+        return true;
+    }
+
+    public boolean pressKey(String key) {
+        robot.keyPress(getKey(key));
+        robot.keyRelease(getKey(key));
+        return true;
     }
 }
