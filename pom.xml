@@ -20,6 +20,12 @@
             <organizationUrl>https://praegus.nl/solutions/</organizationUrl>
         </developer>
         <developer>
+            <name>Juriaan Rijnaars</name>
+            <email>juriaan.rijnaars@praegus.nl</email>
+            <organization>Praegus Solutions B.V.</organization>
+            <organizationUrl>https://praegus.nl/solutions/</organizationUrl>
+        </developer>
+        <developer>
             <name>Fried Hoeben</name>
             <email>fitnesse@hsac.nl</email>
             <organization>Hoeben Software Architecture Consulting B.V.</organization>
