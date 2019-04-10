@@ -9,6 +9,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import java.util.function.Supplier;
@@ -119,6 +120,25 @@ public class AppiumTestTest {
         boolean result = appiumTest.click(place);
 
         assertThat(result).isTrue();
+    }
+
+    @Test
+    public void find_and_click_element_when_available() {
+        String place = "locator";
+        when(appiumHelper.getElementToClick(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.clickIfAvailable(place);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test (expected = WebDriverException.class)
+    public void click_element_then_throw_webdriver_exception_with_message() {
+        String place = "locator";
+        when(appiumHelper.getElementToClick(place)).thenThrow(new WebDriverException("Exeption"));
+
+        appiumTest.clickIfAvailable(place);
     }
 
     @Test
