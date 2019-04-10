@@ -5,7 +5,6 @@ import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -16,7 +15,8 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppiumTestTest {
@@ -77,7 +77,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void clear_find_element_first(){
+    public void clear_find_element_first() {
         String place = "locator";
         when(appiumHelper.getElement(place)).thenReturn(element);
 
@@ -87,7 +87,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void when_element_is_not_found_it_is_not_cleared(){
+    public void when_element_is_not_found_it_is_not_cleared() {
         String place = "locator";
         when(appiumHelper.getElement(place)).thenReturn(null);
 
@@ -96,23 +96,22 @@ public class AppiumTestTest {
         assertThat(result).isFalse();
     }
 
-
     @Test
-    public void clear_element(){
+    public void clear_element() {
         boolean result = appiumTest.clear(element);
 
         assertThat(result).isTrue();
     }
 
     @Test
-    public void clear_doesnt_work_because_element_is_null(){
+    public void clear_doesnt_work_because_element_is_null() {
         boolean result = appiumTest.clear((WebElement) null);
 
         assertThat(result).isFalse();
     }
 
     @Test
-    public void find_and_click_element(){
+    public void find_and_click_element() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(true);
@@ -133,7 +132,7 @@ public class AppiumTestTest {
         assertThat(result).isTrue();
     }
 
-    @Test (expected = WebDriverException.class)
+    @Test(expected = WebDriverException.class)
     public void click_element_then_throw_webdriver_exception_with_message() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenThrow(new WebDriverException("Exeption"));
@@ -142,7 +141,46 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void try_to_click_element_but_element_not_found(){
+    public void find_and_click_element_in_container() {
+        String container = "container";
+        String place = "locator";
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+
+        boolean result = appiumTest.clickIn(place, container);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void find_and_double_click_with_string() {
+        String place = "locator";
+        when(appiumHelper.getElementToClick(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.doubleClick(place);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).doubleClick(element);
+    }
+
+    @Test
+    public void find_and_double_click_in_container() {
+        String container = "container";
+        String place = "locator";
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+
+        boolean result = appiumTest.doubleClickIn(place, container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).doubleClick(element);
+    }
+
+    @Test
+    public void try_to_click_element_but_element_not_found() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(null);
 
@@ -152,7 +190,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void try_to_click_element_but_element_not_interactable(){
+    public void try_to_click_element_but_element_not_interactable() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(false);
@@ -163,9 +201,9 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void when_the_element_is_visible_wait_for_visible_returns_true(){
+    public void when_the_element_is_visible_wait_for_visible_returns_true() {
         String place = "place";
-        when(appiumHelper.findByTechnicalSelectorOr(ArgumentMatchers.eq(place), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.findByTechnicalSelectorOr(eq(place), any(Supplier.class))).thenReturn(element);
         when(element.isDisplayed()).thenReturn(true);
 
         boolean result = appiumTest.waitForVisible(place);
@@ -174,9 +212,9 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void when_the_element_is_not_found_wait_for_visible_returns_false(){
+    public void when_the_element_is_not_found_wait_for_visible_returns_false() {
         String place = "place";
-        when(appiumHelper.findByTechnicalSelectorOr(ArgumentMatchers.eq(place), any(Supplier.class))).thenReturn(null);
+        when(appiumHelper.findByTechnicalSelectorOr(eq(place), any(Supplier.class))).thenReturn(null);
 
         boolean result = appiumTest.waitForVisible(place);
 
@@ -184,9 +222,9 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void when_the_element_is_not_visible_wait_for_visible_returns_false(){
+    public void when_the_element_is_not_visible_wait_for_visible_returns_false() {
         String place = "place";
-        when(appiumHelper.findByTechnicalSelectorOr(ArgumentMatchers.eq(place), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.findByTechnicalSelectorOr(eq(place), any(Supplier.class))).thenReturn(element);
         when(element.isDisplayed()).thenReturn(false);
 
         boolean result = appiumTest.waitForVisible(place);
@@ -195,14 +233,14 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void when_no_select_element_is_to_be_found_false_is_returned(){
+    public void when_no_select_element_is_to_be_found_false_is_returned() {
         boolean result = appiumTest.clickSelectOption(null, "value");
 
         assertThat(result).isFalse();
     }
 
     @Test
-    public void when_the_option_of_the_select_element_is_not_found_false_is_returned(){
+    public void when_the_option_of_the_select_element_is_not_found_false_is_returned() {
         when(element.getTagName()).thenReturn("select");
         when(element.findElement(any())).thenReturn(null);
 
@@ -211,9 +249,8 @@ public class AppiumTestTest {
         assertThat(result).isFalse();
     }
 
-
     @Test
-    public void when_the_select_element_is_found_and_value_is_selected_true_is_returned(){
+    public void when_the_select_element_is_found_and_value_is_selected_true_is_returned() {
         when(element.getTagName()).thenReturn("select");
         when(element.findElement(any())).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(true);
@@ -221,5 +258,31 @@ public class AppiumTestTest {
         boolean result = appiumTest.clickSelectOption(element, "value");
 
         assertThat(result).isTrue();
+    }
+
+    @Test
+    public void find_and_right_click_element() {
+        String place = "locator";
+        when(appiumHelper.getElementToClick(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.rightClick(place);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).rightClick(element);
+    }
+
+    @Test
+    public void find_and_right_click_element_in_container() {
+        String container = "container";
+        String place = "locator";
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+
+        boolean result = appiumTest.rightClickIn(place, container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).rightClick(element);
     }
 }

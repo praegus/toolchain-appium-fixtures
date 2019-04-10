@@ -554,8 +554,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean doubleClickIn(String place, String container) {
-        place = cleanupValue(place);
-        WebElement element = getElementToClick(place, container);
+        WebElement element = getElementToClick(cleanupValue(place), container);
         return doubleClick(element);
     }
 
@@ -570,8 +569,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean rightClickIn(String place, String container) {
-        place = cleanupValue(place);
-        WebElement element = getElementToClick(place, container);
+        WebElement element = getElementToClick(cleanupValue(place), container);
         return rightClick(element);
     }
 
