@@ -14,6 +14,7 @@ import org.openqa.selenium.WebElement;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -132,12 +133,14 @@ public class AppiumTestTest {
         assertThat(result).isTrue();
     }
 
-    @Test(expected = WebDriverException.class)
+    @Test
     public void click_element_then_throw_webdriver_exception_with_message() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenThrow(new WebDriverException("Exeption"));
 
-        appiumTest.clickIfAvailable(place);
+        assertThatThrownBy(() -> appiumTest.clickIfAvailable(place))
+                .isInstanceOf(WebDriverException.class)
+                .hasMessageStartingWith("Exeption");
     }
 
     @Test
