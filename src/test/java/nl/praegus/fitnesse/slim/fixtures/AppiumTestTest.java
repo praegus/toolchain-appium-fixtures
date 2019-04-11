@@ -267,7 +267,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void find_and_right_click_element() {
+    public void find_and_right_click_element_then_true_is_returned() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(true);
@@ -279,7 +279,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void find_and_right_click_element_in_container() {
+    public void find_and_right_click_element_in_container_then_true_is_returned() {
         String container = "container";
         String place = "locator";
         when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
@@ -293,7 +293,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void find_and_shift_click_element() {
+    public void find_and_shift_click_element_then_true_is_returned() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(true);
@@ -305,7 +305,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void find_and_shift_click_element_in_container() {
+    public void find_and_shift_click_element_in_container_then_true_is_returned() {
         String container = "container";
         String place = "locator";
         when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
@@ -319,7 +319,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void find_and_control_click_element() {
+    public void find_and_control_click_element_then_true_is_returned() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(true);
@@ -331,7 +331,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void find_and_control_click_element_in_container() {
+    public void find_and_control_click_element_in_container_then_true_is_returned() {
         String container = "container";
         String place = "locator";
         when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
@@ -345,7 +345,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void enter_value_in_hidden_field() {
+    public void enter_value_in_hidden_field_then_true_is_returned() {
         String idOrName = "idorname";
         String value = "value";
         when(appiumHelper.setHiddenInputValue(any(), any())).thenReturn(true);
@@ -357,7 +357,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void select_option_for_element() {
+    public void select_option_for_element_then_true_is_returned() {
         WindowsElement option = mock(WindowsElement.class);
 
         String place = "place";
@@ -372,7 +372,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void select_option_for_element_in_container() {
+    public void select_option_for_element_in_container_then_true_is_returned() {
         String container = "container";
         String place = "place";
 
@@ -385,7 +385,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void select_option_as_element() {
+    public void select_option_as_element_then_true_is_returned() {
         WindowsElement option = mock(WindowsElement.class);
 
         String place = "place";
@@ -402,7 +402,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void select_option_as_element_in_container() {
+    public void select_option_as_element_in_container_then_true_is_returned() {
         String container = "container";
         String place = "place";
 
@@ -415,14 +415,14 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void send_value_to_webelement_then_keys_are_send() {
+    public void send_value_to_web_element_then_true_is_returned() {
         appiumTest.sendValue(element, "value");
 
         verify(element, times(1)).sendKeys("value");
     }
 
     @Test
-    public void press_single_key_then_the_single_key_is_pressed() {
+    public void press_single_key_then_true_is_returned() {
         when(appiumHelper.getActiveElement()).thenReturn(element);
 
         boolean result = appiumTest.press("control");
@@ -433,7 +433,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void press_double_key_then_both_the_keys_are_pressed() {
+    public void press_double_key_then_true_is_returned() {
         when(appiumHelper.getActiveElement()).thenReturn(element);
 
         boolean result = appiumTest.press("control + v");
@@ -441,6 +441,19 @@ public class AppiumTestTest {
         assertThat(result).isTrue();
         ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
         verify(element, times(1)).sendKeys(captor.capture());
+    }
+
+    @Test
+    public void press_command_then_true_is_returned() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        appiumTest.setSendCommandForControlOnMacTo(true);
+        boolean result = appiumTest.press("control");
+
+        assertThat(result).isTrue();
+        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(captor.capture());
+        verify(appiumHelper, times(1)).getControlOrCommand();
     }
 
 }
