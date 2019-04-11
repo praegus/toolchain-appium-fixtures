@@ -5,9 +5,11 @@ import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -381,4 +383,64 @@ public class AppiumTestTest {
 
         assertThat(result).isTrue();
     }
+
+    @Test
+    public void select_option_as_element() {
+        WindowsElement option = mock(WindowsElement.class);
+
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(element.getTagName()).thenReturn("select");
+        when(element.findElement(any())).thenReturn(option);
+        when(appiumHelper.isInteractable(option)).thenReturn(true);
+        when(element.getAttribute("multiple")).thenReturn("multiple");
+
+        boolean result = appiumTest.selectAs("value", place);
+
+        assertThat(result).isTrue();
+        verify(element, times(1)).findElements(By.tagName("option"));
+    }
+
+    @Test
+    public void select_option_as_element_in_container() {
+        String container = "container";
+        String place = "place";
+
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(true);
+
+        boolean result = appiumTest.selectAsIn("value", place, container);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void send_value_to_webelement_then_keys_are_send() {
+        appiumTest.sendValue(element, "value");
+
+        verify(element, times(1)).sendKeys("value");
+    }
+
+    @Test
+    public void press_single_key_then_the_single_key_is_pressed() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        boolean result = appiumTest.press("control");
+
+        assertThat(result).isTrue();
+        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(captor.capture());
+    }
+
+    @Test
+    public void press_double_key_then_both_the_keys_are_pressed() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        boolean result = appiumTest.press("control + v");
+
+        assertThat(result).isTrue();
+        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(captor.capture());
+    }
+
 }
