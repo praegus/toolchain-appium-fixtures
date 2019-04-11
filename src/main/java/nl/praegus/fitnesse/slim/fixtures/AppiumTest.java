@@ -10,14 +10,29 @@ import nl.hsac.fitnesse.fixture.slim.web.TimeoutStopTestException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.hsac.fitnesse.fixture.util.selenium.*;
-import nl.hsac.fitnesse.fixture.util.selenium.by.*;
+import nl.hsac.fitnesse.fixture.util.selenium.AllFramesDecorator;
+import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
+import nl.hsac.fitnesse.fixture.util.selenium.SelectHelper;
+import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
+import nl.hsac.fitnesse.fixture.util.selenium.StaleContextException;
+import nl.hsac.fitnesse.fixture.util.selenium.by.AltBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.GridBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.ListItemBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.OptionBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.XPathBy;
 import nl.hsac.fitnesse.slim.interaction.ExceptionHelper;
 import nl.praegus.fitnesse.slim.util.AppiumHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 
@@ -648,13 +663,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected <R> R doInContainer(String container, Supplier<R> action) {
-        R result;
         if (container == null) {
-            result = action.get();
+            return action.get();
         } else {
-            result = doInContainer(() -> getContainerElement(cleanupValue(container)), action);
+            return doInContainer(() -> getContainerElement(cleanupValue(container)), action);
         }
-        return result;
     }
 
     protected <R> R doInContainer(Supplier<T> containerSupplier, Supplier<R> action) {
@@ -1127,27 +1140,19 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected T findByClassName(String className) {
-        By by = By.className(className);
-        return appiumHelper.findElement(by);
-    }
-
-    protected T findByXPath(String xpathPattern, String... params) {
-        return appiumHelper.findByXPath(xpathPattern, params);
+        return appiumHelper.findElement(By.className(className));
     }
 
     protected T findByCss(String cssPattern, String... params) {
-        By by = appiumHelper.byCss(cssPattern, params);
-        return appiumHelper.findElement(by);
+        return appiumHelper.findElement(appiumHelper.byCss(cssPattern, params));
     }
 
     protected List<T> findAllByXPath(String xpathPattern, String... params) {
-        By by = appiumHelper.byXpath(xpathPattern, params);
-        return findElements(by);
+        return findElements(appiumHelper.byXpath(xpathPattern, params));
     }
 
     protected List<T> findAllByCss(String cssPattern, String... params) {
-        By by = appiumHelper.byCss(cssPattern, params);
-        return findElements(by);
+        return findElements(appiumHelper.byCss(cssPattern, params));
     }
 
     public void waitMilliSecondAfterScroll(int msToWait) {

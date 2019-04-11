@@ -371,20 +371,14 @@ public class AppiumTestTest {
 
     @Test
     public void select_option_for_element_in_container() {
-        WindowsElement option = mock(WindowsElement.class);
-
         String container = "container";
         String place = "place";
-        when(appiumHelper.getElement(place)).thenReturn(element);
-        when(element.getTagName()).thenReturn("select");
-        when(element.findElement(any())).thenReturn(option);
-        when(appiumHelper.isInteractable(option)).thenReturn(true);
+
         when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
-        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(true);
 
         boolean result = appiumTest.selectForIn("value", place, container);
 
         assertThat(result).isTrue();
     }
-
 }
