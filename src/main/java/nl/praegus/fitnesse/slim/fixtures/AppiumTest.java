@@ -10,30 +10,14 @@ import nl.hsac.fitnesse.fixture.slim.web.TimeoutStopTestException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.hsac.fitnesse.fixture.util.selenium.AllFramesDecorator;
-import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
-import nl.hsac.fitnesse.fixture.util.selenium.SelectHelper;
-import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
-import nl.hsac.fitnesse.fixture.util.selenium.StaleContextException;
-import nl.hsac.fitnesse.fixture.util.selenium.by.AltBy;
-import nl.hsac.fitnesse.fixture.util.selenium.by.GridBy;
-import nl.hsac.fitnesse.fixture.util.selenium.by.ListItemBy;
-import nl.hsac.fitnesse.fixture.util.selenium.by.OptionBy;
-import nl.hsac.fitnesse.fixture.util.selenium.by.XPathBy;
+import nl.hsac.fitnesse.fixture.util.selenium.*;
+import nl.hsac.fitnesse.fixture.util.selenium.by.*;
 import nl.hsac.fitnesse.slim.interaction.ExceptionHelper;
 import nl.praegus.fitnesse.slim.util.AppiumHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 
@@ -538,11 +522,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return result;
     }
 
-    @WaitUntil
-    public boolean click(String place) {
-        return clickImp(place, null);
-    }
-
     @WaitUntil(TimeoutPolicy.RETURN_FALSE)
     public boolean clickIfAvailable(String place) {
         return clickIfAvailableIn(place, null);
@@ -550,32 +529,22 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil(TimeoutPolicy.RETURN_FALSE)
     public boolean clickIfAvailableIn(String place, String container) {
-        return clickImp(place, container);
+        return click(place, container);
     }
 
     @WaitUntil
     public boolean clickIn(String place, String container) {
-        return clickImp(place, container);
+        return click(place, container);
     }
 
-    protected boolean clickImp(String place, String container) {
-        boolean result = false;
-        place = cleanupValue(place);
-        try {
-            WebElement element = getElementToClick(place, container);
-            result = clickElement(element);
-        } catch (WebDriverException e) {
-            // if other element hides the element, hold back the exception so WaitUntil is not interrupted
-            if (!clickExceptionIsAboutHiddenByOtherElement(e)) {
-                throw e;
-            }
-        }
-        return result;
+    @WaitUntil
+    public boolean click(String place) {
+        return click(place, null);
     }
 
-    protected boolean clickExceptionIsAboutHiddenByOtherElement(Exception e) {
-        String msg = e.getMessage();
-        return msg != null;
+    protected boolean click(String place, String container) {
+        WebElement element = getElementToClick(cleanupValue(place), container);
+        return clickElement(element);
     }
 
     @WaitUntil
@@ -585,8 +554,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean doubleClickIn(String place, String container) {
-        place = cleanupValue(place);
-        WebElement element = getElementToClick(place, container);
+        WebElement element = getElementToClick(cleanupValue(place), container);
         return doubleClick(element);
     }
 
@@ -601,8 +569,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean rightClickIn(String place, String container) {
-        place = cleanupValue(place);
-        WebElement element = getElementToClick(place, container);
+        WebElement element = getElementToClick(cleanupValue(place), container);
         return rightClick(element);
     }
 

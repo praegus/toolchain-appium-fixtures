@@ -64,8 +64,8 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
 
 
     @Override
-    protected boolean clickImp(String place, String container) {
-        boolean result = super.clickImp(place, container);
+    protected boolean click(String place, String container) {
+        boolean result = super.click(place, container);
         if (result) {
             waitMilliseconds(delayAfterClickInMillis);
         }
