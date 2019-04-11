@@ -1349,33 +1349,24 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     public int numberOfTimesIsVisibleIn(String text, String container) {
-        return intValueOf(doInContainer(container, () -> numberOfTimesIsVisible(text)));
+        Integer number = doInContainer(container, () -> numberOfTimesIsVisible(text));
+        return number == null ? 0 : number;
     }
 
     public int numberOfTimesIsVisibleOnPageIn(String text, String container) {
-        return intValueOf(doInContainer(container, () -> numberOfTimesIsVisibleOnPage(text)));
-    }
-
-    protected int intValueOf(Integer count) {
-        if (count == null) {
-            count = Integer.valueOf(0);
-        }
-        return count;
+        Integer number = doInContainer(container, () -> numberOfTimesIsVisibleOnPage(text));
+        return number == null ? 0 : number;
     }
 
     protected int numberOfTimesIsVisibleInImpl(String text, boolean checkOnScreen) {
-        int result;
-        SeleniumHelper<T> helper = appiumHelper;
         if (implicitFindInFrames) {
             // sum over iframes
             AtomicInteger count = new AtomicInteger();
-            new AllFramesDecorator<Integer>(helper)
-                    .apply(() -> count.addAndGet(helper.countVisibleOccurrences(text, checkOnScreen)));
-            result = count.get();
+            new AllFramesDecorator<Integer>(appiumHelper).apply(() -> count.addAndGet(appiumHelper.countVisibleOccurrences(text, checkOnScreen)));
+            return count.get();
         } else {
-            result = helper.countVisibleOccurrences(text, checkOnScreen);
+            return appiumHelper.countVisibleOccurrences(text, checkOnScreen);
         }
-        return result;
     }
 
     protected T getElementToCheckVisibility(String place, String container) {
@@ -1390,7 +1381,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
      */
     protected boolean isElementOnScreen(WebElement element) {
         Boolean onScreen = appiumHelper.isElementOnScreen(element);
-        return onScreen == null || onScreen.booleanValue();
+        return onScreen == null || onScreen;
     }
 
     @WaitUntil
@@ -1405,15 +1396,14 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean hoverOver(WebElement element) {
-        boolean result = false;
         if (element != null) {
             scrollIfNotOnScreen(element);
             if (element.isDisplayed()) {
                 appiumHelper.hoverOver(element);
-                result = true;
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
     /**
@@ -1429,7 +1419,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     /**
      * @return number of seconds waitUntil() will wait at most.
      */
-    public int secondsBeforeTimeout() {
+    public int getSecondsBeforeTimeout() {
         return secondsBeforeTimeout;
     }
 
@@ -1621,7 +1611,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected <T> T waitUntilImpl(ExpectedCondition<T> condition) {
-        return appiumHelper.waitUntil(secondsBeforeTimeout(), condition);
+        return appiumHelper.waitUntil(secondsBeforeTimeout, condition);
     }
 
     public boolean refreshSearchContext() {
@@ -1657,7 +1647,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     private String getTimeoutMessage(TimeoutException e) {
-        String messageBase = String.format("Timed-out waiting (after %ss)", secondsBeforeTimeout());
+        String messageBase = String.format("Timed-out waiting (after %ss)", secondsBeforeTimeout);
         return getSlimFixtureExceptionMessage("timeouts", "timeout", messageBase, e);
     }
 
@@ -1682,8 +1672,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         String screenshotTag = getExceptionScreenshotTag(screenshotBaseName, messageBase, t);
         String label = getExceptionPageSourceTag(screenshotBaseName, messageBase, t);
 
-        String message = String.format("<div><div>%s.</div><div>%s:%s</div></div>", exceptionMsg, label, screenshotTag);
-        return message;
+        return String.format("<div><div>%s.</div><div>%s:%s</div></div>", exceptionMsg, label, screenshotTag);
     }
 
     protected String getExceptionMessageText(String messageBase, Throwable t) {
@@ -1918,7 +1907,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         // During repeating we reduce the timeout used for finding elements,
         // but the page load timeout is kept as-is (which takes extra work because secondsBeforeTimeout(int)
         // also changes that.
-        int previousTimeout = secondsBeforeTimeout();
+        int previousTimeout = secondsBeforeTimeout;
         int pageLoadTimeout = secondsBeforePageLoadTimeout();
         try {
             int timeoutDuringRepeat = Math.max((Math.toIntExact(repeatInterval() / 1000)), 1);
