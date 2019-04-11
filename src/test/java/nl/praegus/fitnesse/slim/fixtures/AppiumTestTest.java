@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
@@ -288,4 +289,102 @@ public class AppiumTestTest {
         assertThat(result).isTrue();
         verify(appiumHelper, times(1)).rightClick(element);
     }
+
+    @Test
+    public void find_and_shift_click_element() {
+        String place = "locator";
+        when(appiumHelper.getElementToClick(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.shiftClick(place);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).clickWithKeyDown(element, Keys.SHIFT);
+    }
+
+    @Test
+    public void find_and_shift_click_element_in_container() {
+        String container = "container";
+        String place = "locator";
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+
+        boolean result = appiumTest.shiftClickIn(place, container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).clickWithKeyDown(element, Keys.SHIFT);
+    }
+
+    @Test
+    public void find_and_control_click_element() {
+        String place = "locator";
+        when(appiumHelper.getElementToClick(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.controlClick(place);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).clickWithKeyDown(element, Keys.CONTROL);
+    }
+
+    @Test
+    public void find_and_control_click_element_in_container() {
+        String container = "container";
+        String place = "locator";
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+
+        boolean result = appiumTest.controlClickIn(place, container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).clickWithKeyDown(element, Keys.CONTROL);
+    }
+
+    @Test
+    public void enter_value_in_hidden_field() {
+        String idOrName = "idorname";
+        String value = "value";
+        when(appiumHelper.setHiddenInputValue(any(), any())).thenReturn(true);
+
+        boolean result = appiumTest.enterForHidden(idOrName, value);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).setHiddenInputValue(any(), any());
+    }
+
+    @Test
+    public void select_option_for_element() {
+        WindowsElement option = mock(WindowsElement.class);
+
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(element.getTagName()).thenReturn("select");
+        when(element.findElement(any())).thenReturn(option);
+        when(appiumHelper.isInteractable(option)).thenReturn(true);
+
+        boolean result = appiumTest.selectFor("value", place);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void select_option_for_element_in_container() {
+        WindowsElement option = mock(WindowsElement.class);
+
+        String container = "container";
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(element.getTagName()).thenReturn("select");
+        when(element.findElement(any())).thenReturn(option);
+        when(appiumHelper.isInteractable(option)).thenReturn(true);
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+
+        boolean result = appiumTest.selectForIn("value", place, container);
+
+        assertThat(result).isTrue();
+    }
+
 }
