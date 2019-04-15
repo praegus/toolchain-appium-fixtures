@@ -157,6 +157,7 @@ public class AppiumTestTest {
         boolean result = appiumTest.clickIn(place, container);
 
         assertThat(result).isTrue();
+        verify(element, times(1)).click();
     }
 
     @Test
@@ -369,6 +370,8 @@ public class AppiumTestTest {
         boolean result = appiumTest.selectFor("value", place);
 
         assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).getElement(place);
+        verify(option, times(1)).click();
     }
 
     @Test
@@ -382,6 +385,8 @@ public class AppiumTestTest {
         boolean result = appiumTest.selectForIn("value", place, container);
 
         assertThat(result).isTrue();
+        //TODO: verify implementeren zonder any()
+        verify(appiumHelper, times(1)).doInContext(any(), any());
     }
 
     @Test
@@ -412,6 +417,8 @@ public class AppiumTestTest {
         boolean result = appiumTest.selectAsIn("value", place, container);
 
         assertThat(result).isTrue();
+        //TODO: verify implementeren zonder any()
+        verify(appiumHelper, times(1)).doInContext(any(), any());
     }
 
     @Test
@@ -430,6 +437,7 @@ public class AppiumTestTest {
         assertThat(result).isTrue();
         ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
         verify(element, times(1)).sendKeys(captor.capture());
+        assertThat(String.valueOf(captor.getValue())).isEqualTo("\ue009");
     }
 
     @Test
@@ -451,8 +459,6 @@ public class AppiumTestTest {
         boolean result = appiumTest.press("control");
 
         assertThat(result).isTrue();
-        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
-        verify(element, times(1)).sendKeys(captor.capture());
         verify(appiumHelper, times(1)).getControlOrCommand();
     }
 
