@@ -10,14 +10,29 @@ import nl.hsac.fitnesse.fixture.slim.web.TimeoutStopTestException;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
-import nl.hsac.fitnesse.fixture.util.selenium.*;
-import nl.hsac.fitnesse.fixture.util.selenium.by.*;
+import nl.hsac.fitnesse.fixture.util.selenium.AllFramesDecorator;
+import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
+import nl.hsac.fitnesse.fixture.util.selenium.SelectHelper;
+import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
+import nl.hsac.fitnesse.fixture.util.selenium.StaleContextException;
+import nl.hsac.fitnesse.fixture.util.selenium.by.AltBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.GridBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.ListItemBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.OptionBy;
+import nl.hsac.fitnesse.fixture.util.selenium.by.XPathBy;
 import nl.hsac.fitnesse.slim.interaction.ExceptionHelper;
 import nl.praegus.fitnesse.slim.util.AppiumHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 
@@ -125,10 +140,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     public boolean scrollToIn(String place, String container) {
         return doInContainer(container, () -> scrollTo(place));
-    }
-
-    protected T getElement(String place) {
-        return appiumHelper.getElement(place);
     }
 
     protected T getContainerImpl(String container) {
@@ -248,7 +259,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
      */
     public boolean switchToFrame(String technicalSelector) {
         boolean result = false;
-        T iframe = getElement(technicalSelector);
+        T iframe = appiumHelper.getElement(technicalSelector);
         if (iframe != null) {
             appiumHelper.switchToFrame(iframe);
             result = true;
@@ -328,7 +339,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean enter(WebElement element, String value, boolean shouldClear) {
-        boolean result = element != null && isInteractable(element);
+        boolean result = element != null && appiumHelper.isInteractable(element);
         if (result) {
             if (isSelect(element)) {
                 result = clickSelectOption(element, value);
@@ -347,7 +358,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     @WaitUntil
     public boolean enterDateAs(String date, String place) {
         WebElement element = getElementToSendValue(place);
-        boolean result = element != null && isInteractable(element);
+        boolean result = element != null && appiumHelper.isInteractable(element);
         if (result) {
             appiumHelper.fillDateInput(element, date);
         }
@@ -465,7 +476,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean selectAs(String value, String place) {
-        WebElement element = getElementToSelectFor(place);
+        WebElement element = appiumHelper.getElement(place);
         Select select = new Select(element);
         if (select.isMultiple()) {
             select.deselectAll();
@@ -480,7 +491,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean selectFor(String value, String place) {
-        WebElement element = getElementToSelectFor(place);
+        WebElement element = appiumHelper.getElement(place);
         return clickSelectOption(element, value);
     }
 
@@ -492,10 +503,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     @WaitUntil
     public boolean enterForHidden(String value, String idOrName) {
         return appiumHelper.setHiddenInputValue(idOrName, value);
-    }
-
-    protected T getElementToSelectFor(String selectPlace) {
-        return getElement(selectPlace);
     }
 
     protected boolean clickSelectOption(WebElement element, String optionValue) {
@@ -514,7 +521,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             // we scroll containing select into view (not the option)
             // based on behavior for option in https://www.w3.org/TR/webdriver/#element-click
             scrollIfNotOnScreen(element);
-            if (isInteractable(option)) {
+            if (appiumHelper.isInteractable(option)) {
                 option.click();
                 result = true;
             }
@@ -625,13 +632,13 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public boolean dragAndDropTo(String source, String destination) {
         boolean result = false;
         source = cleanupValue(source);
-        WebElement sourceElement = getElementToClick(source);
+        WebElement sourceElement = appiumHelper.getElementToClick(source);
         destination = cleanupValue(destination);
-        WebElement destinationElement = getElementToClick(destination);
+        WebElement destinationElement = appiumHelper.getElementToClick(destination);
 
         if ((sourceElement != null) && (destinationElement != null)) {
             scrollIfNotOnScreen(sourceElement);
-            if (isInteractable(sourceElement) && destinationElement.isDisplayed()) {
+            if (appiumHelper.isInteractable(sourceElement) && destinationElement.isDisplayed()) {
                 appiumHelper.dragAndDrop(sourceElement, destinationElement);
                 result = true;
             }
@@ -639,12 +646,8 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return result;
     }
 
-    protected T getElementToClick(String place) {
-        return appiumHelper.getElementToClick(place);
-    }
-
     protected T getElementToClick(String place, String container) {
-        return doInContainer(container, () -> getElementToClick(place));
+        return doInContainer(container, () -> appiumHelper.getElementToClick(place));
     }
 
     /**
@@ -660,13 +663,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected <R> R doInContainer(String container, Supplier<R> action) {
-        R result;
         if (container == null) {
-            result = action.get();
+            return action.get();
         } else {
-            result = doInContainer(() -> getContainerElement(cleanupValue(container)), action);
+            return doInContainer(() -> getContainerElement(cleanupValue(container)), action);
         }
-        return result;
     }
 
     protected <R> R doInContainer(Supplier<T> containerSupplier, Supplier<R> action) {
@@ -676,7 +677,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             try {
                 T containerElement = containerSupplier.get();
                 if (containerElement != null) {
-                    result = doInContainer(containerElement, action);
+                    result = appiumHelper.doInContext(containerElement, action);
                 }
                 retryCount = 0;
             } catch (StaleContextException e) {
@@ -690,10 +691,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return result;
     }
 
-    protected <R> R doInContainer(T container, Supplier<R> action) {
-        return appiumHelper.doInContext(container, action);
-    }
-
     @WaitUntil
     public boolean setSearchContextTo(String container) {
         container = cleanupValue(container);
@@ -701,14 +698,10 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         boolean result = false;
         if (containerElement != null) {
             getCurrentSearchContextPath().add(container);
-            setSearchContextTo(containerElement);
+            appiumHelper.setCurrentContext(containerElement);
             result = true;
         }
         return result;
-    }
-
-    protected void setSearchContextTo(SearchContext containerElement) {
-        appiumHelper.setCurrentContext(containerElement);
     }
 
     public void clearSearchContext() {
@@ -728,16 +721,12 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         boolean result = false;
         if (element != null) {
             scrollIfNotOnScreen(element);
-            if (isInteractable(element)) {
+            if (appiumHelper.isInteractable(element)) {
                 action.run();
                 result = true;
             }
         }
         return result;
-    }
-
-    protected boolean isInteractable(WebElement element) {
-        return appiumHelper.isInteractable(element);
     }
 
     @WaitUntil(TimeoutPolicy.STOP_TEST)
@@ -803,7 +792,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public boolean waitForClass(String cssClassName) {
         boolean ok = false;
 
-        WebElement element = findElement(By.className(cssClassName));
+        WebElement element = appiumHelper.findElement(By.className(cssClassName));
         if (element != null) {
             ok = true;
         }
@@ -1037,7 +1026,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public Integer numberFor(String place) {
         Integer number = null;
-        WebElement element = findElement(ListItemBy.numbered(place));
+        WebElement element = appiumHelper.findElement(ListItemBy.numbered(place));
         if (element != null) {
             scrollIfNotOnScreen(element);
             number = appiumHelper.getNumberFor(element);
@@ -1053,7 +1042,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public ArrayList<String> availableOptionsFor(String place) {
         ArrayList<String> result = null;
-        WebElement element = getElementToSelectFor(place);
+        WebElement element = appiumHelper.getElement(place);
         if (element != null) {
             scrollIfNotOnScreen(element);
             result = appiumHelper.getAvailableOptions(element);
@@ -1083,7 +1072,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     @WaitUntil
     public boolean enterAsInRowWhereIs(String value, String requestedColumnName, String selectOnColumn, String selectOnValue) {
         By cellBy = GridBy.columnInRowWhereIs(requestedColumnName, selectOnColumn, selectOnValue);
-        WebElement element = findElement(cellBy);
+        WebElement element = appiumHelper.findElement(cellBy);
         return enter(element, value, true);
     }
 
@@ -1122,7 +1111,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil(TimeoutPolicy.RETURN_FALSE)
     public boolean rowExistsWhereIs(String selectOnColumn, String selectOnValue) {
-        return findElement(GridBy.rowWhereIs(selectOnColumn, selectOnValue)) != null;
+        return appiumHelper.findElement(GridBy.rowWhereIs(selectOnColumn, selectOnValue)) != null;
     }
 
     @WaitUntil
@@ -1138,11 +1127,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean clickInRow(By rowBy, String place) {
-        return Boolean.TRUE.equals(doInContainer(() -> findElement(rowBy), () -> click(place)));
+        return Boolean.TRUE.equals(doInContainer(() -> appiumHelper.findElement(rowBy), () -> click(place)));
     }
 
     protected T getElement(String place, String container) {
-        return doInContainer(container, () -> getElement(place));
+        return doInContainer(container, () -> appiumHelper.getElement(place));
     }
 
     protected String getTextByClassName(String className) {
@@ -1151,27 +1140,19 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected T findByClassName(String className) {
-        By by = By.className(className);
-        return findElement(by);
-    }
-
-    protected T findByXPath(String xpathPattern, String... params) {
-        return appiumHelper.findByXPath(xpathPattern, params);
+        return appiumHelper.findElement(By.className(className));
     }
 
     protected T findByCss(String cssPattern, String... params) {
-        By by = appiumHelper.byCss(cssPattern, params);
-        return findElement(by);
+        return appiumHelper.findElement(appiumHelper.byCss(cssPattern, params));
     }
 
     protected List<T> findAllByXPath(String xpathPattern, String... params) {
-        By by = appiumHelper.byXpath(xpathPattern, params);
-        return findElements(by);
+        return findElements(appiumHelper.byXpath(xpathPattern, params));
     }
 
     protected List<T> findAllByCss(String cssPattern, String... params) {
-        By by = appiumHelper.byCss(cssPattern, params);
-        return findElements(by);
+        return findElements(appiumHelper.byCss(cssPattern, params));
     }
 
     public void waitMilliSecondAfterScroll(int msToWait) {
@@ -1368,33 +1349,24 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     public int numberOfTimesIsVisibleIn(String text, String container) {
-        return intValueOf(doInContainer(container, () -> numberOfTimesIsVisible(text)));
+        Integer number = doInContainer(container, () -> numberOfTimesIsVisible(text));
+        return number == null ? 0 : number;
     }
 
     public int numberOfTimesIsVisibleOnPageIn(String text, String container) {
-        return intValueOf(doInContainer(container, () -> numberOfTimesIsVisibleOnPage(text)));
-    }
-
-    protected int intValueOf(Integer count) {
-        if (count == null) {
-            count = Integer.valueOf(0);
-        }
-        return count;
+        Integer number = doInContainer(container, () -> numberOfTimesIsVisibleOnPage(text));
+        return number == null ? 0 : number;
     }
 
     protected int numberOfTimesIsVisibleInImpl(String text, boolean checkOnScreen) {
-        int result;
-        SeleniumHelper<T> helper = appiumHelper;
         if (implicitFindInFrames) {
             // sum over iframes
             AtomicInteger count = new AtomicInteger();
-            new AllFramesDecorator<Integer>(helper)
-                    .apply(() -> count.addAndGet(helper.countVisibleOccurrences(text, checkOnScreen)));
-            result = count.get();
+            new AllFramesDecorator<Integer>(appiumHelper).apply(() -> count.addAndGet(appiumHelper.countVisibleOccurrences(text, checkOnScreen)));
+            return count.get();
         } else {
-            result = helper.countVisibleOccurrences(text, checkOnScreen);
+            return appiumHelper.countVisibleOccurrences(text, checkOnScreen);
         }
-        return result;
     }
 
     protected T getElementToCheckVisibility(String place, String container) {
@@ -1409,7 +1381,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
      */
     protected boolean isElementOnScreen(WebElement element) {
         Boolean onScreen = appiumHelper.isElementOnScreen(element);
-        return onScreen == null || onScreen.booleanValue();
+        return onScreen == null || onScreen;
     }
 
     @WaitUntil
@@ -1424,15 +1396,14 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean hoverOver(WebElement element) {
-        boolean result = false;
         if (element != null) {
             scrollIfNotOnScreen(element);
             if (element.isDisplayed()) {
                 appiumHelper.hoverOver(element);
-                result = true;
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
     /**
@@ -1448,7 +1419,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     /**
      * @return number of seconds waitUntil() will wait at most.
      */
-    public int secondsBeforeTimeout() {
+    public int getSecondsBeforeTimeout() {
         return secondsBeforeTimeout;
     }
 
@@ -1640,7 +1611,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected <T> T waitUntilImpl(ExpectedCondition<T> condition) {
-        return appiumHelper.waitUntil(secondsBeforeTimeout(), condition);
+        return appiumHelper.waitUntil(secondsBeforeTimeout, condition);
     }
 
     public boolean refreshSearchContext() {
@@ -1676,7 +1647,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     private String getTimeoutMessage(TimeoutException e) {
-        String messageBase = String.format("Timed-out waiting (after %ss)", secondsBeforeTimeout());
+        String messageBase = String.format("Timed-out waiting (after %ss)", secondsBeforeTimeout);
         return getSlimFixtureExceptionMessage("timeouts", "timeout", messageBase, e);
     }
 
@@ -1701,8 +1672,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         String screenshotTag = getExceptionScreenshotTag(screenshotBaseName, messageBase, t);
         String label = getExceptionPageSourceTag(screenshotBaseName, messageBase, t);
 
-        String message = String.format("<div><div>%s.</div><div>%s:%s</div></div>", exceptionMsg, label, screenshotTag);
-        return message;
+        return String.format("<div><div>%s.</div><div>%s:%s</div></div>", exceptionMsg, label, screenshotTag);
     }
 
     protected String getExceptionMessageText(String messageBase, Throwable t) {
@@ -1815,10 +1785,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
                 () -> helper.getLink(place),
                 () -> helper.findElement(AltBy.exact(place)),
                 () -> helper.findElement(AltBy.partial(place)));
-    }
-
-    protected T findElement(By selector) {
-        return appiumHelper.findElement(selector);
     }
 
     protected List<T> findElements(By by) {
@@ -1941,7 +1907,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         // During repeating we reduce the timeout used for finding elements,
         // but the page load timeout is kept as-is (which takes extra work because secondsBeforeTimeout(int)
         // also changes that.
-        int previousTimeout = secondsBeforeTimeout();
+        int previousTimeout = secondsBeforeTimeout;
         int pageLoadTimeout = secondsBeforePageLoadTimeout();
         try {
             int timeoutDuringRepeat = Math.max((Math.toIntExact(repeatInterval() / 1000)), 1);

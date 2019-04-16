@@ -5,9 +5,12 @@ import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
@@ -154,6 +157,7 @@ public class AppiumTestTest {
         boolean result = appiumTest.clickIn(place, container);
 
         assertThat(result).isTrue();
+        verify(element, times(1)).click();
     }
 
     @Test
@@ -264,7 +268,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void find_and_right_click_element() {
+    public void find_and_right_click_element_then_true_is_returned() {
         String place = "locator";
         when(appiumHelper.getElementToClick(place)).thenReturn(element);
         when(appiumHelper.isInteractable(element)).thenReturn(true);
@@ -276,7 +280,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void find_and_right_click_element_in_container() {
+    public void find_and_right_click_element_in_container_then_true_is_returned() {
         String container = "container";
         String place = "locator";
         when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
@@ -288,4 +292,176 @@ public class AppiumTestTest {
         assertThat(result).isTrue();
         verify(appiumHelper, times(1)).rightClick(element);
     }
+
+    @Test
+    public void find_and_shift_click_element_then_true_is_returned() {
+        String place = "locator";
+        when(appiumHelper.getElementToClick(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.shiftClick(place);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).clickWithKeyDown(element, Keys.SHIFT);
+    }
+
+    @Test
+    public void find_and_shift_click_element_in_container_then_true_is_returned() {
+        String container = "container";
+        String place = "locator";
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+
+        boolean result = appiumTest.shiftClickIn(place, container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).clickWithKeyDown(element, Keys.SHIFT);
+    }
+
+    @Test
+    public void find_and_control_click_element_then_true_is_returned() {
+        String place = "locator";
+        when(appiumHelper.getElementToClick(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.controlClick(place);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).clickWithKeyDown(element, Keys.CONTROL);
+    }
+
+    @Test
+    public void find_and_control_click_element_in_container_then_true_is_returned() {
+        String container = "container";
+        String place = "locator";
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+
+        boolean result = appiumTest.controlClickIn(place, container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).clickWithKeyDown(element, Keys.CONTROL);
+    }
+
+    @Test
+    public void enter_value_in_hidden_field_then_true_is_returned() {
+        String idOrName = "idorname";
+        String value = "value";
+        when(appiumHelper.setHiddenInputValue(any(), any())).thenReturn(true);
+
+        boolean result = appiumTest.enterForHidden(idOrName, value);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).setHiddenInputValue(any(), any());
+    }
+
+    @Test
+    public void select_option_for_element_then_true_is_returned() {
+        WindowsElement option = mock(WindowsElement.class);
+
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(element.getTagName()).thenReturn("select");
+        when(element.findElement(any())).thenReturn(option);
+        when(appiumHelper.isInteractable(option)).thenReturn(true);
+
+        boolean result = appiumTest.selectFor("value", place);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).getElement(place);
+        verify(option, times(1)).click();
+    }
+
+    @Test
+    public void select_option_for_element_in_container_then_true_is_returned() {
+        String container = "container";
+        String place = "place";
+
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.doInContext(eq(element), any(Supplier.class))).thenReturn(true);
+
+        boolean result = appiumTest.selectForIn("value", place, container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).doInContext(eq(element), any(Supplier.class));
+    }
+
+    @Test
+    public void select_option_as_element_then_true_is_returned() {
+        WindowsElement option = mock(WindowsElement.class);
+
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(element.getTagName()).thenReturn("select");
+        when(element.findElement(any())).thenReturn(option);
+        when(appiumHelper.isInteractable(option)).thenReturn(true);
+        when(element.getAttribute("multiple")).thenReturn("multiple");
+
+        boolean result = appiumTest.selectAs("value", place);
+
+        assertThat(result).isTrue();
+        verify(element, times(1)).findElements(By.tagName("option"));
+    }
+
+    @Test
+    public void select_option_as_element_in_container_then_true_is_returned() {
+        String container = "container";
+        String place = "place";
+
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.doInContext(eq(element), any(Supplier.class))).thenReturn(true);
+
+        boolean result = appiumTest.selectAsIn("value", place, container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).doInContext(eq(element), any(Supplier.class));
+    }
+
+    @Test
+    public void send_value_to_web_element_then_true_is_returned() {
+        appiumTest.sendValue(element, "value");
+
+        verify(element, times(1)).sendKeys("value");
+    }
+
+    @Test
+    public void press_single_key_then_true_is_returned() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        boolean result = appiumTest.press("control");
+
+        assertThat(result).isTrue();
+        ArgumentCaptor<CharSequence> sentKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sentKeys.capture());
+
+        assertThat(sentKeys.getValue().charAt(0)).isEqualTo('\uE009');
+    }
+
+    @Test
+    public void press_double_key_then_true_is_returned() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        boolean result = appiumTest.press("control + v");
+
+        assertThat(result).isTrue();
+        ArgumentCaptor<CharSequence> sentKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sentKeys.capture());
+
+        assertThat(sentKeys.getValue().charAt(0)).isEqualTo('\uE009');
+        assertThat(sentKeys.getValue().charAt(1)).isEqualTo('v');
+    }
+
+    @Test
+    public void press_command_then_true_is_returned() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        appiumTest.setSendCommandForControlOnMacTo(true);
+        boolean result = appiumTest.press("control");
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).getControlOrCommand();
+    }
+
 }
