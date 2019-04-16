@@ -380,13 +380,12 @@ public class AppiumTestTest {
         String place = "place";
 
         when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
-        when(appiumHelper.doInContext(any(), any())).thenReturn(true);
+        when(appiumHelper.doInContext(eq(element), any(Supplier.class))).thenReturn(true);
 
         boolean result = appiumTest.selectForIn("value", place, container);
 
         assertThat(result).isTrue();
-        //TODO: verify implementeren zonder any()
-        verify(appiumHelper, times(1)).doInContext(any(), any());
+        verify(appiumHelper, times(1)).doInContext(eq(element), any(Supplier.class));
     }
 
     @Test
@@ -412,13 +411,12 @@ public class AppiumTestTest {
         String place = "place";
 
         when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
-        when(appiumHelper.doInContext(any(), any())).thenReturn(true);
+        when(appiumHelper.doInContext(eq(element), any(Supplier.class))).thenReturn(true);
 
         boolean result = appiumTest.selectAsIn("value", place, container);
 
         assertThat(result).isTrue();
-        //TODO: verify implementeren zonder any()
-        verify(appiumHelper, times(1)).doInContext(any(), any());
+        verify(appiumHelper, times(1)).doInContext(eq(element), any(Supplier.class));
     }
 
     @Test
@@ -435,9 +433,10 @@ public class AppiumTestTest {
         boolean result = appiumTest.press("control");
 
         assertThat(result).isTrue();
-        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
-        verify(element, times(1)).sendKeys(captor.capture());
-        assertThat(String.valueOf(captor.getValue())).isEqualTo("\ue009");
+        ArgumentCaptor<CharSequence> sentKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sentKeys.capture());
+
+        assertThat(sentKeys.getValue().charAt(0)).isEqualTo('\uE009');
     }
 
     @Test
@@ -447,8 +446,11 @@ public class AppiumTestTest {
         boolean result = appiumTest.press("control + v");
 
         assertThat(result).isTrue();
-        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
-        verify(element, times(1)).sendKeys(captor.capture());
+        ArgumentCaptor<CharSequence> sentKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sentKeys.capture());
+
+        assertThat(sentKeys.getValue().charAt(0)).isEqualTo('\uE009');
+        assertThat(sentKeys.getValue().charAt(1)).isEqualTo('v');
     }
 
     @Test
