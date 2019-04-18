@@ -44,12 +44,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
 
 /**
  * Specialized class to test applications (iOS, Android, Windows) using Appium.
  */
-@SuppressWarnings({"unused", "WeakerAccess","squid:S1172"})
+@SuppressWarnings({"unused", "WeakerAccess", "squid:S1172"})
 public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends SlimFixture {
     private final List<String> currentSearchContextPath = new ArrayList<>();
     private AppiumHelper<T, D> appiumHelper;
@@ -140,10 +142,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     public boolean scrollToIn(String place, String container) {
         return doInContainer(container, () -> scrollTo(place));
-    }
-
-    protected T getContainerImpl(String container) {
-        return appiumHelper.getContainer(container);
     }
 
     protected D getDriver() {
@@ -701,7 +699,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected T getContainerElement(String container) {
-        return findByTechnicalSelectorOr(container, this::getContainerImpl);
+        return findByTechnicalSelectorOr(container, container1 -> appiumHelper.getContainer(container1));
     }
 
     protected boolean clickElement(WebElement element) {
@@ -822,7 +820,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public String valueForIn(String place, String container) {
-        WebElement element = getElementToRetrieveValue(place, container);
+        WebElement element = getElement(place, container);
         return valueFor(element);
     }
 
@@ -901,15 +899,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public String valueOfAttributeOnIn(String attribute, String place, String container) {
         String result = null;
-        WebElement element = getElementToRetrieveValue(place, container);
+        WebElement element = getElement(place, container);
         if (element != null) {
             result = element.getAttribute(attribute);
         }
         return result;
-    }
-
-    protected T getElementToRetrieveValue(String place, String container) {
-        return getElement(place, container);
     }
 
     protected String valueFor(By by) {
@@ -925,8 +919,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
                 result = getElementText(selected);
             } else {
                 String elementType = element.getAttribute("type");
-                if ("checkbox".equals(elementType)
-                        || "radio".equals(elementType)) {
+                if ("checkbox".equals(elementType) || "radio".equals(elementType)) {
                     result = String.valueOf(element.isSelected());
                 } else if ("li".equalsIgnoreCase(element.getTagName())) {
                     result = getElementText(element);
@@ -968,27 +961,34 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public List<String> valuesForIn(String place, String container) {
-        ArrayList<String> values = null;
-        WebElement element = getElementToRetrieveValue(place, container);
-        if (element != null) {
-            values = new ArrayList<>();
-            String tagName = element.getTagName();
-            if ("ul".equalsIgnoreCase(tagName)
-                    || "ol".equalsIgnoreCase(tagName)) {
-                List<WebElement> items = element.findElements(By.tagName("li"));
-                for (WebElement item : items) {
-                    if (item.isDisplayed()) {
-                        values.add(getElementText(item));
-                    }
-                }
-            } else if (isSelect(element)) {
-                List<WebElement> options = getSelectedOptions(element);
-                for (WebElement item : options) {
-                    values.add(getElementText(item));
-                }
-            } else {
-                values.add(valueFor(element));
+        WebElement element = getElement(place, container);
+        if (element == null) {
+            return emptyList();
+        } else if ("ul".equalsIgnoreCase(element.getTagName()) || "ol".equalsIgnoreCase(element.getTagName())) {
+            return getValuesFromList(element);
+        } else if (isSelect(element)) {
+            return getValuesFromSelect(element);
+        } else {
+            return singletonList(valueFor(element));
+        }
+    }
+
+    private List<String> getValuesFromList(WebElement element) {
+        ArrayList<String> values = new ArrayList<>();
+        List<WebElement> items = element.findElements(By.tagName("li"));
+        for (WebElement item : items) {
+            if (item.isDisplayed()) {
+                values.add(getElementText(item));
             }
+        }
+        return values;
+    }
+
+    private List<String> getValuesFromSelect(WebElement element) {
+        ArrayList<String> values = new ArrayList<>();
+        List<WebElement> options = getSelectedOptions(element);
+        for (WebElement item : options) {
+            values.add(getElementText(item));
         }
         return values;
     }
@@ -1155,12 +1155,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected String getElementText(WebElement element) {
-        String result = null;
         if (element != null) {
             scrollIfNotOnScreen(element);
-            result = appiumHelper.getText(element);
+            return appiumHelper.getText(element);
         }
-        return result;
+        return null;
     }
 
     protected T getElementToScrollTo(String place, String container) {
