@@ -464,4 +464,76 @@ public class AppiumTestTest {
         verify(appiumHelper, times(1)).getControlOrCommand();
     }
 
+    @Test
+    public void when_escape_is_successfully_pressed_true_is_returned() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        boolean result = appiumTest.pressEsc();
+
+        assertThat(result).isTrue();
+        ArgumentCaptor<CharSequence> sendKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sendKeys.capture());
+        assertThat(sendKeys.getValue().charAt(0)).isEqualTo('\ue00c');
+
+    }
+
+    @Test
+    public void when_enter_is_successfully_pressed_true_is_returned() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        boolean result = appiumTest.pressEnter();
+
+        assertThat(result).isTrue();
+        ArgumentCaptor<CharSequence> sendKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sendKeys.capture());
+        assertThat(sendKeys.getValue().charAt(0)).isEqualTo('\ue007');
+    }
+
+    @Test
+    public void when_tab_is_successfully_pressed_true_is_returned() {
+        when(appiumHelper.getActiveElement()).thenReturn(element);
+
+        boolean result = appiumTest.pressTab();
+
+        assertThat(result).isTrue();
+        ArgumentCaptor<CharSequence> sendKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sendKeys.capture());
+        assertThat(sendKeys.getValue().charAt(0)).isEqualTo('\ue004');
+    }
+
+    @Test
+    public void when_get_element_to_send_value_is_used_successfully_then_return_element() {
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+
+        WindowsElement result = appiumTest.getElementToSendValue(place);
+
+        assertThat(result).isEqualTo(element).isNotNull();
+    }
+
+    @Test
+    public void when_enter_as_date_is_used_successfully_then_return_true() {
+        String date = "date";
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.enterDateAs(date, place);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).fillDateInput(element, date);
+    }
+
+    @Test
+    public void uwhen_enter_as_date_with_non_interactable_element_failed_then_false_is_returned() {
+        String date = "date";
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(false);
+
+        boolean result = appiumTest.enterDateAs(date, place);
+
+        assertThat(result).isFalse();
+        verify(appiumHelper, times(0)).fillDateInput(element, date);
+    }
 }
