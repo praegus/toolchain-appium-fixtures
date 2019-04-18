@@ -525,7 +525,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void uwhen_enter_as_date_with_non_interactable_element_failed_then_false_is_returned() {
+    public void when_enter_as_date_with_non_interactable_element_failed_then_false_is_returned() {
         String date = "date";
         String place = "place";
         when(appiumHelper.getElement(place)).thenReturn(element);
@@ -535,5 +535,46 @@ public class AppiumTestTest {
 
         assertThat(result).isFalse();
         verify(appiumHelper, times(0)).fillDateInput(element, date);
+    }
+
+    @Test
+    public void when_enter_with_webelement_is_successfully_used_then_true_is_returned() {
+        String value = "value";
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.enter(element, value, true);
+
+        assertThat(result).isTrue();
+        verify(element, times(1)).sendKeys(value);
+
+    }
+
+    @Test
+    public void when_enter_is_used_on_select_element_then_true_is_returned() {
+        WindowsElement option = mock(WindowsElement.class);
+        String value = "value";
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.isInteractable(option)).thenReturn(true);
+        when(element.getTagName()).thenReturn("Select");
+        when(element.findElement(any())).thenReturn(option);
+
+        boolean result = appiumTest.enter(element, value, true);
+
+        assertThat(result).isTrue();
+        verify(option, times(1)).click();
+    }
+
+    @Test
+    public void when_enter_with_place_is_successfully_used_then_true_is_returned() {
+        String value = "value";
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.enter(value, place, true);
+
+        assertThat(result).isTrue();
+        verify(element, times(1)).sendKeys(value);
+
     }
 }
