@@ -471,8 +471,10 @@ public class AppiumTestTest {
         boolean result = appiumTest.pressEsc();
 
         assertThat(result).isTrue();
-        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
-        verify(element, times(1)).sendKeys(captor.capture());
+        ArgumentCaptor<CharSequence> sendKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sendKeys.capture());
+        assertThat(sendKeys.getValue().charAt(0)).isEqualTo('\ue00c');
+
     }
 
     @Test
@@ -482,8 +484,9 @@ public class AppiumTestTest {
         boolean result = appiumTest.pressEnter();
 
         assertThat(result).isTrue();
-        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
-        verify(element, times(1)).sendKeys(captor.capture());
+        ArgumentCaptor<CharSequence> sendKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sendKeys.capture());
+        assertThat(sendKeys.getValue().charAt(0)).isEqualTo('\ue007');
     }
 
     @Test
@@ -493,8 +496,9 @@ public class AppiumTestTest {
         boolean result = appiumTest.pressTab();
 
         assertThat(result).isTrue();
-        ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
-        verify(element, times(1)).sendKeys(captor.capture());
+        ArgumentCaptor<CharSequence> sendKeys = ArgumentCaptor.forClass(CharSequence.class);
+        verify(element, times(1)).sendKeys(sendKeys.capture());
+        assertThat(sendKeys.getValue().charAt(0)).isEqualTo('\ue004');
     }
 
     @Test
@@ -505,6 +509,7 @@ public class AppiumTestTest {
         WindowsElement result = appiumTest.getElementToSendValue(place);
 
         assertThat(result).isEqualTo(element).isNotNull();
+        //TODO: betere checks inbouwen
     }
 
     @Test
