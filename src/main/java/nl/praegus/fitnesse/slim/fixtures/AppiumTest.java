@@ -705,7 +705,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean clickElement(WebElement element) {
-        return doIfInteractable(element, element::click);
+        return doIfInteractable(element, () -> element.click());
     }
 
     protected boolean doIfInteractable(WebElement element, Runnable action) {
