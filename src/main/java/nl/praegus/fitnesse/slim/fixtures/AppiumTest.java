@@ -176,7 +176,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             Object result;
             WaitUntil waitUntil = reflectionHelper.getAnnotation(WaitUntil.class, method);
             if (waitUntil == null) {
-                result = superInvoke(interaction, method, arguments);
+                result = super.invoke(interaction, method, arguments);
             } else {
                 result = invokedWrappedInWaitUntil(waitUntil, interaction, method, arguments);
             }
@@ -195,7 +195,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     protected Object invokedWrappedInWaitUntil(WaitUntil waitUntil, FixtureInteraction interaction, Method method, Object[] arguments) {
         ExpectedCondition<Object> condition = webDriver -> {
             try {
-                return superInvoke(interaction, method, arguments);
+                return super.invoke(interaction, method, arguments);
             } catch (Throwable e) {
                 Throwable realEx = ExceptionHelper.stripReflectionException(e);
                 if (realEx instanceof RuntimeException) {
@@ -226,10 +226,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
                 break;
         }
         return result;
-    }
-
-    protected Object superInvoke(FixtureInteraction interaction, Method method, Object[] arguments) throws Throwable {
-        return super.invoke(interaction, method, arguments);
     }
 
     /**
