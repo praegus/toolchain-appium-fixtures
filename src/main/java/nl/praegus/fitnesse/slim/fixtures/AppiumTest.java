@@ -49,7 +49,7 @@ import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
 /**
  * Specialized class to test applications (iOS, Android, Windows) using Appium.
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused", "WeakerAccess","squid:S1172"})
 public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends SlimFixture {
     private final List<String> currentSearchContextPath = new ArrayList<>();
     private AppiumHelper<T, D> appiumHelper;
@@ -162,11 +162,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public boolean waitForToContain(String place, String text) {
         T element = this.getElement(place, null);
         return null != element && element.getText().contains(text);
-    }
-
-    @Override
-    protected void beforeInvoke(Method method, Object[] arguments) {
-        super.beforeInvoke(method, arguments);
     }
 
     @Override
@@ -710,7 +705,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected boolean clickElement(WebElement element) {
-        return doIfInteractable(element, () -> element.click());
+        return doIfInteractable(element, element::click);
     }
 
     protected boolean doIfInteractable(WebElement element, Runnable action) {
@@ -852,7 +847,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return normalizeValue(value);
     }
 
-    protected ArrayList<String> normalizeValues(ArrayList<String> values) {
+    protected List<String> normalizeValues(List<String> values) {
         if (values != null) {
             for (int i = 0; i < values.size(); i++) {
                 String value = values.get(i);
@@ -957,26 +952,26 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> valuesOf(String place) {
+    public List<String> valuesOf(String place) {
         return valuesFor(place);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> valuesOfIn(String place, String container) {
+    public List<String> valuesOfIn(String place, String container) {
         return valuesForIn(place, container);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> valuesFor(String place) {
+    public List<String> valuesFor(String place) {
         return valuesForIn(place, null);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> valuesForIn(String place, String container) {
+    public List<String> valuesForIn(String place, String container) {
         ArrayList<String> values = null;
         WebElement element = getElementToRetrieveValue(place, container);
         if (element != null) {
-            values = new ArrayList<String>();
+            values = new ArrayList<>();
             String tagName = element.getTagName();
             if ("ul".equalsIgnoreCase(tagName)
                     || "ol".equalsIgnoreCase(tagName)) {
@@ -999,23 +994,23 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedValuesOf(String place) {
+    public List<String> normalizedValuesOf(String place) {
         return normalizedValuesFor(place);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedValuesOfIn(String place, String container) {
+    public List<String> normalizedValuesOfIn(String place, String container) {
         return normalizedValuesForIn(place, container);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedValuesFor(String place) {
+    public List<String> normalizedValuesFor(String place) {
         return normalizedValuesForIn(place, null);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedValuesForIn(String place, String container) {
-        ArrayList<String> values = valuesForIn(place, container);
+    public List<String> normalizedValuesForIn(String place, String container) {
+        List<String> values = valuesForIn(place, container);
         return normalizeValues(values);
     }
 
@@ -1036,7 +1031,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> availableOptionsFor(String place) {
+    public List<String> availableOptionsFor(String place) {
         ArrayList<String> result = null;
         WebElement element = appiumHelper.getElement(place);
         if (element != null) {
@@ -1047,7 +1042,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedAvailableOptionsFor(String place) {
+    public List<String> normalizedAvailableOptionsFor(String place) {
         return normalizeValues(availableOptionsFor(place));
     }
 

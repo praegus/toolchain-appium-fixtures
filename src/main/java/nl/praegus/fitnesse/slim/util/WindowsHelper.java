@@ -2,6 +2,7 @@ package nl.praegus.fitnesse.slim.util;
 
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
+import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.praegus.fitnesse.slim.util.by.AppiumHeuristicBy;
 import nl.praegus.fitnesse.slim.util.by.IsDisplayedFilter;
 import nl.praegus.fitnesse.slim.util.by.WindowsBy;
@@ -19,7 +20,7 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
 
     @Override
     public By placeToBy(String place) {
-        if(place.startsWith("id=")) {
+        if (place.startsWith("id=")) {
             return WindowsBy.accessibilityId(place.substring(3));
         } else if (place.startsWith("name=")) {
             return WindowsBy.name(place.substring(5));
@@ -33,7 +34,7 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
         return WindowsBy.heuristic(place);
     }
 
-    protected By getClickBy(String place)  {
+    protected By getClickBy(String place) {
         return WindowsBy.heuristic(place);
     }
 
@@ -46,7 +47,8 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
                 WindowsBy.name(text), WindowsBy.accessibilityId(text), WindowsBy.exactText(text), WindowsBy.partialText(text));
     }
 
+    @Override
     public void scrollTo(WebElement element) {
-        //not implemented
+        throw new SlimFixtureException("scroll to is not implemented for Windows!");
     }
 }
