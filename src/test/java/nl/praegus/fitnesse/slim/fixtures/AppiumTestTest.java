@@ -465,7 +465,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void press_esc_then_true_is_returned() {
+    public void when_escape_is_successfully_pressed_true_is_returned() {
         when(appiumHelper.getActiveElement()).thenReturn(element);
 
         boolean result = appiumTest.pressEsc();
@@ -478,7 +478,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void press_enter_then_true_is_returned() {
+    public void when_enter_is_successfully_pressed_true_is_returned() {
         when(appiumHelper.getActiveElement()).thenReturn(element);
 
         boolean result = appiumTest.pressEnter();
@@ -490,7 +490,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void press_tab_then_true_is_returned() {
+    public void when_tab_is_successfully_pressed_true_is_returned() {
         when(appiumHelper.getActiveElement()).thenReturn(element);
 
         boolean result = appiumTest.pressTab();
@@ -502,18 +502,17 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void use_get_element_to_send_value_then_return_element() {
+    public void when_get_element_to_send_value_is_used_successfully_then_return_element() {
         String place = "place";
         when(appiumHelper.getElement(place)).thenReturn(element);
 
         WindowsElement result = appiumTest.getElementToSendValue(place);
 
         assertThat(result).isEqualTo(element).isNotNull();
-        //TODO: betere checks inbouwen
     }
 
     @Test
-    public void use_enter_as_date_then_true_is_returned() {
+    public void when_enter_as_date_is_used_successfully_then_return_true() {
         String date = "date";
         String place = "place";
         when(appiumHelper.getElement(place)).thenReturn(element);
@@ -526,7 +525,7 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void use_enter_as_date_with_non_interactable_element_then_true_is_returned() {
+    public void uwhen_enter_as_date_with_non_interactable_element_failed_then_false_is_returned() {
         String date = "date";
         String place = "place";
         when(appiumHelper.getElement(place)).thenReturn(element);
