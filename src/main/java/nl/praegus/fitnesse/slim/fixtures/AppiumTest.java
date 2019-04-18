@@ -44,12 +44,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
 
 /**
  * Specialized class to test applications (iOS, Android, Windows) using Appium.
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused", "WeakerAccess", "squid:S1172"})
 public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends SlimFixture {
     private final List<String> currentSearchContextPath = new ArrayList<>();
     private AppiumHelper<T, D> appiumHelper;
@@ -142,10 +144,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return doInContainer(container, () -> scrollTo(place));
     }
 
-    protected T getContainerImpl(String container) {
-        return appiumHelper.getContainer(container);
-    }
-
     protected D getDriver() {
         return appiumHelper.driver();
     }
@@ -165,18 +163,13 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     @Override
-    protected void beforeInvoke(Method method, Object[] arguments) {
-        super.beforeInvoke(method, arguments);
-    }
-
-    @Override
     protected Object invoke(FixtureInteraction interaction, Method method, Object[] arguments)
             throws Throwable {
         try {
             Object result;
             WaitUntil waitUntil = reflectionHelper.getAnnotation(WaitUntil.class, method);
             if (waitUntil == null) {
-                result = superInvoke(interaction, method, arguments);
+                result = super.invoke(interaction, method, arguments);
             } else {
                 result = invokedWrappedInWaitUntil(waitUntil, interaction, method, arguments);
             }
@@ -195,7 +188,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     protected Object invokedWrappedInWaitUntil(WaitUntil waitUntil, FixtureInteraction interaction, Method method, Object[] arguments) {
         ExpectedCondition<Object> condition = webDriver -> {
             try {
-                return superInvoke(interaction, method, arguments);
+                return super.invoke(interaction, method, arguments);
             } catch (Throwable e) {
                 Throwable realEx = ExceptionHelper.stripReflectionException(e);
                 if (realEx instanceof RuntimeException) {
@@ -226,10 +219,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
                 break;
         }
         return result;
-    }
-
-    protected Object superInvoke(FixtureInteraction interaction, Method method, Object[] arguments) throws Throwable {
-        return super.invoke(interaction, method, arguments);
     }
 
     /**
@@ -710,7 +699,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected T getContainerElement(String container) {
-        return findByTechnicalSelectorOr(container, this::getContainerImpl);
+        return findByTechnicalSelectorOr(container, container1 -> appiumHelper.getContainer(container1));
     }
 
     protected boolean clickElement(WebElement element) {
@@ -831,7 +820,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public String valueForIn(String place, String container) {
-        WebElement element = getElementToRetrieveValue(place, container);
+        WebElement element = getElement(place, container);
         return valueFor(element);
     }
 
@@ -856,7 +845,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return normalizeValue(value);
     }
 
-    protected ArrayList<String> normalizeValues(ArrayList<String> values) {
+    protected List<String> normalizeValues(List<String> values) {
         if (values != null) {
             for (int i = 0; i < values.size(); i++) {
                 String value = values.get(i);
@@ -910,15 +899,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public String valueOfAttributeOnIn(String attribute, String place, String container) {
         String result = null;
-        WebElement element = getElementToRetrieveValue(place, container);
+        WebElement element = getElement(place, container);
         if (element != null) {
             result = element.getAttribute(attribute);
         }
         return result;
-    }
-
-    protected T getElementToRetrieveValue(String place, String container) {
-        return getElement(place, container);
     }
 
     protected String valueFor(By by) {
@@ -934,8 +919,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
                 result = getElementText(selected);
             } else {
                 String elementType = element.getAttribute("type");
-                if ("checkbox".equals(elementType)
-                        || "radio".equals(elementType)) {
+                if ("checkbox".equals(elementType) || "radio".equals(elementType)) {
                     result = String.valueOf(element.isSelected());
                 } else if ("li".equalsIgnoreCase(element.getTagName())) {
                     result = getElementText(element);
@@ -961,65 +945,72 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> valuesOf(String place) {
+    public List<String> valuesOf(String place) {
         return valuesFor(place);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> valuesOfIn(String place, String container) {
+    public List<String> valuesOfIn(String place, String container) {
         return valuesForIn(place, container);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> valuesFor(String place) {
+    public List<String> valuesFor(String place) {
         return valuesForIn(place, null);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> valuesForIn(String place, String container) {
-        ArrayList<String> values = null;
-        WebElement element = getElementToRetrieveValue(place, container);
-        if (element != null) {
-            values = new ArrayList<String>();
-            String tagName = element.getTagName();
-            if ("ul".equalsIgnoreCase(tagName)
-                    || "ol".equalsIgnoreCase(tagName)) {
-                List<WebElement> items = element.findElements(By.tagName("li"));
-                for (WebElement item : items) {
-                    if (item.isDisplayed()) {
-                        values.add(getElementText(item));
-                    }
-                }
-            } else if (isSelect(element)) {
-                List<WebElement> options = getSelectedOptions(element);
-                for (WebElement item : options) {
-                    values.add(getElementText(item));
-                }
-            } else {
-                values.add(valueFor(element));
+    public List<String> valuesForIn(String place, String container) {
+        WebElement element = getElement(place, container);
+        if (element == null) {
+            return emptyList();
+        } else if ("ul".equalsIgnoreCase(element.getTagName()) || "ol".equalsIgnoreCase(element.getTagName())) {
+            return getValuesFromList(element);
+        } else if (isSelect(element)) {
+            return getValuesFromSelect(element);
+        } else {
+            return singletonList(valueFor(element));
+        }
+    }
+
+    private List<String> getValuesFromList(WebElement element) {
+        ArrayList<String> values = new ArrayList<>();
+        List<WebElement> items = element.findElements(By.tagName("li"));
+        for (WebElement item : items) {
+            if (item.isDisplayed()) {
+                values.add(getElementText(item));
             }
         }
         return values;
     }
 
+    private List<String> getValuesFromSelect(WebElement element) {
+        ArrayList<String> values = new ArrayList<>();
+        List<WebElement> options = getSelectedOptions(element);
+        for (WebElement item : options) {
+            values.add(getElementText(item));
+        }
+        return values;
+    }
+
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedValuesOf(String place) {
+    public List<String> normalizedValuesOf(String place) {
         return normalizedValuesFor(place);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedValuesOfIn(String place, String container) {
+    public List<String> normalizedValuesOfIn(String place, String container) {
         return normalizedValuesForIn(place, container);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedValuesFor(String place) {
+    public List<String> normalizedValuesFor(String place) {
         return normalizedValuesForIn(place, null);
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedValuesForIn(String place, String container) {
-        ArrayList<String> values = valuesForIn(place, container);
+    public List<String> normalizedValuesForIn(String place, String container) {
+        List<String> values = valuesForIn(place, container);
         return normalizeValues(values);
     }
 
@@ -1040,7 +1031,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> availableOptionsFor(String place) {
+    public List<String> availableOptionsFor(String place) {
         ArrayList<String> result = null;
         WebElement element = appiumHelper.getElement(place);
         if (element != null) {
@@ -1051,7 +1042,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
-    public ArrayList<String> normalizedAvailableOptionsFor(String place) {
+    public List<String> normalizedAvailableOptionsFor(String place) {
         return normalizeValues(availableOptionsFor(place));
     }
 
@@ -1164,12 +1155,11 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected String getElementText(WebElement element) {
-        String result = null;
         if (element != null) {
             scrollIfNotOnScreen(element);
-            result = appiumHelper.getText(element);
+            return appiumHelper.getText(element);
         }
-        return result;
+        return null;
     }
 
     protected T getElementToScrollTo(String place, String container) {

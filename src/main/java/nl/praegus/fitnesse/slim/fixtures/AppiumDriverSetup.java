@@ -27,7 +27,7 @@ import java.util.function.BiFunction;
  * Fixture to connect FitNesse to appium.
  */
 public class AppiumDriverSetup extends SeleniumDriverSetup {
-    private final static Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String APP_CAPABILITY_NAME = "app";
 
     static {

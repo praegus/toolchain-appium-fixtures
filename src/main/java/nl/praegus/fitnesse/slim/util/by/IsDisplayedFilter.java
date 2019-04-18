@@ -2,19 +2,21 @@ package nl.praegus.fitnesse.slim.util.by;
 
 import org.openqa.selenium.WebElement;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 /**
  * Function to be used as post-processor when finding elements.
  * It will filter out non-visible elements.
+ *
  * @param <T> type of element to return.
  */
-public class IsDisplayedFilter<T extends WebElement> implements Function<T, T>, Supplier<T> {
+public class IsDisplayedFilter<T extends WebElement> implements UnaryOperator<T>, Supplier<T> {
     private T firstFound;
 
     /**
      * Filters out non-displayed elements.
+     *
      * @param webElement element to check.
      * @return webElement if it is displayed, null otherwise.
      */
@@ -36,6 +38,7 @@ public class IsDisplayedFilter<T extends WebElement> implements Function<T, T>, 
 
     /**
      * Checks whether element is displayed, without caching.
+     *
      * @param element element to check.
      * @return true for visible elements, false otherwise.
      */

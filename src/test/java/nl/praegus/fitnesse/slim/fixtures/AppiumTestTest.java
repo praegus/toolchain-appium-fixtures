@@ -14,13 +14,18 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
 import java.util.function.Supplier;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppiumTestTest {
@@ -474,7 +479,6 @@ public class AppiumTestTest {
         ArgumentCaptor<CharSequence> sendKeys = ArgumentCaptor.forClass(CharSequence.class);
         verify(element, times(1)).sendKeys(sendKeys.capture());
         assertThat(sendKeys.getValue().charAt(0)).isEqualTo('\ue00c');
-
     }
 
     @Test
@@ -535,6 +539,91 @@ public class AppiumTestTest {
 
         assertThat(result).isFalse();
         verify(appiumHelper, times(0)).fillDateInput(element, date);
+    }
+
+    @Test
+    public void when_the_values_of_a_non_existing_element_are_retreived_an_empty_list_is_returned() {
+        String container = "container";
+        String place = "place";
+
+        // can't find item!
+        when(appiumHelper.doInContext(any(), any())).thenReturn(null);
+
+        // container that has list
+        WindowsElement containerElement = mock(WindowsElement.class);
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(containerElement);
+
+        List<String> result = appiumTest.valuesForIn(place, container);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    public void when_the_values_of_a_list_are_retreived_these_are_returned() {
+        String container = "container";
+        String place = "place";
+
+        // list item
+        WindowsElement li = mock(WindowsElement.class);
+        when(li.isDisplayed()).thenReturn(true);
+        when(appiumHelper.getText(eq(li))).thenReturn("text!");
+
+        // list
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+        when(element.getTagName()).thenReturn("ul");
+        when(element.findElements(eq(By.tagName("li")))).thenReturn(singletonList(li));
+
+        // container that has list
+        WindowsElement containerElement = mock(WindowsElement.class);
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(containerElement);
+
+        List<String> result = appiumTest.valuesForIn(place, container);
+
+        assertThat(result).containsExactly("text!");
+    }
+
+    @Test
+    public void when_the_values_of_a_select_are_retreived_these_are_returned() {
+        String container = "container";
+        String place = "place";
+
+        // list item
+        WindowsElement option = mock(WindowsElement.class);
+        when(option.isDisplayed()).thenReturn(true);
+        when(appiumHelper.getText(eq(option))).thenReturn("text!");
+
+        // select
+        when(element.getTagName()).thenReturn("select");
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+        when(element.findElements(any())).thenReturn(singletonList(option));
+
+        // container that has select
+        WindowsElement containerElement = mock(WindowsElement.class);
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(containerElement);
+
+        List<String> result = appiumTest.valuesForIn(place, container);
+
+        assertThat(result).containsExactly("text!");
+    }
+
+    @Test
+    public void when_the_values_of_a_checkbox_is_retreived_these_are_returned() {
+        String container = "container";
+        String place = "place";
+
+        // checkbox
+        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+        when(element.getTagName()).thenReturn("div");
+        when(element.getAttribute("type")).thenReturn("checkbox");
+        when(element.isSelected()).thenReturn(true);
+
+        // container that has checkbox
+        WindowsElement containerElement = mock(WindowsElement.class);
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(containerElement);
+
+        List<String> result = appiumTest.valuesForIn(place, container);
+
+        assertThat(result).containsExactly("true");
     }
 
     @Test
