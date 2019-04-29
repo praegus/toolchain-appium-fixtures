@@ -28,4 +28,9 @@ public class AndroidTest extends AppiumTest<AndroidElement, AndroidDriver<Androi
 	protected AndroidHelper getAppiumHelper() {
 		return (AndroidHelper) super.getAppiumHelper();
 	}
+
+	public boolean resetApp() {
+		getDriver().resetApp();
+		return true;
+	}
 }

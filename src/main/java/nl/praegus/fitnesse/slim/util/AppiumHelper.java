@@ -109,11 +109,6 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
         return findByTechnicalSelectorOr(place, this::getNothing);
     }
 
-    public T getContainer(String container) {
-        Function<String, By> containerBy = this::getNothing;
-        return findByTechnicalSelectorOr(container, containerBy);
-    }
-
     @Override
     public T getElementToCheckVisibility(String place) {
         return findByTechnicalSelectorOr(place, this::getNothing);
