@@ -22,10 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppiumTestTest {
@@ -665,5 +662,18 @@ public class AppiumTestTest {
         assertThat(result).isTrue();
         verify(element, times(1)).sendKeys(value);
 
+    }
+
+    @Test
+    public void when_enter_for_is_successfully_used_then_true_is_returned() {
+        String value = "value";
+        String place = "place";
+
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.enterFor(value, place);
+
+        assertThat(result).isTrue();
     }
 }
