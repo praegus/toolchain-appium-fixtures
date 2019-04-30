@@ -720,7 +720,7 @@ public class AppiumTestTest {
 
         assertThat(result).isFalse();
         verify(appiumHelper, times(0)).switchToFrame(any());
-        verify(appiumHelper, times(0)).getElement(selector);
+        verify(appiumHelper, times(1 )).getElement(selector);
     }
 
     @Test
