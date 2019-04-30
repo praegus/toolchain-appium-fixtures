@@ -22,10 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppiumTestTest {
@@ -624,5 +621,60 @@ public class AppiumTestTest {
         List<String> result = appiumTest.valuesForIn(place, container);
 
         assertThat(result).containsExactly("true");
+    }
+
+    @Test
+    public void when_enter_with_webelement_is_successfully_used_then_true_is_returned() {
+        String value = "value";
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.enter(element, value, true);
+
+        assertThat(result).isTrue();
+        verify(element, times(1)).sendKeys(value);
+
+    }
+
+    @Test
+    public void when_enter_is_used_on_select_element_then_true_is_returned() {
+        WindowsElement option = mock(WindowsElement.class);
+        String value = "value";
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+        when(appiumHelper.isInteractable(option)).thenReturn(true);
+        when(element.getTagName()).thenReturn("Select");
+        when(element.findElement(any())).thenReturn(option);
+
+        boolean result = appiumTest.enter(element, value, true);
+
+        assertThat(result).isTrue();
+        verify(option, times(1)).click();
+    }
+
+    @Test
+    public void when_enter_with_place_is_successfully_used_then_true_is_returned() {
+        String value = "value";
+        String place = "place";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.enter(value, place, true);
+
+        assertThat(result).isTrue();
+        verify(element, times(1)).sendKeys(value);
+
+    }
+
+    @Test
+    public void when_enter_for_is_successfully_used_then_true_is_returned() {
+        String value = "value";
+        String place = "place";
+
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(appiumHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = appiumTest.enterFor(value, place);
+
+        assertThat(result).isTrue();
+        verify(element, times(1)).sendKeys(value);
     }
 }
