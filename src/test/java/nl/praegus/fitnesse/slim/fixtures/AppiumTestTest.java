@@ -677,4 +677,66 @@ public class AppiumTestTest {
         assertThat(result).isTrue();
         verify(element, times(1)).sendKeys(value);
     }
+
+    @Test
+    public void when_pagetitle_is_successfully_used_the_page_title_is_returned() {
+        String pageTitle = "pageTitle";
+
+        when(appiumHelper.getPageTitle()).thenReturn(pageTitle);
+
+        String result = appiumTest.pageTitle();
+
+        assertThat(result).isEqualTo(pageTitle);
+        verify(appiumHelper, times(1)).getPageTitle();
+    }
+
+    @Test
+    public void when_switch_to_parent_frame_is_successfully_used_the_function_is_used() {
+
+        appiumTest.switchToParentFrame();
+
+        verify(appiumHelper, times(1)).switchToParentFrame();
+    }
+
+    @Test
+    public void when_switch_to_frame_is_successfully_used_true_is_returned() {
+        String selector = "selector";
+
+        when(appiumHelper.getElement(selector)).thenReturn(element);
+
+        boolean result = appiumTest.switchToFrame(selector);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).switchToFrame(any());
+    }
+
+    @Test
+    public void when_switch_to_frame_is_not_successfully_used_false_is_returned() {
+        String selector = "selector";
+
+        when(appiumHelper.getElement(selector)).thenReturn(null);
+
+        boolean result = appiumTest.switchToFrame(selector);
+
+        assertThat(result).isFalse();
+        verify(appiumHelper, times(0)).switchToFrame(any());
+        verify(appiumHelper, times(1 )).getElement(selector);
+    }
+
+    @Test
+    public void when_switch_to_default_context_is_successfully_used_the_function_is_used() {
+
+        appiumTest.switchToDefaultContent();
+
+        verify(appiumHelper, times(1)).switchToDefaultContent();
+        verify(appiumHelper, times(1)).setCurrentContext(null);
+    }
+
+    @Test
+    public void when_on_alert_handled_is_successfully_used_the_function_is_used() {
+        appiumTest.onAlertHandled(true);
+
+        verify(appiumHelper, times(1)).resetFrameDepthOnAlertError();
+    }
+
 }
