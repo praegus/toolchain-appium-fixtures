@@ -24,8 +24,7 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
         } else if (place.startsWith("name=")) {
             return WindowsBy.name(place.substring(5));
         } else {
-            return firstNonNull(place,
-                    super::placeToBy);
+            return firstNonNull(place, super::placeToBy);
         }
     }
 
@@ -50,5 +49,4 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
     public void scrollTo(WebElement element) {
         // todo goede implementatie maken
     }
-
 }
