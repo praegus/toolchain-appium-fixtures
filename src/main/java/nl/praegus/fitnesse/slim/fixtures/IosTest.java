@@ -20,4 +20,9 @@ public class IosTest extends AppiumTest<IOSElement, IOSDriver<IOSElement>> {
     protected IosHelper getAppiumHelper() {
         return (IosHelper) super.getAppiumHelper();
     }
+
+    public boolean resetApp() {
+        getDriver().resetApp();
+        return true;
+    }
 }

@@ -100,11 +100,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return true;
     }
 
-    public boolean resetApp() {
-        getDriver().resetApp();
-        return true;
-    }
-
     public boolean closeApp() {
         getDriver().closeApp();
         return true;
@@ -127,21 +122,13 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return result;
     }
 
-    protected T getElementToCheckVisibility(String place) {
-        return appiumHelper.getElementToCheckVisibility(place);
-    }
-
     public String savePageSource() {
         String fileName = "xmlView_" + System.currentTimeMillis();
         return savePageSource(fileName, fileName + ".xml");
     }
 
-    public boolean scrollTo(String place) {
-        return appiumHelper.scrollTo(place);
-    }
-
     public boolean scrollToIn(String place, String container) {
-        return doInContainer(container, () -> scrollTo(place));
+        return doInContainer(container, () -> appiumHelper.scrollTo(place));
     }
 
     protected D getDriver() {
@@ -699,7 +686,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected T getContainerElement(String container) {
-        return findByTechnicalSelectorOr(container, container1 -> appiumHelper.getContainer(container1));
+        return findByTechnicalSelectorOr(container, container1 -> appiumHelper.getElement(container1));
     }
 
     protected boolean clickElement(WebElement element) {
@@ -1162,10 +1149,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return null;
     }
 
-    protected T getElementToScrollTo(String place, String container) {
-        return getElementToCheckVisibility(place, container);
-    }
-
     /**
      * Scrolls window so top of element becomes visible.
      *
@@ -1360,7 +1343,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     protected T getElementToCheckVisibility(String place, String container) {
-        return doInContainer(container, () -> findByTechnicalSelectorOr(place, this::getElementToCheckVisibility));
+        return doInContainer(container, () -> findByTechnicalSelectorOr(place, place1 -> appiumHelper.getElementToCheckVisibility(place1)));
     }
 
     /**

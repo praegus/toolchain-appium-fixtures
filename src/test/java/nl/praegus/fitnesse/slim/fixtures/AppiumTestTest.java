@@ -675,6 +675,7 @@ public class AppiumTestTest {
         boolean result = appiumTest.enterFor(value, place);
 
         assertThat(result).isTrue();
+        verify(element, times(1)).sendKeys(value);
     }
 
     @Test
