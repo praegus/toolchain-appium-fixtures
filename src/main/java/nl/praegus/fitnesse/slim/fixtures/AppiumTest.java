@@ -26,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
@@ -1824,21 +1823,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
                 && "input".equalsIgnoreCase(element.getTagName())
                 && "file".equalsIgnoreCase(element.getAttribute("type"))) {
             result = element;
-        }
-        return result;
-    }
-
-    /**
-     * Gets the value of the cookie with the supplied name.
-     *
-     * @param cookieName name of cookie to get value from.
-     * @return cookie's value if any.
-     */
-    public String cookieValue(String cookieName) {
-        String result = null;
-        Cookie cookie = appiumHelper.getCookie(cookieName);
-        if (cookie != null) {
-            result = cookie.getValue();
         }
         return result;
     }
