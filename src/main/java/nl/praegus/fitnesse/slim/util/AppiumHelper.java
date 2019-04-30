@@ -4,6 +4,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
+import nl.hsac.fitnesse.fixture.util.FirstNonNullHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
 import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.by.ConstantBy;
@@ -15,12 +16,13 @@ import org.openqa.selenium.WebElement;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static nl.hsac.fitnesse.fixture.util.FirstNonNullHelper.firstNonNull;
 import static nl.hsac.fitnesse.fixture.util.selenium.by.TechnicalSelectorBy.byIfStartsWith;
 
 /**
- * Specialized helper to deal with appium's web getDriver.
+ * Specialized helper to deal with appium's webdriver.
  */
 public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriver<T>> extends SeleniumHelper<T> {
     private static final Function<String, By> ACCESSIBILITY_BY = byIfStartsWith("accessibility", MobileBy::AccessibilityId);
@@ -97,7 +99,7 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
 
     @Override
     public T getElementToClick(String place) {
-        return findByTechnicalSelectorOr(place, this::getNothing);
+        return findByTechnicalSelectorOr(place, this::getClickBy);
     }
 
     protected By getNothing(String place) {
@@ -106,12 +108,12 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
 
     @Override
     public T getElement(String place) {
-        return findByTechnicalSelectorOr(place, this::getNothing);
+        return findByTechnicalSelectorOr(place, this::getElementBy);
     }
 
     @Override
     public T getElementToCheckVisibility(String place) {
-        return findByTechnicalSelectorOr(place, this::getNothing);
+        return findByTechnicalSelectorOr(place, this::getElementToCheckVisibilityBy);
     }
 
     @Override

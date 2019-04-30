@@ -1149,10 +1149,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return null;
     }
 
-    protected T getElementToScrollTo(String place, String container) {
-        return getElementToCheckVisibility(place, container);
-    }
-
     /**
      * Scrolls window so top of element becomes visible.
      *

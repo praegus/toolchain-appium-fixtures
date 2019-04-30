@@ -2,7 +2,6 @@ package nl.praegus.fitnesse.slim.util;
 
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
-import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.praegus.fitnesse.slim.util.by.AppiumHeuristicBy;
 import nl.praegus.fitnesse.slim.util.by.IsDisplayedFilter;
 import nl.praegus.fitnesse.slim.util.by.WindowsBy;
@@ -49,6 +48,7 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
 
     @Override
     public void scrollTo(WebElement element) {
-        throw new SlimFixtureException("scroll to is not implemented for Windows!");
+        // todo goede implementatie maken
     }
+
 }
