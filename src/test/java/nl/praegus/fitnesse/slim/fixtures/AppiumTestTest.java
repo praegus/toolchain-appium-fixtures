@@ -13,6 +13,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -720,7 +721,7 @@ public class AppiumTestTest {
 
         assertThat(result).isFalse();
         verify(appiumHelper, times(0)).switchToFrame(any());
-        verify(appiumHelper, times(1 )).getElement(selector);
+        verify(appiumHelper, times(1)).getElement(selector);
     }
 
     @Test
@@ -739,4 +740,54 @@ public class AppiumTestTest {
         verify(appiumHelper, times(1)).resetFrameDepthOnAlertError();
     }
 
+    @Test
+    public void when_wait_for_to_contain_is_successfully_used_true_is_returned() {
+        String place = "place";
+        String text = "text";
+        when(appiumHelper.getElement(place)).thenReturn(element);
+        when(element.getText()).thenReturn(text);
+
+        boolean result = appiumTest.waitForToContain(place, text);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).getElement(place);
+    }
+
+    @Test
+    public void when_set_search_context_to_is_successfully_used_true_is_returned() {
+        String container = "container";
+
+        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(element);
+
+        boolean result = appiumTest.setSearchContextTo(container);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).setCurrentContext(element);
+    }
+
+    @Test
+    public void when_get_page_title_is_successfully_used_true_is_returned() {
+        String pageName = "pageName";
+
+        when(appiumHelper.getPageTitle()).thenReturn(pageName);
+
+        boolean result = appiumTest.waitForPage(pageName);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).getPageTitle();
+    }
+
+    @Test
+    public void when_wait_for_tag_with_text_is_() {
+        String tagName = "tagName";
+        String expectedText = "expectedText";
+        appiumTest.secondsBeforeTimeout(5);
+
+        when(appiumHelper.waitUntil(eq(5), any(ExpectedCondition.class))).thenReturn(true);
+
+        boolean result = appiumTest.waitForTagWithText(tagName, expectedText);
+
+        assertThat(result).isTrue();
+        verify(appiumHelper, times(1)).waitUntil(eq(5), any(ExpectedCondition.class));
+    }
 }
