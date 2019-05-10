@@ -43,10 +43,10 @@ release:
     - mvn $MAVEN_CLI_OPTS deploy -DskipTests
   image: "maven:3.6.0-jdk-8-alpine"
   artifacts:
-    name: "augmented-testing-datatypes"
+    name: "toolchain-appium-fixtures"
     expire_in: 1 week
     paths:
-      - target/*.jar
+      - target/*
   only:
     - master
   tags:
@@ -63,7 +63,7 @@ update-version:
     - mvn -B $MAVEN_CLI_OPTS release:update-versions -DautoVersionSubmodules=true
     - git add '*pom.xml'
     - git commit -m "update version [ci skip]"
-    - git push https://$MACMINI_USER:$MACMINI_PASS@gitlab.com/praegus/augmented-testing-apps/augmented-testing-datatypes.git
+    - git push https://$MACMINI_USER:$MACMINI_PASS@gitlab.com/praegus/toolchain-fixtures/toolchain-appium-fixtures.git
   only:
     - master
   tags:
