@@ -23,6 +23,7 @@ build:
     paths:
       - target/*
   except:
+    - development
     - master
 
 sonar:
@@ -32,4 +33,38 @@ sonar:
   tags:
     - mvn
   except:
+    - development
     - master
+
+release:
+  stage: release
+  script:
+    - mvn $MAVEN_CLI_OPTS versions:set -DremoveSnapshot
+    - mvn $MAVEN_CLI_OPTS deploy -DskipTests
+  image: "maven:3.6.0-jdk-8-alpine"
+  artifacts:
+    name: "augmented-testing-datatypes"
+    expire_in: 1 week
+    paths:
+      - target/*.jar
+  only:
+    - master
+  tags:
+    - mvn
+
+update-version:
+  stage: update-version
+  image: "maven:3.6.0-jdk-8-alpine"
+  script:
+    - apk update && apk upgrade && apk add --no-cache bash git openssh
+    - git config --global user.email "macmini@praegus.nl"
+    - git config --global user.name "macmini"
+    - git checkout -B "$CI_BUILD_REF_NAME"
+    - mvn -B $MAVEN_CLI_OPTS release:update-versions -DautoVersionSubmodules=true
+    - git add '*pom.xml'
+    - git commit -m "update version [ci skip]"
+    - git push https://$MACMINI_USER:$MACMINI_PASS@gitlab.com/praegus/augmented-testing-apps/augmented-testing-datatypes.git
+  only:
+    - master
+  tags:
+    - mvn
