@@ -27,7 +27,6 @@ build:
   except:
     - development
     - master
-    - gpg
 
 sonar:
   stage: sonar
@@ -38,7 +37,6 @@ sonar:
   except:
     - development
     - master
-    - gpg
 
 release:
   stage: release
@@ -55,7 +53,7 @@ release:
     paths:
       - target/*
   only:
-    - gpg
+    - master
   tags:
     - mvn
 
