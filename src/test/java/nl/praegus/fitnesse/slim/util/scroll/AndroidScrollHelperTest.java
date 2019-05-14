@@ -1,11 +1,12 @@
 package nl.praegus.fitnesse.slim.util.scroll;
 
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.touch.offset.PointOption;
 import nl.praegus.fitnesse.slim.util.AndroidHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -23,14 +24,14 @@ public class AndroidScrollHelperTest {
     @Mock
     private AndroidHelper helper;
 
-    @InjectMocks
-    private AndroidScrollHelper scrollHelper;
-
     @Mock
-    private AndroidDriver driver;
+    private TouchAction touchAction;
 
     @Mock
     private AndroidElement element;
+
+    @InjectMocks
+    private AndroidScrollHelper scrollHelper;
 
     @Test
     public void when_element_is_already_visible_true_is_returned() {
@@ -43,16 +44,17 @@ public class AndroidScrollHelperTest {
         assertThat(result).isTrue();
         verify(element, times(1)).isDisplayed();
         verify(helper, times(1)).getElementToCheckVisibility(place);
-        verify(driver, times(0)).performTouchAction(any(TouchAction.class));
+        verify(touchAction, times(0)).moveTo(any());
     }
 
     @Test
     public void when_element_becomes_visible_true_is_eventually_returned() {
         String place = "place";
-        when(helper.getWindowSize()).thenReturn(new Dimension(100, 100));
-        when(helper.getTouchAction()).thenReturn(new TouchAction(driver));
+        when(helper.getWindowSize()).thenReturn(new Dimension(100, 200));
+        when(helper.getTouchAction()).thenReturn(touchAction);
         when(helper.getElementToCheckVisibility(place)).thenReturn(null).thenReturn(element);
         when(element.isDisplayed()).thenReturn(true);
+        mockTouchAction();
 
         boolean result = scrollHelper.scrollTo(0.5, place, helper::getElementToCheckVisibility);
 
@@ -60,16 +62,21 @@ public class AndroidScrollHelperTest {
         verify(helper, times(1)).getTouchAction();
         verify(element, times(1)).isDisplayed();
         verify(helper, times(2)).getElementToCheckVisibility(place);
-        verify(driver, times(1)).performTouchAction(any(TouchAction.class));
+
+        ArgumentCaptor<PointOption> argumentCaptor = ArgumentCaptor.forClass(PointOption.class);
+        verify(touchAction, times(1)).moveTo(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue().build().get("x")).isEqualTo(0);
+        assertThat(argumentCaptor.getValue().build().get("y")).isEqualTo(150);
     }
 
     @Test
     public void when_element_remains_invisible_false_is_returned() {
         String place = "place";
-        when(helper.getWindowSize()).thenReturn(new Dimension(100, 100));
-        when(helper.getTouchAction()).thenReturn(new TouchAction(driver));
+        when(helper.getWindowSize()).thenReturn(new Dimension(100, 200));
+        when(helper.getTouchAction()).thenReturn(touchAction);
         when(helper.getElementToCheckVisibility(place)).thenReturn(element);
         when(element.isDisplayed()).thenReturn(false);
+        mockTouchAction();
 
         boolean result = scrollHelper.scrollTo(0.5, place, helper::getElementToCheckVisibility);
 
@@ -77,21 +84,34 @@ public class AndroidScrollHelperTest {
         verify(helper, times(2)).getTouchAction();
         verify(element, times(3)).isDisplayed();
         verify(helper, times(3)).getElementToCheckVisibility(place);
-        verify(driver, times(2)).performTouchAction(any(TouchAction.class));
+
+        ArgumentCaptor<PointOption> argumentCaptor = ArgumentCaptor.forClass(PointOption.class);
+        verify(touchAction, times(2)).moveTo(argumentCaptor.capture());
+        assertThat(argumentCaptor.getAllValues().get(0).build().get("x")).isEqualTo(0);
+        assertThat(argumentCaptor.getAllValues().get(0).build().get("y")).isEqualTo(150);
+        assertThat(argumentCaptor.getAllValues().get(1).build().get("x")).isEqualTo(0);
+        assertThat(argumentCaptor.getAllValues().get(1).build().get("y")).isEqualTo(50);
     }
 
     @Test
     public void when_element_is_does_not_exist_false_is_returned() {
         String place = "place";
-        when(helper.getWindowSize()).thenReturn(new Dimension(100, 100));
-        when(helper.getTouchAction()).thenReturn(new TouchAction(driver));
+        when(helper.getWindowSize()).thenReturn(new Dimension(100, 200));
+        when(helper.getTouchAction()).thenReturn(touchAction);
         when(helper.getElementToCheckVisibility(place)).thenReturn(null);
-
+        mockTouchAction();
         boolean result = scrollHelper.scrollTo(0.5, place, helper::getElementToCheckVisibility);
 
         assertThat(result).isFalse();
         verify(helper, times(2)).getTouchAction();
         verify(helper, times(3)).getElementToCheckVisibility(place);
-        verify(driver, times(2)).performTouchAction(any(TouchAction.class));
+        verify(touchAction, times(2)).moveTo(any(PointOption.class));
+    }
+
+    private void mockTouchAction() {
+        when(touchAction.press(any())).thenReturn(touchAction);
+        when(touchAction.waitAction(any())).thenReturn(touchAction);
+        when(touchAction.moveTo(any())).thenReturn(touchAction);
+        when(touchAction.release()).thenReturn(touchAction);
     }
 }

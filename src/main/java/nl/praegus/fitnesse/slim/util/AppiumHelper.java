@@ -92,7 +92,7 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
 
     @Override
     public Boolean isElementOnScreen(WebElement element) {
-        return true;
+        return true; // todo dit moet er echt uit overal
     }
 
     @Override
