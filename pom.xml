@@ -42,8 +42,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <fitnesse.version>20190224</fitnesse.version>
-        <hsac.fixtures.version>4.2.0</hsac.fixtures.version>
+        <fitnesse.version>20190508</fitnesse.version>
+        <hsac.fixtures.version>4.4.3</hsac.fixtures.version>
         <appium.version>7.0.0</appium.version>
     </properties>
 
@@ -60,6 +60,11 @@
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-support</artifactId>
                 <version>3.141.59</version>
+            </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>1.9.7</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
