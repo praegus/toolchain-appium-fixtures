@@ -125,6 +125,10 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
         return getScrollHelper().scrollTo(0.5, place, this::getElementToCheckVisibility);
     }
 
+    public boolean scrollUpOrDown(boolean up){
+        return getScrollHelper().scrollUpOrDown(up);
+    }
+
     public ScrollHelper<T, D> getScrollHelper() {
         if (scrollHelper == null) {
             scrollHelper = new ScrollHelper<>(this);

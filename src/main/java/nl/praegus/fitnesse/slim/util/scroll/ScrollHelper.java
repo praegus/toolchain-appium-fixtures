@@ -28,6 +28,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
     protected final AppiumHelper<T, D> helper;
 
     private Duration waitBetweenScrollPressAndMove = Duration.ofMillis(10);
+    private Duration waitAfterMoveDuration = Duration.ofMillis(10);
 
     public ScrollHelper(AppiumHelper<T, D> helper) {
         this.helper = helper;
@@ -51,7 +52,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             while (!targetIsReached && bumps < 2) {
                 T refEl = findScrollRefElement(topScrollable);
                 Optional<?> currentRef = createHashForElement(refEl);
-                scrollUpOrDown(bumps, center, heightDelta);
+                scrollUpOrDown(bumps == 0, center, heightDelta);
 
                 if (currentRef.equals(prevRef)) {
                     // we either are: unable to find a reference element OR
@@ -60,15 +61,40 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
                     bumps++;
                 }
                 prevRef = currentRef;
-                target = placeFinder.apply(place);
+                target = findTarget(placeFinder, place);
                 targetIsReached = targetIsReached(target);
             }
         }
         return targetIsReached;
     }
 
-    private void scrollUpOrDown(int bumps, Point center, int heightDelta) {
-        if (bumps == 0) {
+    private T findTarget(Function<String, ? extends T> placeFinder, String place) {
+        T result = placeFinder.apply(place);
+        int retries = 0;
+        while (result == null && retries < 3) {
+            result = placeFinder.apply(place);
+            try {
+                Duration.ofMillis(300).wait();
+            } catch (Exception e) {
+                LOGGER.warn("wait failed!");
+            }
+            retries++;
+        }
+        return result;
+    }
+
+    public boolean scrollUpOrDown(boolean up) {
+        T topScrollable = findTopScrollable();
+        Dimension dimensions = getDimensions(topScrollable);
+
+        Point center = getCenter(topScrollable, dimensions);
+        int heightDelta = (int) (dimensions.getHeight() / 2.0 * 0.5);
+        scrollUpOrDown(up, center, heightDelta);
+        return true;
+    }
+
+    private void scrollUpOrDown(boolean up, Point center, int heightDelta) {
+        if (up) {
             // did not hit top of screen, yet
             LOGGER.debug("Going up!");
             performScroll(center.getX(), center.getY(), heightDelta);
@@ -119,8 +145,11 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
         TouchAction ta = helper.getTouchAction()
                 .press(PointOption.point(centerX, centerY))
                 .waitAction(WaitOptions.waitOptions(waitBetweenScrollPressAndMove))
-                .moveTo(PointOption.point(0, centerY + offset))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1500)));
+                .moveTo(PointOption.point(0, centerY + offset));
+
+        if (waitAfterMoveDuration != null) {
+            ta = ta.waitAction(WaitOptions.waitOptions(waitAfterMoveDuration));
+        }
 
         ta.release().perform();
     }

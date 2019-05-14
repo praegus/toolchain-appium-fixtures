@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AndroidScrollHelperTest {
+public class ScrollHelperTest {
 
     @Mock
     private AndroidHelper helper;
@@ -104,8 +104,40 @@ public class AndroidScrollHelperTest {
 
         assertThat(result).isFalse();
         verify(helper, times(2)).getTouchAction();
-        verify(helper, times(3)).getElementToCheckVisibility(place);
+        verify(helper, times(9)).getElementToCheckVisibility(place);
         verify(touchAction, times(2)).moveTo(any(PointOption.class));
+    }
+
+    @Test
+    public void scroll_up_or_down_scrolls_down() {
+        when(helper.getWindowSize()).thenReturn(new Dimension(100, 200));
+        when(helper.getTouchAction()).thenReturn(touchAction);
+        mockTouchAction();
+
+        boolean result = scrollHelper.scrollUpOrDown(false);
+
+        assertThat(result).isTrue();
+
+        ArgumentCaptor<PointOption> argumentCaptor = ArgumentCaptor.forClass(PointOption.class);
+        verify(touchAction, times(1)).moveTo(argumentCaptor.capture());
+        assertThat(argumentCaptor.getAllValues().get(0).build().get("x")).isEqualTo(0);
+        assertThat(argumentCaptor.getAllValues().get(0).build().get("y")).isEqualTo(50);
+    }
+
+    @Test
+    public void scroll_up_or_down_scrolls_up() {
+        when(helper.getWindowSize()).thenReturn(new Dimension(100, 200));
+        when(helper.getTouchAction()).thenReturn(touchAction);
+        mockTouchAction();
+
+        boolean result = scrollHelper.scrollUpOrDown(true);
+
+        assertThat(result).isTrue();
+
+        ArgumentCaptor<PointOption> argumentCaptor = ArgumentCaptor.forClass(PointOption.class);
+        verify(touchAction, times(1)).moveTo(argumentCaptor.capture());
+        assertThat(argumentCaptor.getAllValues().get(0).build().get("x")).isEqualTo(0);
+        assertThat(argumentCaptor.getAllValues().get(0).build().get("y")).isEqualTo(150);
     }
 
     private void mockTouchAction() {
