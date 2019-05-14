@@ -128,8 +128,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             ta = ta.waitAction(WaitOptions.waitOptions(waitAfterMove));
         }
 
-        ta.release()
-                .perform();
+        ta.release().perform();
     }
 
     public Duration getWaitBetweenScrollPressAndMove() {

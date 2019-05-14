@@ -1148,6 +1148,10 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return null;
     }
 
+    public boolean scrollTo(String place) {
+        return appiumHelper.scrollTo(place);
+    }
+
     /**
      * Scrolls window so top of element becomes visible.
      *
