@@ -24,11 +24,10 @@ import java.util.function.Function;
  */
 public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    protected final AppiumHelper<T, D> helper;
-
     private Duration waitBetweenScrollPressAndMove = Duration.ofMillis(10);
     private Duration waitAfterMoveDuration = Duration.ofMillis(10);
+
+    protected final AppiumHelper<T, D> helper;
 
     public ScrollHelper(AppiumHelper<T, D> helper) {
         this.helper = helper;
@@ -68,21 +67,6 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
         return targetIsReached;
     }
 
-    private T findTarget(Function<String, ? extends T> placeFinder, String place) {
-        T result = placeFinder.apply(place);
-        int retries = 0;
-        while (result == null && retries < 3) {
-            result = placeFinder.apply(place);
-            try {
-                Duration.ofMillis(300).wait();
-            } catch (Exception e) {
-                LOGGER.warn("wait failed!");
-            }
-            retries++;
-        }
-        return result;
-    }
-
     public boolean scrollUpOrDown(boolean up) {
         T topScrollable = findTopScrollable();
         Dimension dimensions = getDimensions(topScrollable);
@@ -91,32 +75,6 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
         int heightDelta = (int) (dimensions.getHeight() / 2.0 * 0.5);
         scrollUpOrDown(up, center, heightDelta);
         return true;
-    }
-
-    private void scrollUpOrDown(boolean up, Point center, int heightDelta) {
-        if (up) {
-            // did not hit top of screen, yet
-            LOGGER.debug("Going up!");
-            performScroll(center.getX(), center.getY(), heightDelta);
-        } else {
-            LOGGER.debug("Going down!");
-            performScroll(center.getX(), center.getY(), -heightDelta);
-        }
-    }
-
-    private Point getCenter(T topScrollable, Dimension dimensions) {
-        if (topScrollable == null) {
-            return new Point(dimensions.getWidth() / 2, dimensions.getHeight() / 2);
-        } else {
-            return topScrollable.getCenter();
-        }
-    }
-
-    private Dimension getDimensions(T topScrollable) {
-        if (topScrollable == null) {
-            return helper.getWindowSize();
-        }
-        return topScrollable.getSize();
     }
 
     protected boolean targetIsReached(T target) {
@@ -192,5 +150,46 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             result = 31 * result + location.hashCode();
             return result;
         }
+    }
+
+    private T findTarget(Function<String, ? extends T> placeFinder, String place) {
+        T result = placeFinder.apply(place);
+        int retries = 0;
+        while (result == null && retries < 3) {
+            result = placeFinder.apply(place);
+            try {
+                Duration.ofMillis(300).wait();
+            } catch (Exception e) {
+                LOGGER.warn("wait failed!");
+            }
+            retries++;
+        }
+        return result;
+    }
+
+    private void scrollUpOrDown(boolean up, Point center, int heightDelta) {
+        if (up) {
+            // did not hit top of screen, yet
+            LOGGER.debug("Going up!");
+            performScroll(center.getX(), center.getY(), heightDelta);
+        } else {
+            LOGGER.debug("Going down!");
+            performScroll(center.getX(), center.getY(), -heightDelta);
+        }
+    }
+
+    private Point getCenter(T topScrollable, Dimension dimensions) {
+        if (topScrollable == null) {
+            return new Point(dimensions.getWidth() / 2, dimensions.getHeight() / 2);
+        } else {
+            return topScrollable.getCenter();
+        }
+    }
+
+    private Dimension getDimensions(T topScrollable) {
+        if (topScrollable == null) {
+            return helper.getWindowSize();
+        }
+        return topScrollable.getSize();
     }
 }
