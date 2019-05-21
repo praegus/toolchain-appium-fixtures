@@ -80,6 +80,7 @@
             <groupId>nl.hsac</groupId>
             <artifactId>hsac-fitnesse-fixtures</artifactId>
             <version>${hsac.fixtures.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.appium</groupId>
