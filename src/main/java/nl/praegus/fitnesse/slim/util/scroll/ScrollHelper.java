@@ -24,11 +24,10 @@ import java.util.function.Function;
  */
 public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    protected final AppiumHelper<T, D> helper;
-
     private Duration waitBetweenScrollPressAndMove = Duration.ofMillis(10);
     private Duration waitAfterMoveDuration = Duration.ofMillis(10);
+
+    protected final AppiumHelper<T, D> helper;
 
     public ScrollHelper(AppiumHelper<T, D> helper) {
         this.helper = helper;
@@ -36,40 +35,23 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
 
     public boolean scrollTo(double swipeDistance, String place, Function<String, ? extends T> placeFinder) {
         T target = placeFinder.apply(place);
-        boolean isReached = targetIsReached(target);
-        if (!isReached) {
+        boolean targetIsReached = targetIsReached(target);
+        if (!targetIsReached) {
             LOGGER.debug("Scroll to: {}", place);
-            Dimension dimensions;
-            Point center;
             T topScrollable = findTopScrollable();
-
-            if (topScrollable == null) {
-                dimensions = helper.getWindowSize();
-                center = new Point(dimensions.getWidth() / 2, dimensions.getHeight() / 2);
-            } else {
-                dimensions = topScrollable.getSize();
-                center = topScrollable.getCenter();
-            }
-            int centerX = center.getX();
+            Dimension dimensions = getDimensions(topScrollable);
+            Point center = getCenter(topScrollable, dimensions);
 
             int heightDelta = (int) (dimensions.getHeight() / 2.0 * swipeDistance);
-            int centerY = center.getY();
-            int lowPoint = centerY + heightDelta;
-            int highPoint = centerY - heightDelta;
 
             Optional<?> prevRef = Optional.empty();
 
             // counter for hitting top/bottom: 0=no hit yet, 1=hit top, 2=hit bottom
             int bumps = 0;
-            while (!isReached && bumps < 2) {
+            while (!targetIsReached && bumps < 2) {
                 T refEl = findScrollRefElement(topScrollable);
                 Optional<?> currentRef = createHashForElement(refEl);
-                if (bumps == 0) {
-                    // did not hit top of screen, yet
-                    scrollUp(centerX, lowPoint, highPoint);
-                } else {
-                    scrollDown(centerX, lowPoint, highPoint);
-                }
+                scrollUpOrDown(bumps == 0, center, heightDelta);
 
                 if (currentRef.equals(prevRef)) {
                     // we either are: unable to find a reference element OR
@@ -78,11 +60,21 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
                     bumps++;
                 }
                 prevRef = currentRef;
-                target = placeFinder.apply(place);
-                isReached = targetIsReached(target);
+                target = findTarget(placeFinder, place);
+                targetIsReached = targetIsReached(target);
             }
         }
-        return isReached;
+        return targetIsReached;
+    }
+
+    public boolean scrollUpOrDown(boolean up) {
+        T topScrollable = findTopScrollable();
+        Dimension dimensions = getDimensions(topScrollable);
+
+        Point center = getCenter(topScrollable, dimensions);
+        int heightDelta = (int) (dimensions.getHeight() / 2.0 * 0.5);
+        scrollUpOrDown(up, center, heightDelta);
+        return true;
     }
 
     protected boolean targetIsReached(T target) {
@@ -107,45 +99,17 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
         return result;
     }
 
-    public void scrollUp(int centerX, int lowPoint, int highPoint) {
-        LOGGER.debug("Going up!");
-        performScroll(centerX, highPoint, lowPoint);
-    }
-
-    public void scrollDown(int centerX, int lowPoint, int highPoint) {
-        LOGGER.debug("Going down!");
-        performScroll(centerX, lowPoint, highPoint);
-    }
-
-    public void performScroll(int centerX, int scrollStart, int scrollEnd) {
+    public void performScroll(int centerX, int centerY, int offset) {
         TouchAction ta = helper.getTouchAction()
-                .press(PointOption.point(centerX, scrollStart))
-                .waitAction(WaitOptions.waitOptions(getWaitBetweenScrollPressAndMove()))
-                .moveTo(PointOption.point(0, scrollEnd - scrollStart));
+                .press(PointOption.point(centerX, centerY))
+                .waitAction(WaitOptions.waitOptions(waitBetweenScrollPressAndMove))
+                .moveTo(PointOption.point(0, centerY + offset));
 
-        Duration waitAfterMove = getWaitAfterMoveDuration();
-        if (waitAfterMove != null) {
-            ta = ta.waitAction(WaitOptions.waitOptions(waitAfterMove));
+        if (waitAfterMoveDuration != null) {
+            ta = ta.waitAction(WaitOptions.waitOptions(waitAfterMoveDuration));
         }
 
-        ta.release()
-                .perform();
-    }
-
-    public Duration getWaitBetweenScrollPressAndMove() {
-        return waitBetweenScrollPressAndMove;
-    }
-
-    public void setWaitBetweenScrollPressAndMove(Duration waitBetweenScrollPressAndMove) {
-        this.waitBetweenScrollPressAndMove = waitBetweenScrollPressAndMove;
-    }
-
-    public Duration getWaitAfterMoveDuration() {
-        return waitAfterMoveDuration;
-    }
-
-    public void setWaitAfterMoveDuration(Duration waitAfterMoveDuration) {
-        this.waitAfterMoveDuration = waitAfterMoveDuration;
+        ta.release().perform();
     }
 
     /**
@@ -186,5 +150,46 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             result = 31 * result + location.hashCode();
             return result;
         }
+    }
+
+    private T findTarget(Function<String, ? extends T> placeFinder, String place) {
+        T result = placeFinder.apply(place);
+        int retries = 0;
+        while (result == null && retries < 3) {
+            result = placeFinder.apply(place);
+            try {
+                Duration.ofMillis(300).wait();
+            } catch (Exception e) {
+                LOGGER.warn("wait failed!");
+            }
+            retries++;
+        }
+        return result;
+    }
+
+    private void scrollUpOrDown(boolean up, Point center, int heightDelta) {
+        if (up) {
+            // did not hit top of screen, yet
+            LOGGER.debug("Going up!");
+            performScroll(center.getX(), center.getY(), heightDelta);
+        } else {
+            LOGGER.debug("Going down!");
+            performScroll(center.getX(), center.getY(), -heightDelta);
+        }
+    }
+
+    private Point getCenter(T topScrollable, Dimension dimensions) {
+        if (topScrollable == null) {
+            return new Point(dimensions.getWidth() / 2, dimensions.getHeight() / 2);
+        } else {
+            return topScrollable.getCenter();
+        }
+    }
+
+    private Dimension getDimensions(T topScrollable) {
+        if (topScrollable == null) {
+            return helper.getWindowSize();
+        }
+        return topScrollable.getSize();
     }
 }

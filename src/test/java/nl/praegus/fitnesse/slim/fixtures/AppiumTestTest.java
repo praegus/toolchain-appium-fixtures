@@ -23,7 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppiumTestTest {
@@ -633,7 +636,6 @@ public class AppiumTestTest {
 
         assertThat(result).isTrue();
         verify(element, times(1)).sendKeys(value);
-
     }
 
     @Test
@@ -662,7 +664,6 @@ public class AppiumTestTest {
 
         assertThat(result).isTrue();
         verify(element, times(1)).sendKeys(value);
-
     }
 
     @Test
@@ -789,5 +790,39 @@ public class AppiumTestTest {
 
         assertThat(result).isTrue();
         verify(appiumHelper, times(1)).waitUntil(eq(5), any(ExpectedCondition.class));
+    }
+
+    @Test
+    public void scroll_to_place() {
+        when(appiumHelper.scrollTo("place")).thenReturn(true);
+
+        boolean result = appiumTest.scrollTo("place");
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void scroll_to_element() {
+        appiumTest.scrollTo(element);
+
+        verify(appiumHelper, times(1)).scrollTo(element);
+    }
+
+    @Test
+    public void scroll_up() {
+        when(appiumHelper.scrollUpOrDown(true)).thenReturn(true);
+
+        boolean result = appiumTest.scrollUp();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void scroll_down() {
+        when(appiumHelper.scrollUpOrDown(false)).thenReturn(true);
+
+        boolean result = appiumTest.scrollDown();
+
+        assertThat(result).isTrue();
     }
 }

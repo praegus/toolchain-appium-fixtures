@@ -22,6 +22,10 @@ public class AndroidHelper extends AppiumHelper<AndroidElement, AndroidDriver<An
 		setScrollHelper(new AndroidScrollHelper(this));
 	}
 
+	public AndroidHelper(AndroidScrollHelper scrollHelper){
+		setScrollHelper(scrollHelper);
+	}
+
 	@Override
 	public By placeToBy(String place) {
 		return firstNonNull(place,

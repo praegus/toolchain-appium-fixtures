@@ -58,7 +58,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     private boolean implicitFindInFrames = true;
     private int secondsBeforeTimeout;
     private int secondsBeforePageLoadTimeout;
-    private int waitAfterScroll = 150;
+    private int waitAfterScroll = 500;
     private String screenshotBase = new File(filesDir, "screenshots").getPath() + "/";
     private String screenshotHeight = "200";
     private String pageSourceBase = new File(filesDir, "pagesources").getPath() + "/";
@@ -1148,6 +1148,24 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return null;
     }
 
+    public boolean scrollUp() {
+        boolean result = appiumHelper.scrollUpOrDown(true);
+        waitAfterScroll(waitAfterScroll);
+        return result;
+    }
+
+    public boolean scrollDown() {
+        boolean result = appiumHelper.scrollUpOrDown(false);
+        waitAfterScroll(waitAfterScroll);
+        return result;
+    }
+
+    public boolean scrollTo(String place) {
+        boolean result = appiumHelper.scrollTo(place);
+        waitAfterScroll(waitAfterScroll);
+        return result;
+    }
+
     /**
      * Scrolls window so top of element becomes visible.
      *
@@ -1175,7 +1193,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
      * @param element element to scroll to.
      */
     protected void scrollIfNotOnScreen(WebElement element) {
-        if (!element.isDisplayed() || !isElementOnScreen(element)) {
+        if (!element.isDisplayed()) {
             scrollTo(element);
         }
     }
@@ -1343,17 +1361,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     protected T getElementToCheckVisibility(String place, String container) {
         return doInContainer(container, () -> findByTechnicalSelectorOr(place, place1 -> appiumHelper.getElementToCheckVisibility(place1)));
-    }
-
-    /**
-     * Checks whether element is in viewport.
-     *
-     * @param element element to check
-     * @return true if element is in viewport.
-     */
-    protected boolean isElementOnScreen(WebElement element) {
-        Boolean onScreen = appiumHelper.isElementOnScreen(element);
-        return onScreen == null || onScreen;
     }
 
     @WaitUntil

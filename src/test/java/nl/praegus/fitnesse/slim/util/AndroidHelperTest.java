@@ -1,19 +1,23 @@
 package nl.praegus.fitnesse.slim.util;
 
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileBy;
+import nl.praegus.fitnesse.slim.util.scroll.AndroidScrollHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.openqa.selenium.By;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AndroidHelperTest {
@@ -21,7 +25,11 @@ public class AndroidHelperTest {
     @Mock
     private AppiumDriver webDriver;
 
-    private AndroidHelper androidHelper = new AndroidHelper();
+    @Mock
+    private AndroidScrollHelper scrollHelper;
+
+    @InjectMocks
+    private AndroidHelper androidHelper;
 
     @Before
     public void setMocks() {
@@ -33,5 +41,16 @@ public class AndroidHelperTest {
         androidHelper.getElementToCheckVisibility("banaan");
 
         verify(webDriver, times(1)).findElements(eq(By.xpath(".//*[@enabled='true' and (contains(@text,'banaan') or contains(@name,'banaan') or contains(@content-desc,'banaan') or contains(@resource-id,'banaan'))]")));
+    }
+
+    @Test
+    public void when_scroll_to_is_used_the_scrollhelper_is_used() {
+        when(scrollHelper.scrollTo(anyDouble(), anyString(), any())).thenReturn(true);
+
+        boolean result = androidHelper.scrollTo("place");
+
+        assertThat(result).isTrue();
+
+        verify(scrollHelper).scrollTo(eq(0.5), eq("place"), any());
     }
 }

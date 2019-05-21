@@ -4,6 +4,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
+import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.hsac.fitnesse.fixture.util.selenium.PageSourceSaver;
 import nl.hsac.fitnesse.fixture.util.selenium.SeleniumHelper;
 import nl.hsac.fitnesse.fixture.util.selenium.by.ConstantBy;
@@ -92,7 +93,7 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
 
     @Override
     public Boolean isElementOnScreen(WebElement element) {
-        return true;
+        throw new SlimFixtureException("Deze functionaliteit wordt niet ondersteund door appium!");
     }
 
     @Override
@@ -123,6 +124,10 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
 
     public boolean scrollTo(String place) {
         return getScrollHelper().scrollTo(0.5, place, this::getElementToCheckVisibility);
+    }
+
+    public boolean scrollUpOrDown(boolean up) {
+        return getScrollHelper().scrollUpOrDown(up);
     }
 
     public ScrollHelper<T, D> getScrollHelper() {
