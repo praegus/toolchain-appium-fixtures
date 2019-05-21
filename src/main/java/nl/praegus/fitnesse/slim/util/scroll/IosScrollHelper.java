@@ -13,7 +13,6 @@ public class IosScrollHelper extends ScrollHelper<IOSElement, IOSDriver<IOSEleme
 
     public IosScrollHelper(IosHelper helper) {
         super(helper);
-        setWaitAfterMoveDuration(null);
     }
 
     @Override
