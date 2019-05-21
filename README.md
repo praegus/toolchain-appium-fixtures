@@ -12,5 +12,15 @@ It adds the ability to test mobile (iOS, Android) and Windows applications using
 - Upgrade naar laatste fitnesse en hsac versies. 
 - is element on screen eruit gehaald. Is functionaliteit die appium niet ondersteunt. 
  
-### Known issues
-- Scrollen en klikken samen in 1 operatie werkt niet. We lijken alleen xml te krijgen van appium van wat zichtbaar is. Moet nog geimplementeerd worden.  
+## Known issues
+
+### Android
+- Scrollen en klikken samen in 1 operatie werkt niet. We lijken alleen xml te krijgen van appium van wat zichtbaar is. Moet nog geimplementeerd worden.
+
+### Windows
+- available options for
+- normalized value of in
+- number of times is visible
+- scroll to
+- value of in
+- wait / wait long
