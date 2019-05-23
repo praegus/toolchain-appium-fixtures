@@ -1167,14 +1167,17 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     }
 
     public boolean scrolldownTo(String place) {
-        int result = numberOfTimesIsVisible(place);
+        boolean isVisible = isVisibleOnPage(place);
+        if (isVisible) {
+            return true;
+        }
         int counter = 0;
-        while (counter < 5 && result == 0) {
+        while (counter < 5) {
             appiumHelper.scrollUpOrDown(false);
             waitAfterScroll(waitAfterScroll);
             counter = counter + 1;
-            result = numberOfTimesIsVisible(place);
-            if (result != 0) {
+            isVisible = isVisibleOnPage(place);
+            if (isVisible) {
                 return true;
             }
         }
