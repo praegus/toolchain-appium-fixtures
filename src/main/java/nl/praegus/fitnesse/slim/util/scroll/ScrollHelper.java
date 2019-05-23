@@ -37,7 +37,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
         this.waitAfterMoveDuration = Duration.ofMillis(millis);
     }
 
-    public boolean scrollTo(double swipeDistance, String place, Function<String, ? extends T> placeFinder) {
+    public boolean scrollTo(String place, Function<String, ? extends T> placeFinder) {
         T target = placeFinder.apply(place);
         boolean targetIsReached = targetIsReached(target);
         if (!targetIsReached) {
@@ -46,7 +46,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             Dimension dimensions = getDimensions(topScrollable);
             Point center = getCenter(topScrollable, dimensions);
 
-            int heightDelta = (int) (dimensions.getHeight() / 2.0 * swipeDistance);
+            int heightDelta = (int) (dimensions.getHeight() / 2.0);
 
             Optional<?> prevRef = Optional.empty();
 

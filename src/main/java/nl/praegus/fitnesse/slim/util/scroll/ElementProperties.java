@@ -10,13 +10,13 @@ import org.openqa.selenium.WebElement;
  * the same when scrolling.
  */
 @EqualsAndHashCode
-public class ElementProperties {
+class ElementProperties {
     private String tag;
     private String text;
     private Dimension size;
     private Point location;
 
-    public ElementProperties(WebElement element) {
+    ElementProperties(WebElement element) {
         tag = element.getTagName();
         text = element.getText();
         size = element.getSize();
