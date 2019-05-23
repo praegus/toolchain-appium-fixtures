@@ -793,15 +793,6 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void scroll_to_place() {
-        when(appiumHelper.scrollTo("place")).thenReturn(true);
-
-        boolean result = appiumTest.scrollTo("place");
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
     public void scroll_to_element() {
         appiumTest.scrollTo(element);
 
