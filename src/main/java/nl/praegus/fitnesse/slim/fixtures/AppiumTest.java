@@ -53,12 +53,12 @@ import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
 @SuppressWarnings({"unused", "WeakerAccess", "squid:S1172"})
 public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends SlimFixture {
     private final List<String> currentSearchContextPath = new ArrayList<>();
-    private AppiumHelper<T, D> appiumHelper;
+    protected AppiumHelper<T, D> appiumHelper;
     private ReflectionHelper reflectionHelper;
     private boolean implicitFindInFrames = true;
     private int secondsBeforeTimeout;
     private int secondsBeforePageLoadTimeout;
-    private int waitAfterScroll = 500;
+    protected int waitAfterScroll = 500;
     private String screenshotBase = new File(filesDir, "screenshots").getPath() + "/";
     private String screenshotHeight = "200";
     private String pageSourceBase = new File(filesDir, "pagesources").getPath() + "/";
@@ -124,10 +124,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public String savePageSource() {
         String fileName = "xmlView_" + System.currentTimeMillis();
         return savePageSource(fileName, fileName + ".xml");
-    }
-
-    public boolean scrollToIn(String place, String container) {
-        return doInContainer(container, () -> appiumHelper.scrollTo(place));
     }
 
     protected D getDriver() {
@@ -1160,20 +1156,30 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return result;
     }
 
-    public boolean scrollTo(String place) {
-        boolean result = appiumHelper.scrollTo(place);
-        waitAfterScroll(waitAfterScroll);
-        return result;
+    public boolean scrollDownTo(String place) {
+        return scrollUpOrDown(place, false);
     }
 
-    public boolean scrolldownTo(String place) {
+    public boolean scrollDownToIn(String place, String container) {
+        return doInContainer(container, () -> scrollDownTo(place));
+    }
+
+    public boolean scrollUpTo(String place) {
+        return scrollUpOrDown(place, true);
+    }
+
+    public boolean scrollUpToIn(String place, String container) {
+        return doInContainer(container, () -> scrollUpTo(place));
+    }
+
+    private boolean scrollUpOrDown(String place, boolean up) {
         boolean isVisible = isVisibleOnPage(place);
         if (isVisible) {
             return true;
         }
         int counter = 0;
         while (counter < 5) {
-            appiumHelper.scrollUpOrDown(false);
+            appiumHelper.scrollUpOrDown(up);
             waitAfterScroll(waitAfterScroll);
             counter = counter + 1;
             isVisible = isVisibleOnPage(place);
