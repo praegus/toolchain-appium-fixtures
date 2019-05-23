@@ -118,12 +118,12 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
     @Override
     public void scrollTo(WebElement element) {
         if (!element.isDisplayed()) {
-            getScrollHelper().scrollTo(0.5, element.toString(), x -> (T) element);
+            getScrollHelper().scrollTo(element.toString(), x -> (T) element);
         }
     }
 
     public boolean scrollTo(String place) {
-        return getScrollHelper().scrollTo(0.5, place, this::getElementToCheckVisibility);
+        return getScrollHelper().scrollTo(place, this::getElementToCheckVisibility);
     }
 
     public boolean scrollUpOrDown(boolean up) {

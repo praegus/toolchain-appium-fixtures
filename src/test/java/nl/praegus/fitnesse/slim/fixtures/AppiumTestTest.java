@@ -22,6 +22,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -793,20 +794,12 @@ public class AppiumTestTest {
     }
 
     @Test
-    public void scroll_to_place() {
-        when(appiumHelper.scrollTo("place")).thenReturn(true);
-
-        boolean result = appiumTest.scrollTo("place");
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
     public void scroll_to_element() {
         appiumTest.scrollTo(element);
 
         verify(appiumHelper, times(1)).scrollTo(element);
     }
+
 
     @Test
     public void scroll_up() {
@@ -818,10 +811,48 @@ public class AppiumTestTest {
     }
 
     @Test
+    public void scroll_up_to() {
+        when(appiumHelper.findByTechnicalSelectorOr(eq("place"), any(Supplier.class))).thenReturn(null).thenReturn(element);
+        when(appiumHelper.checkVisible(any(), anyBoolean())).thenReturn(false).thenReturn(true);
+        when(appiumHelper.scrollUpOrDown(true)).thenReturn(true);
+
+        boolean result = appiumTest.scrollUpTo("place");
+
+        assertThat(result).isTrue();
+
+        verify(appiumHelper, times(2)).findByTechnicalSelectorOr(eq("place"), any(Supplier.class));
+        verify(appiumHelper, times(1)).scrollUpOrDown(true);
+    }
+
+    @Test
     public void scroll_down() {
         when(appiumHelper.scrollUpOrDown(false)).thenReturn(true);
 
         boolean result = appiumTest.scrollDown();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void scroll_down_to() {
+        when(appiumHelper.findByTechnicalSelectorOr(eq("place"), any(Supplier.class))).thenReturn(null).thenReturn(element);
+        when(appiumHelper.checkVisible(any(), anyBoolean())).thenReturn(false).thenReturn(true);
+        when(appiumHelper.scrollUpOrDown(false)).thenReturn(true);
+
+        boolean result = appiumTest.scrollDownTo("place");
+
+        assertThat(result).isTrue();
+
+        verify(appiumHelper, times(2)).findByTechnicalSelectorOr(eq("place"), any(Supplier.class));
+        verify(appiumHelper, times(1)).scrollUpOrDown(false);
+    }
+
+    @Test
+    public void is_visible_on_page(){
+        when(appiumHelper.findByTechnicalSelectorOr(eq("place"), any(Supplier.class))).thenReturn(element);
+        when(appiumHelper.checkVisible(any(), anyBoolean())).thenReturn(true);
+
+        boolean result = appiumTest.isVisibleOnPage("place");
 
         assertThat(result).isTrue();
     }

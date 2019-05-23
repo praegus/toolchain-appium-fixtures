@@ -39,7 +39,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         super(secondsBeforeTimeout);
     }
 
-    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper, Robot robot , Clipboard clipboard) {
+    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper, Robot robot, Clipboard clipboard) {
         super(windowsHelper, reflectionHelper);
         this.robot = robot;
         this.clipboard = clipboard;
@@ -61,7 +61,6 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
     public List<String> windowHandles() {
         return new ArrayList<>(getAppiumHelper().driver().getWindowHandles());
     }
-
 
     @Override
     protected boolean click(String place, String container) {
@@ -136,5 +135,15 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         robot.keyPress(getKey(key));
         robot.keyRelease(getKey(key));
         return true;
+    }
+
+    /**
+     * Scrolls window so top of element becomes visible.
+     *
+     * @param element element to scroll to.
+     */
+    protected void scrollTo(WebElement element) {
+        appiumHelper.scrollTo(element);
+        waitAfterScroll(waitAfterScroll);
     }
 }
