@@ -39,7 +39,7 @@ public class ScrollHelperTest {
         when(helper.getElementToCheckVisibility(place)).thenReturn(element);
         when(element.isDisplayed()).thenReturn(true);
 
-        boolean result = scrollHelper.scrollTo(0.5, place, helper::getElementToCheckVisibility);
+        boolean result = scrollHelper.scrollTo(place, helper::getElementToCheckVisibility);
 
         assertThat(result).isTrue();
         verify(element, times(1)).isDisplayed();
@@ -56,7 +56,7 @@ public class ScrollHelperTest {
         when(element.isDisplayed()).thenReturn(true);
         mockTouchAction();
 
-        boolean result = scrollHelper.scrollTo(0.5, place, helper::getElementToCheckVisibility);
+        boolean result = scrollHelper.scrollTo(place, helper::getElementToCheckVisibility);
 
         assertThat(result).isTrue();
         verify(helper, times(1)).getTouchAction();
@@ -78,7 +78,7 @@ public class ScrollHelperTest {
         when(element.isDisplayed()).thenReturn(false);
         mockTouchAction();
 
-        boolean result = scrollHelper.scrollTo(0.5, place, helper::getElementToCheckVisibility);
+        boolean result = scrollHelper.scrollTo(place, helper::getElementToCheckVisibility);
 
         assertThat(result).isFalse();
         verify(helper, times(2)).getTouchAction();
@@ -100,7 +100,7 @@ public class ScrollHelperTest {
         when(helper.getTouchAction()).thenReturn(touchAction);
         when(helper.getElementToCheckVisibility(place)).thenReturn(null);
         mockTouchAction();
-        boolean result = scrollHelper.scrollTo(0.5, place, helper::getElementToCheckVisibility);
+        boolean result = scrollHelper.scrollTo(place, helper::getElementToCheckVisibility);
 
         assertThat(result).isFalse();
         verify(helper, times(2)).getTouchAction();
