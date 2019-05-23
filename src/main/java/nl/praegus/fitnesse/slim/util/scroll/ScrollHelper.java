@@ -33,6 +33,10 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
         this.helper = helper;
     }
 
+    public void waitBetweenScrollPressAndMove(int millis) {
+        this.waitAfterMoveDuration = Duration.ofMillis(millis);
+    }
+
     public boolean scrollTo(double swipeDistance, String place, Function<String, ? extends T> placeFinder) {
         T target = placeFinder.apply(place);
         boolean targetIsReached = targetIsReached(target);
@@ -110,46 +114,6 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
         }
 
         ta.release().perform();
-    }
-
-    /**
-     * Container for properties of an element that will be compared to determine whether it is considered
-     * the same when scrolling.
-     */
-    protected static class ElementProperties {
-        private String tag;
-        private Optional<String> text;
-        private Dimension size;
-        private Point location;
-
-        public ElementProperties(WebElement element) {
-            tag = element.getTagName();
-            text = Optional.ofNullable(element.getText());
-            size = element.getSize();
-            location = element.getLocation();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ElementProperties that = (ElementProperties) o;
-
-            if (!tag.equals(that.tag)) return false;
-            if (!text.equals(that.text)) return false;
-            if (!size.equals(that.size)) return false;
-            return location.equals(that.location);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = tag.hashCode();
-            result = 31 * result + text.hashCode();
-            result = 31 * result + size.hashCode();
-            result = 31 * result + location.hashCode();
-            return result;
-        }
     }
 
     private T findTarget(Function<String, ? extends T> placeFinder, String place) {
