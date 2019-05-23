@@ -10,7 +10,6 @@ import nl.praegus.fitnesse.slim.util.by.IsDisplayedFilter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +45,6 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             Dimension dimensions = getDimensions(topScrollable);
             Point center = getCenter(topScrollable, dimensions);
 
-            int heightDelta = (int) (dimensions.getHeight() / 2.0);
-
             Optional<?> prevRef = Optional.empty();
 
             // counter for hitting top/bottom: 0=no hit yet, 1=hit top, 2=hit bottom
@@ -55,7 +52,7 @@ public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
             while (!targetIsReached && bumps < 2) {
                 T refEl = findScrollRefElement(topScrollable);
                 Optional<?> currentRef = createHashForElement(refEl);
-                scrollUpOrDown(bumps == 0, center, heightDelta);
+                scrollUpOrDown(bumps == 0, center, (int) (dimensions.getHeight() / 2.0));
 
                 if (currentRef.equals(prevRef)) {
                     // we either are: unable to find a reference element OR

@@ -1166,6 +1166,21 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return result;
     }
 
+    public boolean scrolldownTo(String place) {
+        int result = numberOfTimesIsVisible(place);
+        int counter = 0;
+        while (counter < 5 && result == 0) {
+            appiumHelper.scrollUpOrDown(false);
+            waitAfterScroll(waitAfterScroll);
+            counter = counter + 1;
+            result = numberOfTimesIsVisible(place);
+            if (result != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Scrolls window so top of element becomes visible.
      *

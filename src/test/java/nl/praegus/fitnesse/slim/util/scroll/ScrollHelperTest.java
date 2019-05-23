@@ -66,7 +66,7 @@ public class ScrollHelperTest {
         ArgumentCaptor<PointOption> argumentCaptor = ArgumentCaptor.forClass(PointOption.class);
         verify(touchAction, times(1)).moveTo(argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().build().get("x")).isEqualTo(0);
-        assertThat(argumentCaptor.getValue().build().get("y")).isEqualTo(150);
+        assertThat(argumentCaptor.getValue().build().get("y")).isEqualTo(200);
     }
 
     @Test
@@ -88,9 +88,9 @@ public class ScrollHelperTest {
         ArgumentCaptor<PointOption> argumentCaptor = ArgumentCaptor.forClass(PointOption.class);
         verify(touchAction, times(2)).moveTo(argumentCaptor.capture());
         assertThat(argumentCaptor.getAllValues().get(0).build().get("x")).isEqualTo(0);
-        assertThat(argumentCaptor.getAllValues().get(0).build().get("y")).isEqualTo(150);
+        assertThat(argumentCaptor.getAllValues().get(0).build().get("y")).isEqualTo(200);
         assertThat(argumentCaptor.getAllValues().get(1).build().get("x")).isEqualTo(0);
-        assertThat(argumentCaptor.getAllValues().get(1).build().get("y")).isEqualTo(50);
+        assertThat(argumentCaptor.getAllValues().get(1).build().get("y")).isEqualTo(0);
     }
 
     @Test
