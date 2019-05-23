@@ -40,27 +40,15 @@
     </scm>
 
     <properties>
+        <fitnesse.version>20190508</fitnesse.version>
+        <hsac.fixtures.version>4.5.1</hsac.fixtures.version>
+        <appium.version>7.0.0</appium.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <fitnesse.version>20190508</fitnesse.version>
-        <hsac.fixtures.version>4.4.3</hsac.fixtures.version>
-        <appium.version>7.0.0</appium.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <!-- Ensure appium dependency does not overrule the selenium api version used -->
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-api</artifactId>
-                <version>3.141.59</version>
-            </dependency>
-            <dependency>
-                <!-- Ensure appium dependency does not overrule the selenium api version used -->
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-support</artifactId>
-                <version>3.141.59</version>
-            </dependency>
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>

@@ -24,8 +24,8 @@ import java.util.function.Function;
  */
 public class ScrollHelper<T extends MobileElement, D extends AppiumDriver<T>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private Duration waitBetweenScrollPressAndMove = Duration.ofMillis(10);
-    private Duration waitAfterMoveDuration = Duration.ofMillis(10);
+    private Duration waitBetweenScrollPressAndMove = Duration.ofMillis(1);
+    private Duration waitAfterMoveDuration = Duration.ofMillis(100);
 
     protected final AppiumHelper<T, D> helper;
 
