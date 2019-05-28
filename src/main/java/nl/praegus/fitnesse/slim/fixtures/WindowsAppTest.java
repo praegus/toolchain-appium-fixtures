@@ -181,6 +181,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
      *
      * @param element element to scroll to.
      */
+    @Override
     protected void scrollTo(WebElement element) {
         appiumHelper.scrollTo(element);
         waitAfterScroll(waitAfterScroll);
@@ -209,8 +210,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
 
     @WaitUntil
     public boolean shiftClickIn(String place, String container) {
-        place = cleanupValue(place);
-        WebElement element = getElementToClick(place, container);
+        WebElement element = getElementToClick(cleanupValue(place), container);
         return shiftClick(element);
     }
 
@@ -225,8 +225,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
 
     @WaitUntil
     public boolean controlClickIn(String place, String container) {
-        place = cleanupValue(place);
-        WebElement element = getElementToClick(place, container);
+        WebElement element = getElementToClick(cleanupValue(place), container);
         return controlClick(element);
     }
 
