@@ -45,12 +45,12 @@ public class AndroidHelperTest {
 
     @Test
     public void when_scroll_to_is_used_the_scrollhelper_is_used() {
-        when(scrollHelper.scrollTo(anyDouble(), anyString(), any())).thenReturn(true);
+        when(scrollHelper.scrollTo(anyString(), any())).thenReturn(true);
 
         boolean result = androidHelper.scrollTo("place");
 
         assertThat(result).isTrue();
 
-        verify(scrollHelper).scrollTo(eq(0.5), eq("place"), any());
+        verify(scrollHelper).scrollTo(eq("place"), any());
     }
 }

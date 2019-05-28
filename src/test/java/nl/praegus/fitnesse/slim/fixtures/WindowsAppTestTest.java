@@ -11,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 
 import java.awt.*;
@@ -26,7 +27,12 @@ import java.util.LinkedHashSet;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WindowsAppTestTest {
@@ -134,5 +140,40 @@ public class WindowsAppTestTest {
         verify(robot, times(1)).keyPress(KeyEvent.VK_V);
         verify(robot, times(1)).keyRelease(KeyEvent.VK_CONTROL);
         verify(robot, times(1)).keyRelease(KeyEvent.VK_V);
+    }
+
+    @Test
+    public void right_click() {
+        when(windowsHelper.getElementToClick("place")).thenReturn(element);
+        when(windowsHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = windowsAppTest.rightClick("place");
+
+        assertThat(result).isTrue();
+        verify(windowsHelper, times(1)).rightClick(element);
+    }
+
+    @Test
+    public void shift_click() {
+        when(windowsHelper.getElementToClick("place")).thenReturn(element);
+        when(windowsHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = windowsAppTest.shiftClick("place");
+
+        System.out.println(mockingDetails(windowsHelper).printInvocations());
+        assertThat(result).isTrue();
+        verify(windowsHelper, times(1)).clickWithKeyDown(element, Keys.SHIFT);
+    }
+
+    @Test
+    public void control_click() {
+        when(windowsHelper.getElementToClick("place")).thenReturn(element);
+        when(windowsHelper.isInteractable(element)).thenReturn(true);
+
+        boolean result = windowsAppTest.controlClick("place");
+
+        System.out.println(mockingDetails(windowsHelper).printInvocations());
+        assertThat(result).isTrue();
+        verify(windowsHelper, times(1)).clickWithKeyDown(element, Keys.CONTROL);
     }
 }

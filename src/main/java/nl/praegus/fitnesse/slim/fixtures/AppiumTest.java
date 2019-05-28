@@ -26,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.UnhandledAlertException;
@@ -53,12 +52,12 @@ import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
 @SuppressWarnings({"unused", "WeakerAccess", "squid:S1172"})
 public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver<T>> extends SlimFixture {
     private final List<String> currentSearchContextPath = new ArrayList<>();
-    private AppiumHelper<T, D> appiumHelper;
+    protected AppiumHelper<T, D> appiumHelper;
     private ReflectionHelper reflectionHelper;
     private boolean implicitFindInFrames = true;
     private int secondsBeforeTimeout;
     private int secondsBeforePageLoadTimeout;
-    private int waitAfterScroll = 500;
+    protected int waitAfterScroll = 500;
     private String screenshotBase = new File(filesDir, "screenshots").getPath() + "/";
     private String screenshotHeight = "200";
     private String pageSourceBase = new File(filesDir, "pagesources").getPath() + "/";
@@ -124,10 +123,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public String savePageSource() {
         String fileName = "xmlView_" + System.currentTimeMillis();
         return savePageSource(fileName, fileName + ".xml");
-    }
-
-    public boolean scrollToIn(String place, String container) {
-        return doInContainer(container, () -> appiumHelper.scrollTo(place));
     }
 
     protected D getDriver() {
@@ -544,53 +539,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return doIfInteractable(element, () -> appiumHelper.doubleClick(element));
     }
 
-    @WaitUntil
-    public boolean rightClick(String place) {
-        return rightClickIn(place, null);
-    }
-
-    @WaitUntil
-    public boolean rightClickIn(String place, String container) {
-        WebElement element = getElementToClick(cleanupValue(place), container);
-        return rightClick(element);
-    }
-
-    protected boolean rightClick(WebElement element) {
-        return doIfInteractable(element, () -> appiumHelper.rightClick(element));
-    }
-
-    @WaitUntil
-    public boolean shiftClick(String place) {
-        return shiftClickIn(place, null);
-    }
-
-    @WaitUntil
-    public boolean shiftClickIn(String place, String container) {
-        place = cleanupValue(place);
-        WebElement element = getElementToClick(place, container);
-        return shiftClick(element);
-    }
-
-    protected boolean shiftClick(WebElement element) {
-        return doIfInteractable(element, () -> appiumHelper.clickWithKeyDown(element, Keys.SHIFT));
-    }
-
-    @WaitUntil
-    public boolean controlClick(String place) {
-        return controlClickIn(place, null);
-    }
-
-    @WaitUntil
-    public boolean controlClickIn(String place, String container) {
-        place = cleanupValue(place);
-        WebElement element = getElementToClick(place, container);
-        return controlClick(element);
-    }
-
-    protected boolean controlClick(WebElement element) {
-        return doIfInteractable(element, () -> appiumHelper.clickWithKeyDown(element, controlKey()));
-    }
-
     public void setSendCommandForControlOnMacTo(boolean sendCommand) {
         sendCommandForControlOnMac = sendCommand;
     }
@@ -605,20 +553,17 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     @WaitUntil
     public boolean dragAndDropTo(String source, String destination) {
-        boolean result = false;
-        source = cleanupValue(source);
-        WebElement sourceElement = appiumHelper.getElementToClick(source);
-        destination = cleanupValue(destination);
-        WebElement destinationElement = appiumHelper.getElementToClick(destination);
+        WebElement sourceElement = appiumHelper.getElementToClick(cleanupValue(source));
+        WebElement destinationElement = appiumHelper.getElementToClick(cleanupValue(destination));
 
         if ((sourceElement != null) && (destinationElement != null)) {
             scrollIfNotOnScreen(sourceElement);
             if (appiumHelper.isInteractable(sourceElement) && destinationElement.isDisplayed()) {
                 appiumHelper.dragAndDrop(sourceElement, destinationElement);
-                result = true;
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
     protected T getElementToClick(String place, String container) {
@@ -1160,10 +1105,38 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return result;
     }
 
-    public boolean scrollTo(String place) {
-        boolean result = appiumHelper.scrollTo(place);
-        waitAfterScroll(waitAfterScroll);
-        return result;
+    public boolean scrollDownTo(String place) {
+        return scrollUpOrDown(place, false);
+    }
+
+    public boolean scrollDownToIn(String place, String container) {
+        return doInContainer(container, () -> scrollDownTo(place));
+    }
+
+    public boolean scrollUpTo(String place) {
+        return scrollUpOrDown(place, true);
+    }
+
+    public boolean scrollUpToIn(String place, String container) {
+        return doInContainer(container, () -> scrollUpTo(place));
+    }
+
+    private boolean scrollUpOrDown(String place, boolean up) {
+        boolean isVisible = isVisibleOnPage(place);
+        if (isVisible) {
+            return true;
+        }
+        int counter = 0;
+        while (counter < 5) {
+            appiumHelper.scrollUpOrDown(up);
+            waitAfterScroll(waitAfterScroll);
+            counter = counter + 1;
+            isVisible = isVisibleOnPage(place);
+            if (isVisible) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1422,9 +1395,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
      * @param directory sets base directory where screenshots will be stored.
      */
     public void screenshotBaseDirectory(String directory) {
-        if (directory.equals("")
-                || directory.endsWith("/")
-                || directory.endsWith("\\")) {
+        if (directory.equals("") || directory.endsWith("/") || directory.endsWith("\\")) {
             screenshotBase = directory;
         } else {
             screenshotBase = directory + "/";
@@ -1720,42 +1691,6 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
      */
     protected void setAppiumHelper(AppiumHelper<T, D> helper) {
         appiumHelper = helper;
-    }
-
-    public int currentWindowWidth() {
-        return getWindowSize().getWidth();
-    }
-
-    public int currentWindowHeight() {
-        return getWindowSize().getHeight();
-    }
-
-    public void setWindowWidth(int newWidth) {
-        int currentHeight = currentWindowHeight();
-        setWindowSizeToBy(newWidth, currentHeight);
-    }
-
-    public void setWindowHeight(int newHeight) {
-        int currentWidth = currentWindowWidth();
-        setWindowSizeToBy(currentWidth, newHeight);
-    }
-
-    public void setWindowSizeToBy(int newWidth, int newHeight) {
-        appiumHelper.setWindowSize(newWidth, newHeight);
-        Dimension actualSize = getWindowSize();
-        if (actualSize.getHeight() != newHeight || actualSize.getWidth() != newWidth) {
-            String message = String.format("Unable to change size to: %s x %s; size is: %s x %s",
-                    newWidth, newHeight, actualSize.getWidth(), actualSize.getHeight());
-            throw new SlimFixtureException(false, message);
-        }
-    }
-
-    protected Dimension getWindowSize() {
-        return appiumHelper.getWindowSize();
-    }
-
-    public void setWindowSizeToMaximum() {
-        appiumHelper.setWindowSizeToMaximum();
     }
 
     protected WebElement getElementToDownload(String place) {
