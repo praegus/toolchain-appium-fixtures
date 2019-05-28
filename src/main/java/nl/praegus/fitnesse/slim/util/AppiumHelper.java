@@ -92,8 +92,12 @@ public abstract class AppiumHelper<T extends MobileElement, D extends AppiumDriv
     }
 
     @Override
+    @Deprecated
+    /**
+     * @deprecated this is not supported by appium and always returns true.
+     */
     public Boolean isElementOnScreen(WebElement element) {
-        throw new SlimFixtureException("Deze functionaliteit wordt niet ondersteund door appium!");
+        return true;
     }
 
     @Override
