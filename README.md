@@ -24,7 +24,6 @@ It adds the ability to test mobile (iOS, Android) and Windows applications using
 - Scrollen en klikken samen in 1 operatie werkt niet. We lijken alleen xml te krijgen van appium van wat zichtbaar is. Moet nog geimplementeerd worden.
 
 ### Windows
-- available options for
 - normalized value of in
 - number of times is visible
 - scroll to
