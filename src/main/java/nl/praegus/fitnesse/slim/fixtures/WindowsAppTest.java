@@ -7,6 +7,8 @@ import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 import java.awt.*;
@@ -137,13 +139,97 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         return true;
     }
 
+    public int currentWindowWidth() {
+        return getWindowSize().getWidth();
+    }
+
+    public int currentWindowHeight() {
+        return getWindowSize().getHeight();
+    }
+
+    public void setWindowWidth(int newWidth) {
+        int currentHeight = currentWindowHeight();
+        setWindowSizeToBy(newWidth, currentHeight);
+    }
+
+    public void setWindowHeight(int newHeight) {
+        int currentWidth = currentWindowWidth();
+        setWindowSizeToBy(currentWidth, newHeight);
+    }
+
+    public void setWindowSizeToBy(int newWidth, int newHeight) {
+        appiumHelper.setWindowSize(newWidth, newHeight);
+        org.openqa.selenium.Dimension actualSize = getWindowSize();
+        if (actualSize.getHeight() != newHeight || actualSize.getWidth() != newWidth) {
+            String message = String.format("Unable to change size to: %s x %s; size is: %s x %s",
+                    newWidth, newHeight, actualSize.getWidth(), actualSize.getHeight());
+            throw new SlimFixtureException(false, message);
+        }
+    }
+
+    protected Dimension getWindowSize() {
+        return appiumHelper.getWindowSize();
+    }
+
+    public void setWindowSizeToMaximum() {
+        appiumHelper.setWindowSizeToMaximum();
+    }
+
+
     /**
      * Scrolls window so top of element becomes visible.
      *
      * @param element element to scroll to.
      */
+    @Override
     protected void scrollTo(WebElement element) {
         appiumHelper.scrollTo(element);
         waitAfterScroll(waitAfterScroll);
+    }
+
+
+    @WaitUntil
+    public boolean rightClick(String place) {
+        return rightClickIn(place, null);
+    }
+
+    @WaitUntil
+    public boolean rightClickIn(String place, String container) {
+        WebElement element = getElementToClick(cleanupValue(place), container);
+        return rightClick(element);
+    }
+
+    protected boolean rightClick(WebElement element) {
+        return doIfInteractable(element, () -> appiumHelper.rightClick(element));
+    }
+
+    @WaitUntil
+    public boolean shiftClick(String place) {
+        return shiftClickIn(place, null);
+    }
+
+    @WaitUntil
+    public boolean shiftClickIn(String place, String container) {
+        WebElement element = getElementToClick(cleanupValue(place), container);
+        return shiftClick(element);
+    }
+
+    protected boolean shiftClick(WebElement element) {
+        return doIfInteractable(element, () -> appiumHelper.clickWithKeyDown(element, Keys.SHIFT));
+    }
+
+    @WaitUntil
+    public boolean controlClick(String place) {
+        return controlClickIn(place, null);
+    }
+
+    @WaitUntil
+    public boolean controlClickIn(String place, String container) {
+        WebElement element = getElementToClick(cleanupValue(place), container);
+        return controlClick(element);
+    }
+
+    protected boolean controlClick(WebElement element) {
+        return doIfInteractable(element, () -> appiumHelper.clickWithKeyDown(element, controlKey()));
     }
 }

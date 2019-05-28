@@ -856,4 +856,39 @@ public class AppiumTestTest {
 
         assertThat(result).isTrue();
     }
+
+
+    @Test
+    public void when_both_elements_are_visible_drag_and_drop_is_performed() {
+        WindowsElement sourceElement = mock(WindowsElement.class);
+        WindowsElement destinationElement = mock(WindowsElement.class);
+
+        when(appiumHelper.getElementToClick("place 1")).thenReturn(sourceElement);
+        when(appiumHelper.getElementToClick("place 2")).thenReturn(destinationElement);
+        when(appiumHelper.isInteractable(sourceElement)).thenReturn(true);
+        when(destinationElement.isDisplayed()).thenReturn(true);
+
+        boolean result = appiumTest.dragAndDropTo("place 1", "place 2");
+
+        assertThat(result).isTrue();
+
+        verify(appiumHelper, times(1)).dragAndDrop(sourceElement, destinationElement);
+    }
+
+    @Test
+    public void when_one_element_is_not_visible_drag_and_drop__not_is_performed() {
+        WindowsElement sourceElement = mock(WindowsElement.class);
+        WindowsElement destinationElement = mock(WindowsElement.class);
+
+        when(appiumHelper.getElementToClick("place 1")).thenReturn(sourceElement);
+        when(appiumHelper.getElementToClick("place 2")).thenReturn(destinationElement);
+        when(appiumHelper.isInteractable(sourceElement)).thenReturn(true);
+        when(destinationElement.isDisplayed()).thenReturn(false);
+
+        boolean result = appiumTest.dragAndDropTo("place 1", "place 2");
+
+        assertThat(result).isFalse();
+
+        verify(appiumHelper, times(0)).dragAndDrop(any(), any());
+    }
 }
