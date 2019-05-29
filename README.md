@@ -3,6 +3,9 @@
 This project extends the Java fixtures provided by [hsac-fitnesse-fixtures](https://github.com/fhoeben/hsac-fitnesse-fixtures).
 It adds the ability to test mobile (iOS, Android) and Windows applications using [appium](http://appium.io).
 
+## Update 0.0.11
+- Build wordt vanaf nu gedaan met OpenJDK 11. 
+
 ## Update 0.0.10
 - Scroll to er toch uit gehaald; werkte te instabiel.
 - Nieuwe functies toegevoegd: scroll down to en scroll up to. Simpelere implementatie die in principe hetzelfde doet als scroll to.
