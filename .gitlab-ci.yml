@@ -31,7 +31,7 @@ build:
 
 sonar:
   stage: sonar
-  script: mvn sonar:sonar -Dsonar.projectKey=$PROJECT_NAME -Dsonar.host.url=$SONAR_ENDPOINT -Dsonar.login=$SONAR_LOGIN
+  script: mvn sonar:sonar -Dsonar.projectKey=$PROJECT_NAME -Dsonar.host.url=$SONAR_ENDPOINT_LOCAL -Dsonar.login=$SONAR_LOGIN
   image: "maven-git:latest"
   tags:
     - maven-git
