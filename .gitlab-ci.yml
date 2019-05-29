@@ -42,7 +42,6 @@ sonar:
 release:
   stage: release
   script:
-#    - apt install gnupg
     - export GNUPGHOME=.gnupg
     - echo "${GPG_KEY}" | gpg --batch --import
     - mvn $MAVEN_CLI_OPTS versions:set -DremoveSnapshot
@@ -62,9 +61,6 @@ update-version:
   stage: update-version
   image: "maven-git:latest"
   script:
-#    - apt update && apt upgrade && apt install bash git openssh
-#    - git config --global user.email "macmini@praegus.nl"
-#    - git config --global user.name "macmini"
     - git checkout -B "$CI_BUILD_REF_NAME"
     - mvn -B $MAVEN_CLI_OPTS release:update-versions -DautoVersionSubmodules=true
     - git add '*pom.xml'
