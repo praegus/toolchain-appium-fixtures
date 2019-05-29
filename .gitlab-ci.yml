@@ -16,9 +16,9 @@ cache:
 build:
   stage: build
   script: mvn $MAVEN_CLI_OPTS test
-  image: "maven:3.6.1-jdk-11"
+  image: "maven-git:latest"
   tags:
-    - mvn
+    - maven-git
   artifacts:
     name: "toolchain-appium-fixtures"
     expire_in: 1 hour
@@ -31,9 +31,9 @@ build:
 sonar:
   stage: sonar
   script: mvn sonar:sonar -Dsonar.projectKey=toolchain-appium-fixtures -Dsonar.host.url=$SONAR_ENDPOINT -Dsonar.login=$SONAR_LOGIN
-  image: "maven:3.6.1-jdk-11"
+  image: "maven-git:latest"
   tags:
-    - mvn
+    - maven-git
   except:
     - development
     - master
@@ -41,12 +41,12 @@ sonar:
 release:
   stage: release
   script:
-    - apt install gnupg
+#    - apt install gnupg
     - export GNUPGHOME=.gnupg
     - echo "${GPG_KEY}" | gpg --batch --import
     - mvn $MAVEN_CLI_OPTS versions:set -DremoveSnapshot
     - mvn $MAVEN_CLI_OPTS -P release -DskipTests -Dgpg.passphrase=${GPG_PASS} deploy
-  image: "maven:3.6.1-jdk-11"
+  image: "maven-git:latest"
   artifacts:
     name: "toolchain-appium-fixtures"
     expire_in: 1 week
@@ -55,15 +55,15 @@ release:
   only:
     - master
   tags:
-    - mvn
+    - maven-git
 
 update-version:
   stage: update-version
-  image: "maven:3.6.1-jdk-11"
+  image: "maven-git:latest"
   script:
-    - apt update && apt upgrade && apt install bash git openssh
-    - git config --global user.email "macmini@praegus.nl"
-    - git config --global user.name "macmini"
+#    - apt update && apt upgrade && apt install bash git openssh
+#    - git config --global user.email "macmini@praegus.nl"
+#    - git config --global user.name "macmini"
     - git checkout -B "$CI_BUILD_REF_NAME"
     - mvn -B $MAVEN_CLI_OPTS release:update-versions -DautoVersionSubmodules=true
     - git add '*pom.xml'
@@ -72,4 +72,4 @@ update-version:
   only:
     - master
   tags:
-    - mvn
+    - maven-git
