@@ -21,7 +21,7 @@ build:
   tags:
     - mvn
   artifacts:
-    name: "toolchain-appium-fixtures"
+    name: $PROJECT_NAME
     expire_in: 1 hour
     paths:
       - target/*
@@ -31,7 +31,7 @@ build:
 
 sonar:
   stage: sonar
-  script: mvn sonar:sonar -Dsonar.projectKey=toolchain-appium-fixtures -Dsonar.host.url=$SONAR_ENDPOINT -Dsonar.login=$SONAR_LOGIN
+  script: mvn $MAVEN_CLI_OPTS sonar:sonar -Dsonar.projectKey=$PROJECT_NAME -Dsonar.host.url=$SONAR_ENDPOINT -Dsonar.login=$SONAR_LOGIN
   image: "maven:3.6.0-jdk-8-alpine"
   tags:
     - mvn
@@ -69,7 +69,7 @@ update-version:
     - mvn -B $MAVEN_CLI_OPTS release:update-versions -DautoVersionSubmodules=true
     - git add '*pom.xml'
     - git commit -m "update version [ci skip]"
-    - git push https://$MACMINI_USER:$MACMINI_PASS@gitlab.com/praegus/toolchain-fixtures/toolchain-appium-fixtures.git
+    - git push https://$MACMINI_USER:$MACMINI_PASS@gitlab.com/praegus/toolchain-fixtures/$PROJECT_NAME.git
   only:
     - master
   tags:
