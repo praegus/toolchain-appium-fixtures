@@ -1,7 +1,14 @@
+[![Maven Central](https://img.shields.io/maven-central/v/nl.praegus/toolchain-appium-fixtures.svg?maxAge=21600)](https://mvnrepository.com/artifact/nl.praegus/toolchain-appium-fixtures)
+
 # Praegus Fitnesse Appium
 
 This project extends the Java fixtures provided by [hsac-fitnesse-fixtures](https://github.com/fhoeben/hsac-fitnesse-fixtures).
 It adds the ability to test mobile (iOS, Android) and Windows applications using [appium](http://appium.io).
+
+To run tests you need Appium and an appropriate driver.
+
+## Update 0.0.12
+- Terug op Java 8.
 
 ## Update 0.0.11
 - Build wordt vanaf nu gedaan met OpenJDK 11. 
