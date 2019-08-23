@@ -6,7 +6,7 @@
     <artifactId>toolchain-appium-fixtures</artifactId>
     <version>0.0.13-SNAPSHOT</version>
 
-    <url>https://gitlab.com/praegus/toolchain-fixtures/toolchain-appium-fixtures.git</url>
+    <url>https://github.com/praegus/toolchain-appium-fixtures.git</url>
     <name>Praegus FitNesse Fixtures for Appium</name>
     <description>Fixtures to assist in android, iOS and windows app testing via FitNesse</description>
 
@@ -26,9 +26,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@gitlab.com:praegus/toolchain-fixtures/toolchain-appium-fixtures.git</connection>
-        <url>https://gitlab.com/praegus/toolchain-fixtures/toolchain-appium-fixtures.git</url>
-        <developerConnection>scm:git:git@gitlab.com:praegus/toolchain-fixtures/toolchain-appium-fixtures.git
+        <connection>scm:git:git@github.com:praegus/toolchain-appium-fixtures.git</connection>
+        <url>https://github.com/praegus/toolchain-appium-fixtures.git</url>
+        <developerConnection>scm:git:git@github.com:praegus/toolchain-appium-fixtures.git
         </developerConnection>
         <tag>HEAD</tag>
     </scm>
