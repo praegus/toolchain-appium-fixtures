@@ -183,7 +183,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
      */
     @Override
     protected void scrollTo(WebElement element) {
-        appiumHelper.scrollTo(element);
+        appiumHelper.scrollTo(element, false);
         waitAfterScroll(waitAfterScroll);
     }
 

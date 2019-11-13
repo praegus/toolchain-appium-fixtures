@@ -13,7 +13,7 @@ import static nl.hsac.fitnesse.fixture.util.FirstNonNullHelper.firstNonNull;
 
 public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<WindowsElement>> {
 
-    public WindowsHelper() {
+    WindowsHelper() {
         setScrollHelper(new ScrollHelper<>(this));
     }
 
@@ -46,7 +46,8 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
     }
 
     @Override
-    public void scrollTo(WebElement element) {
-        // todo goede implementatie maken
+    public void scrollTo(WebElement element, boolean toCenter) {
+
+        // todo goede implementatie maken (of controleren of een simpele click een impliciete scrollntoView doet)
     }
 }

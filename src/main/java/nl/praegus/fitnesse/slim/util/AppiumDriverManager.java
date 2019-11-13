@@ -56,7 +56,7 @@ public class AppiumDriverManager extends DriverManager {
     }
 
     protected MobileElementConverter createMobileElementConverter(AppiumDriver d) {
-        return new MobileElementConverter(d, d);
+        return new MobileElementConverter(d);
     }
 
     protected SeleniumHelper createHelperForIos() {

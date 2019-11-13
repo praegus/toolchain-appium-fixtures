@@ -797,7 +797,7 @@ public class AppiumTestTest {
     public void scroll_to_element() {
         appiumTest.scrollTo(element);
 
-        verify(appiumHelper, times(1)).scrollTo(element);
+        verify(appiumHelper, times(1)).scrollTo(element, false);
     }
 
 

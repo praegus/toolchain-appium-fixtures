@@ -8,9 +8,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.ImmutableCapabilities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppiumDriverManagerTest {
@@ -35,6 +37,7 @@ public class AppiumDriverManagerTest {
     @Test
     public void when_an_android_driver_is_the_argument_an_android_helper_is_created() {
         AndroidDriver driver = mock(AndroidDriver.class);
+        when(driver.getCapabilities()).thenReturn(new ImmutableCapabilities("platformName", "android", "automationName", ""));
 
         SeleniumHelper result = appiumDriverManager.createHelper(driver);
 
