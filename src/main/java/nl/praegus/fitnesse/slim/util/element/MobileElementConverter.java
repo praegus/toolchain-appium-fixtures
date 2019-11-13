@@ -1,6 +1,5 @@
 package nl.praegus.fitnesse.slim.util.element;
 
-import io.appium.java_client.HasSessionDetails;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.internal.JsonToMobileElementConverter;
@@ -12,8 +11,8 @@ import org.openqa.selenium.remote.RemoteWebElement;
 
 public class MobileElementConverter extends JsonToMobileElementConverter {
 
-    public MobileElementConverter(RemoteWebDriver driver, HasSessionDetails hasSessionDetails) {
-        super(driver, hasSessionDetails);
+    public MobileElementConverter(RemoteWebDriver driver) {
+        super(driver);
     }
 
     @Override

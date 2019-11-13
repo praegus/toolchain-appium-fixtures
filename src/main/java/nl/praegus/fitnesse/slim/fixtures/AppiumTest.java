@@ -1145,7 +1145,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
      * @param element element to scroll to.
      */
     protected void scrollTo(WebElement element) {
-        appiumHelper.scrollTo(element);
+        appiumHelper.scrollTo(element, false);
         waitAfterScroll(waitAfterScroll);
     }
 
