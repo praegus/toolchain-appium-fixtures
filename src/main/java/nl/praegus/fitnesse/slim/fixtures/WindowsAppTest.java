@@ -3,7 +3,6 @@ package nl.praegus.fitnesse.slim.fixtures;
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
 import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
-import nl.hsac.fitnesse.fixture.slim.web.BrowserTest;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
 import nl.hsac.fitnesse.slim.interaction.ReflectionHelper;
@@ -275,5 +274,15 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
 
     protected boolean controlClick(WebElement element) {
         return doIfInteractable(element, () -> appiumHelper.clickWithKeyDown(element, controlKey()));
+    }
+
+    @Override
+    protected boolean doIfInteractable(WebElement element, Runnable action) {
+        boolean result = false;
+        if (element != null && getAppiumHelper().isInteractable(element)) {
+                action.run();
+                result = true;
+            }
+        return result;
     }
 }
