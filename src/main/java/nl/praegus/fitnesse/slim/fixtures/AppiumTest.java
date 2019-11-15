@@ -1300,7 +1300,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
 
     protected boolean isVisibleImpl(String place, String container, boolean checkOnScreen) {
         WebElement element = getElementToCheckVisibility(place, container);
-        return appiumHelper.checkVisible(element, checkOnScreen);
+        return element != null && appiumHelper.checkVisible(element, checkOnScreen);
     }
 
     public int numberOfTimesIsVisible(String text) {
