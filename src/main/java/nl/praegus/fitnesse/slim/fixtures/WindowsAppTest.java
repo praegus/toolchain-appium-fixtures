@@ -3,9 +3,10 @@ package nl.praegus.fitnesse.slim.fixtures;
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
 import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
+import nl.hsac.fitnesse.fixture.slim.web.BrowserTest;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.TimeoutPolicy;
 import nl.hsac.fitnesse.fixture.slim.web.annotation.WaitUntil;
-import nl.hsac.fitnesse.fixture.util.ReflectionHelper;
+import nl.hsac.fitnesse.slim.interaction.ReflectionHelper;
 import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
@@ -14,13 +15,45 @@ import org.openqa.selenium.WebElement;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static nl.praegus.fitnesse.slim.util.KeyMapping.getKey;
 
 @SuppressWarnings("WeakerAccess")
 public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<WindowsElement>> {
+
+    private final static Set<String> METHODS_NO_WAIT;
+
+    static {
+        METHODS_NO_WAIT = ReflectionHelper.validateMethodNames(WindowsAppTest.class,
+                "getFocusedWindow",
+                "takeScreenshot",
+                "secondsBeforeTimeout",
+                "waitForVisible",
+                "waitSeconds",
+                "waitMilliseconds",
+                "waitMilliSecondAfterScroll",
+                "screenshotBaseDirectory",
+                "screenshotShowHeight",
+                "setGlobalValueTo",
+                "setSendCommandForControlOnMacTo",
+                "sendCommandForControlOnMac",
+                "globalValue",
+                "clearSearchContext",
+                "secondsBeforeTimeout",
+                "secondsBeforePageLoadTimeout",
+                "trimOnNormalize",
+                "setImplicitFindInFramesTo",
+                "setTrimOnNormalize",
+                "setRepeatIntervalToMilliseconds",
+                "repeatAtMostTimes",
+                "repeatAtMostTimes",
+                "timeSpentRepeating");
+    }
+
     private int delayAfterClickInMillis = 100;
     private String focusedWindow = "";
     private Robot robot;
@@ -41,10 +74,21 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         super(secondsBeforeTimeout);
     }
 
-    public WindowsAppTest(WindowsHelper windowsHelper, ReflectionHelper reflectionHelper, Robot robot, Clipboard clipboard) {
+    public WindowsAppTest(WindowsHelper windowsHelper, nl.hsac.fitnesse.fixture.util.ReflectionHelper reflectionHelper, Robot robot, Clipboard clipboard) {
         super(windowsHelper, reflectionHelper);
         this.robot = robot;
         this.clipboard = clipboard;
+    }
+
+    /**
+     * Override beforeInvoke to delay execution
+     */
+    @Override
+    protected void beforeInvoke(Method method, Object[] arguments) {
+        super.beforeInvoke(method, arguments);
+        if (!METHODS_NO_WAIT.contains(method.getName())) {
+            waitMilliseconds(delayAfterClickInMillis);
+        }
     }
 
     public String getFocusedWindow() {
@@ -183,7 +227,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
      */
     @Override
     protected void scrollTo(WebElement element) {
-        appiumHelper.scrollTo(element, false);
+        getAppiumHelper().scrollTo(element, false);
         waitAfterScroll(waitAfterScroll);
     }
 
