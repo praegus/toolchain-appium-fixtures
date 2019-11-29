@@ -820,8 +820,8 @@ public class AppiumTestTest {
 
         assertThat(result).isTrue();
 
-        verify(appiumHelper, times(2)).findByTechnicalSelectorOr(eq("place"), any(Supplier.class));
-        verify(appiumHelper, times(1)).scrollUpOrDown(true);
+        verify(appiumHelper, times(3)).findByTechnicalSelectorOr(eq("place"), any(Supplier.class));
+        verify(appiumHelper, times(2)).scrollUpOrDown(true);
     }
 
     @Test
@@ -843,8 +843,8 @@ public class AppiumTestTest {
 
         assertThat(result).isTrue();
 
-        verify(appiumHelper, times(2)).findByTechnicalSelectorOr(eq("place"), any(Supplier.class));
-        verify(appiumHelper, times(1)).scrollUpOrDown(false);
+        verify(appiumHelper, times(3)).findByTechnicalSelectorOr(eq("place"), any(Supplier.class));
+        verify(appiumHelper, times(2)).scrollUpOrDown(false);
     }
 
     @Test
