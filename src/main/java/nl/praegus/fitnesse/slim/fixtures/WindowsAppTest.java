@@ -57,6 +57,7 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
     private String focusedWindow = "";
     private Robot robot;
     private Clipboard clipboard;
+    private int maxRetriesToFindElement = 5;
 
     public WindowsAppTest() {
         super();
@@ -94,6 +95,14 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
         return focusedWindow;
     }
 
+    public int maxRetriesToFindElement() {
+        return maxRetriesToFindElement;
+    }
+
+    public void maxRetriesToFindElement(int maxRetriesToFindElement) {
+        this.maxRetriesToFindElement = maxRetriesToFindElement;
+    }
+
     public void setMillisecondsDelayAfterClick(int millis) {
         delayAfterClickInMillis = millis;
     }
@@ -109,11 +118,19 @@ public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<Win
 
     @Override
     protected boolean click(String place, String container) {
-        boolean result = super.click(place, container);
-        if (result) {
-            waitMilliseconds(delayAfterClickInMillis);
+        int retryCount = 0;
+        try {
+            WebElement element = getElementToClick(cleanupValue(place), container);
+            return clickElement(element);
+        } catch (Exception e) {
+            if (e.getMessage().contains("element//displayed") && retryCount < maxRetriesToFindElement) {
+                System.out.println("Retry click on " + place + " in " + container);
+                retryCount++;
+                return click(place, container);
+            } else {
+                throw e;
+            }
         }
-        return result;
     }
 
     @Override
