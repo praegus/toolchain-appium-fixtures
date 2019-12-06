@@ -402,6 +402,13 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return sendKeysToActiveElement(s);
     }
 
+    /** Simulate the back button. In iOS this is the browser's back button, or the app's if availabe.
+     * In android this simulates the (physical) back button
+     */
+    public void pressBackButton() {
+        getDriver().navigate().back();
+    }
+
     protected CharSequence parseKey(String key) {
         CharSequence s;
         try {
