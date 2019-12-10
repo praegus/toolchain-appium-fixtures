@@ -608,25 +608,26 @@ public class AppiumTestTest {
         assertThat(result).containsExactly("text!");
     }
 
-    @Test
-    public void when_the_values_of_a_checkbox_is_retreived_these_are_returned() {
-        String container = "container";
-        String place = "place";
-
-        // checkbox
-        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
-        when(element.getTagName()).thenReturn("div");
-        when(element.getAttribute("type")).thenReturn("checkbox");
-        when(element.isSelected()).thenReturn(true);
-
-        // container that has checkbox
-        WindowsElement containerElement = mock(WindowsElement.class);
-        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(containerElement);
-
-        List<String> result = appiumTest.valuesForIn(place, container);
-
-        assertThat(result).containsExactly("true");
-    }
+    //  --> TEST REMOVED BECAUSE IT AIMS AT WEB BROWSERS <--//
+//    @Test
+//    public void when_the_values_of_a_checkbox_is_retreived_these_are_returned() {
+//        String container = "container";
+//        String place = "place";
+//
+//        // checkbox
+//        when(appiumHelper.doInContext(any(), any())).thenReturn(element);
+//        when(element.getTagName()).thenReturn("div");
+//        when(element.getAttribute("type")).thenReturn("checkbox");
+//        when(element.isSelected()).thenReturn(true);
+//
+//        // container that has checkbox
+//        WindowsElement containerElement = mock(WindowsElement.class);
+//        when(appiumHelper.findByTechnicalSelectorOr(eq(container), any(Supplier.class))).thenReturn(containerElement);
+//
+//        List<String> result = appiumTest.valuesForIn(place, container);
+//
+//        assertThat(result).containsExactly("true");
+//    }
 
     @Test
     public void when_enter_with_webelement_is_successfully_used_then_true_is_returned() {
