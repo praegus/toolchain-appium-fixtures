@@ -856,16 +856,9 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
                 WebElement selected = getFirstSelectedOption(element);
                 result = getElementText(selected);
             } else {
-                String elementType = element.getAttribute("type");
-                if ("checkbox".equals(elementType) || "radio".equals(elementType)) {
-                    result = String.valueOf(element.isSelected());
-                } else if ("li".equalsIgnoreCase(element.getTagName())) {
+                result = element.getAttribute("value");
+                if (result == null) {
                     result = getElementText(element);
-                } else {
-                    result = element.getAttribute("value");
-                    if (result == null) {
-                        result = getElementText(element);
-                    }
                 }
             }
         }
