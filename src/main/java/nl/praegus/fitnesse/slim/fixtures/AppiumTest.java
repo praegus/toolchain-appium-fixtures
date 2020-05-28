@@ -851,17 +851,17 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
                 WebElement selected = getFirstSelectedOption(element);
                 result = getElementText(selected);
             } else {
-                String elementType = element.getAttribute("type");
-                if ("checkbox".equals(elementType) || "radio".equals(elementType)) {
-                    result = String.valueOf(element.isSelected());
-                } else if ("li".equalsIgnoreCase(element.getTagName())) {
-                    result = getElementText(element);
-                } else {
-                    try {
-                        result = element.getAttribute("value");
-                    } catch (UnsupportedCommandException e) {
+                try {
+                    String elementType = element.getAttribute("type");
+                    if ("checkbox".equals(elementType) || "radio".equals(elementType)) {
+                        result = String.valueOf(element.isSelected());
+                    } else if ("li".equalsIgnoreCase(element.getTagName())) {
                         result = getElementText(element);
+                    } else {
+                        result = element.getAttribute("value");
                     }
+                } catch (UnsupportedCommandException e) {
+                    result = getElementText(element);
                 }
             }
         }
