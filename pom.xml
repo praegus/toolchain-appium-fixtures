@@ -4,7 +4,7 @@
 
     <groupId>nl.praegus</groupId>
     <artifactId>toolchain-appium-fixtures</artifactId>
-    <version>0.0.21</version>
+    <version>0.0.22-SNAPSHOT</version>
 
     <url>https://github.com/praegus/toolchain-appium-fixtures.git</url>
     <name>Praegus FitNesse Fixtures for Appium</name>
@@ -30,7 +30,7 @@
         <url>https://github.com/praegus/toolchain-appium-fixtures.git</url>
         <developerConnection>scm:git:git@github.com:praegus/toolchain-appium-fixtures.git
         </developerConnection>
-        <tag>toolchain-appium-fixtures-0.0.21</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
