@@ -5,6 +5,7 @@ import io.appium.java_client.android.AndroidElement;
 import nl.praegus.fitnesse.slim.util.AndroidHelper;
 import org.openqa.selenium.By;
 
+
 /**
  * Helper to deal with scrolling for Android.
  */

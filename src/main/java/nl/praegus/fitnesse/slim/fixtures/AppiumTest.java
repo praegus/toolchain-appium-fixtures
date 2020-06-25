@@ -33,6 +33,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -214,6 +215,10 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public void switchToDefaultContent() {
         appiumHelper.switchToDefaultContent();
         clearSearchContext();
+    }
+
+    public Set<String> contexts() {
+        return getDriver().getContextHandles();
     }
 
     /**
