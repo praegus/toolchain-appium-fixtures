@@ -3,6 +3,9 @@ package nl.praegus.fitnesse.slim.fixtures;
 import fitnesse.slim.fixtureInteraction.FixtureInteraction;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.PointOption;
 import nl.hsac.fitnesse.fixture.slim.SlimFixture;
 import nl.hsac.fitnesse.fixture.slim.SlimFixtureException;
 import nl.hsac.fitnesse.fixture.slim.StopTestException;
@@ -21,6 +24,7 @@ import nl.hsac.fitnesse.fixture.util.selenium.by.ListItemBy;
 import nl.hsac.fitnesse.fixture.util.selenium.by.OptionBy;
 import nl.hsac.fitnesse.fixture.util.selenium.by.XPathBy;
 import nl.hsac.fitnesse.slim.interaction.ExceptionHelper;
+import nl.praegus.fitnesse.slim.fixtures.util.Direction;
 import nl.praegus.fitnesse.slim.util.AppiumHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -31,6 +35,7 @@ import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -137,6 +142,87 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public boolean waitForToContain(String place, String text) {
         T element = this.getElement(place, null);
         return null != element && element.getText().contains(text);
+    }
+
+    /**
+     * Swipe in the given direction (UP, DOWN, LEFT or RIGHT)
+     * @param direction The direction to swipe
+     */
+    public boolean swipeScreen(String direction) {
+
+        final int ANIMATION_TIME = 50; // ms
+        final int PRESS_TIME = 200; // ms
+
+        PointOption pointOptionStart, pointOptionEnd;
+
+        // init screen variables
+        Dimension dims = getDriver().manage().window().getSize();
+
+        // init start point = center of screen
+        pointOptionStart = PointOption.point(dims.width / 2, dims.height / 2);
+        Direction dir = Direction.valueOf(direction.toUpperCase());
+        switch (dir) {
+            case DOWN:
+                pointOptionEnd = PointOption.point(dims.width / 2, dims.height - (dims.height / 3));
+                break;
+            case UP:
+                pointOptionEnd = PointOption.point(dims.width / 2, dims.height / 3);
+                break;
+            case LEFT:
+                pointOptionEnd = PointOption.point(dims.width / 3, dims.height / 2);
+                break;
+            case RIGHT:
+                pointOptionEnd = PointOption.point(dims.width - (dims.width / 3), dims.height / 2);
+                break;
+            default:
+                throw new IllegalArgumentException("swipeScreen(): dir: '" + dir + "' NOT supported");
+        }
+
+        try {
+            new TouchAction(getDriver())
+                    .press(pointOptionStart)
+                    .waitAction(WaitOptions.waitOptions(Duration.ofMillis(PRESS_TIME)))
+                    .moveTo(pointOptionEnd)
+                    .release().perform();
+        } catch (Exception e) {
+            System.err.println("swipeScreen(): TouchAction FAILED\n" + e.getMessage());
+            return false;
+        }
+
+        // always allow swipe action to complete
+        try {
+            Thread.sleep(ANIMATION_TIME);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+        return true;
+    }
+
+    public boolean swipeUntilIsVisible(String direction, String place) {
+        return repeatUntil(getSwipeUntilVisible(direction, place));
+    }
+
+    private RepeatCompletion getSwipeUntilVisible(String direction, String place) {
+        return new ConditionBasedRepeatUntil(true, d -> swipeScreen(direction), d -> isVisible(place));
+    }
+
+    protected boolean dragTo(String dragPlace, String targetPlace, TouchAction action) {
+        boolean result;
+        T elementToDrag = this.getElement(dragPlace, null);
+        T dragTarget = this.getElement(targetPlace, null);
+
+        if(elementToDrag == null || dragTarget == null) {
+            return false;
+        }
+
+        action.press(PointOption.point(elementToDrag.getCenter()))
+                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(200)))
+                .moveTo(PointOption.point(dragTarget.getCenter()))
+                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(50)))
+                .release()
+                .perform();
+
+        return true;
     }
 
     @Override

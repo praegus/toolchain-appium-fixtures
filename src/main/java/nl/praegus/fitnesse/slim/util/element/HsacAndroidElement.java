@@ -5,6 +5,7 @@ import io.appium.java_client.android.AndroidElement;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.BooleanCache;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.ObjectCache;
 import nl.hsac.fitnesse.fixture.util.selenium.caching.ObjectCacheMap;
+
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
@@ -24,6 +25,7 @@ public class HsacAndroidElement extends AndroidElement {
 
     private ObjectCacheMap<String, String> attributesCache;
     private ObjectCacheMap<String, String> cssValuesCache;
+
 
     @Override
     protected void setFoundBy(SearchContext foundFrom, String locator, String term) {

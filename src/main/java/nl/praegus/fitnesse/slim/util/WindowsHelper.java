@@ -23,7 +23,7 @@ public class WindowsHelper extends AppiumHelper<WindowsElement, WindowsDriver<Wi
             return WindowsBy.accessibilityId(place.substring(3));
         } else if (place.startsWith("name=")) {
             return WindowsBy.name(place.substring(5));
-        } else {
+        }else{
             return firstNonNull(place, super::placeToBy);
         }
     }
