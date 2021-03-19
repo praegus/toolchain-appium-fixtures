@@ -34,8 +34,8 @@
     </scm>
 
     <properties>
-        <fitnesse.version>20200501</fitnesse.version>
-        <hsac.fixtures.version>4.21.0</hsac.fixtures.version>
+        <fitnesse.version>20201213</fitnesse.version>
+        <hsac.fixtures.version>4.24.1</hsac.fixtures.version>
         <appium.version>7.4.0</appium.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
