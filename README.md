@@ -7,6 +7,20 @@ It adds the ability to test mobile (iOS, Android) and Windows applications using
 
 To run tests you need Appium and an appropriate driver.
 
+##Usage:
+Add the dependency below to your project's pom.xml and add `nl.praegus.fitnesse.slim.fixtures` to your imports in FitNesse
+
+```
+<dependency>
+    <groupId>nl.praegus</groupId>
+    <artifactId>toolchain-appium-fixtures</artifactId>
+    <version>0.0.22</version>
+</dependency>
+```
+
+## Update 0.0.22
+- Minor improvements for testing Android apps
+
 ## Update 0.0.12
 - Terug op Java 8.
 
