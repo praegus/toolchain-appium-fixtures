@@ -6,6 +6,7 @@ import io.appium.java_client.android.AndroidElement;
 import nl.praegus.fitnesse.slim.util.by.AndroidBy;
 import nl.praegus.fitnesse.slim.util.scroll.AndroidScrollHelper;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import java.util.function.Function;
 
@@ -48,4 +49,18 @@ public class AndroidHelper extends AppiumHelper<AndroidElement, AndroidDriver<An
     protected By getElementToCheckVisibilityBy(String text) {
         return AndroidBy.partialText(text);
     }
+
+	@Override
+	public String getText(WebElement element) {
+		String text = element.getText();
+		if(text == null) {
+			text = element.getAttribute("text");
+		}
+		if (text != null) {
+			text = text.replace(' ', ' ');
+			text = text.trim();
+		}
+
+		return text;
+	}
 }

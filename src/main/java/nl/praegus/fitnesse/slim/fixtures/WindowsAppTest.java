@@ -10,6 +10,7 @@ import nl.praegus.fitnesse.slim.util.WindowsHelper;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -25,6 +26,11 @@ import static nl.praegus.fitnesse.slim.util.KeyMapping.getKey;
 public class WindowsAppTest extends AppiumTest<WindowsElement, WindowsDriver<WindowsElement>> {
 
     private final static Set<String> METHODS_NO_WAIT;
+
+    @Override
+    public void scrollIntoView(String text) {
+        throw new NotImplementedException();
+    }
 
     static {
         METHODS_NO_WAIT = ReflectionHelper.validateMethodNames(WindowsAppTest.class,

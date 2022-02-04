@@ -1,5 +1,6 @@
 package nl.praegus.fitnesse.slim.fixtures;
 
+import io.appium.java_client.MobileBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
@@ -48,6 +49,13 @@ public class AndroidTest extends AppiumTest<AndroidElement, AndroidDriver<Androi
             getDriver().hideKeyboard();
         }
         return result;
+    }
+
+    @Override
+    public void scrollIntoView(String text) {
+        getDriver().findElement(
+                MobileBy.AndroidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0))" +
+                        ".scrollIntoView(new UiSelector().textContains(\""+text+"\").instance(0))"));
     }
 
     public void swipeScreen(String direction) {
