@@ -36,6 +36,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
 
 /**
@@ -398,7 +400,8 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         return sendKeysToActiveElement(s);
     }
 
-    /** Simulate the back button. In iOS this is the browser's back button, or the app's if availabe.
+    /**
+     * Simulate the back button. In iOS this is the browser's back button, or the app's if availabe.
      * In android this simulates the (physical) back button
      */
     public void pressBackButton() {
@@ -896,13 +899,24 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     public List<String> valuesForIn(String place, String container) {
         WebElement element = getElement(place, container);
         List<String> values = new ArrayList<>();
-        List<WebElement> children = element.findElements(By.xpath("./descendant::*"));
-        System.out.println(children.size() + " descendants found");
-        for(WebElement c : children) {
-            String v = valueFor(c);
-            if (v != null && !v.isEmpty()) { values.add(valueFor(c)); };
+        if (element == null) {
+            return emptyList();
+        } else {
+            if ("ul".equalsIgnoreCase(element.getTagName()) || "ol".equalsIgnoreCase(element.getTagName())) {
+                return getValuesFromList(element);
+            } else if (isSelect(element)) {
+                return getValuesFromSelect(element);
+            } else {
+                List<WebElement> children = element.findElements(By.xpath("./descendant::*"));
+                for (WebElement c : children) {
+                    String v = valueFor(c);
+                    if (v != null && !v.isEmpty()) {
+                        values.add(valueFor(c));
+                    }
+                }
+            }
+            return values.isEmpty() ? singletonList(valueFor(element)) : values;
         }
-        return values;
     }
 
     private List<String> getValuesFromList(WebElement element) {
