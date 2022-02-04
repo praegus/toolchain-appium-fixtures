@@ -22,8 +22,6 @@ import nl.hsac.fitnesse.fixture.util.selenium.by.OptionBy;
 import nl.hsac.fitnesse.fixture.util.selenium.by.XPathBy;
 import nl.hsac.fitnesse.slim.interaction.ExceptionHelper;
 import nl.praegus.fitnesse.slim.util.AppiumHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -38,8 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static nl.hsac.fitnesse.fixture.util.selenium.SelectHelper.isSelect;
 
 /**
@@ -445,7 +441,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
      * @param value   cell content.
      */
     protected void sendValue(WebElement element, String value) {
-        if (StringUtils.isNotEmpty(value)) {
+        if (!value.isEmpty()) {
             String keys = cleanupValue(value);
             element.sendKeys(keys);
         }
@@ -701,15 +697,13 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         if (textToLookFor == null) {
             ok = actual == null;
         } else {
-            if (StringUtils.isEmpty(actual)) {
+            if (actual.isEmpty()) {
                 String value = element.getAttribute("value");
-                if (!StringUtils.isEmpty(value)) {
+                if (!value.isEmpty()) {
                     actual = value;
                 }
             }
-            if (actual != null) {
-                actual = actual.trim();
-            }
+            actual = actual.trim();
             ok = textToLookFor.equals(actual);
         }
         return ok;
@@ -901,15 +895,14 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
     @WaitUntil(TimeoutPolicy.RETURN_NULL)
     public List<String> valuesForIn(String place, String container) {
         WebElement element = getElement(place, container);
-        if (element == null) {
-            return emptyList();
-        } else if ("ul".equalsIgnoreCase(element.getTagName()) || "ol".equalsIgnoreCase(element.getTagName())) {
-            return getValuesFromList(element);
-        } else if (isSelect(element)) {
-            return getValuesFromSelect(element);
-        } else {
-            return singletonList(valueFor(element));
+        List<String> values = new ArrayList<>();
+        List<WebElement> children = element.findElements(By.xpath("./descendant::*"));
+        System.out.println(children.size() + " descendants found");
+        for(WebElement c : children) {
+            String v = valueFor(c);
+            if (v != null && !v.isEmpty()) { values.add(valueFor(c)); };
         }
+        return values;
     }
 
     private List<String> getValuesFromList(WebElement element) {
@@ -1100,6 +1093,8 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
         }
         return null;
     }
+
+    public abstract void scrollIntoView(String text);
 
     public boolean scrollUp() {
         boolean result = appiumHelper.scrollUpOrDown(true);
@@ -1639,7 +1634,7 @@ public abstract class AppiumTest<T extends MobileElement, D extends AppiumDriver
             if (t == null) {
                 message = "";
             } else {
-                message = ExceptionUtils.getStackTrace(t);
+                message = t.getMessage();
             }
         }
         return formatExceptionMsg(message);
