@@ -34,7 +34,7 @@
     </scm>
 
     <properties>
-        <fitnesse.version>20211030</fitnesse.version>
+        <fitnesse.version>20241026</fitnesse.version>
         <hsac.fixtures.version>4.31.0</hsac.fixtures.version>
         <appium.version>7.6.0</appium.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
